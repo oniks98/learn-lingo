@@ -1,2 +1,40 @@
-@import "../../node_modules/tailwindcss/dist/lib.d.mts";
+@import 'tailwindcss';
+
+@theme {
+    --color-white: #fff;
+    --color-yellow-light: #ffdc86;
+    --color-yellow: #f4c550;
+    --color-gray-light: #f8f8f8;
+    --color-green: #38cd3e;
+    --color-dark: #121417;
+
+
+    --breakpoint-sm: 320px;
+    --breakpoint-md: 768px;
+    --breakpoint-xl: 1440px;
+
+    --font-sans: Roboto, Helvetica, Arial, sans-serif;
+
+}
+
+
+/*@utility title {*/
+/*    @apply text-[28px] leading-9 text-grey font-sans font-bold tracking-[0.32px];*/
+/*}*/
+
+
+@layer base {
+    body {
+        @apply bg-white;
+        }
+
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        @apply cursor-pointer;
+    }
+
+    img {
+        @apply w-full h-full;
+    }
+}
 

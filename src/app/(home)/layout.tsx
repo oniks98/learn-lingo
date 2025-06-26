@@ -1,9 +1,10 @@
 import React from 'react';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Roboto  } from 'next/font/google';
 import Providers from '@/providers/providers';
 import '@/styles/globals.css';
 
-const font = Plus_Jakarta_Sans({ subsets: ['latin'] });
+const font = Roboto ({ subsets: ['latin'],
+    weight: ['400', '500', '700'] });
 
 export default function RootLayout({
   children,
@@ -11,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={font.className}>
+    <html lang="en" className={font.className}>
+      <body >
         <Providers>{children}</Providers>
       </body>
     </html>
