@@ -1,16 +1,31 @@
+
 'use client';
 
-import React, { useMemo } from 'react';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import {
+    QueryClient,
+    QueryClientProvider,
+    HydrationBoundary,
+    DehydratedState,
+} from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
-export default function Providers({ children }: React.PropsWithChildren) {
-  const client = useMemo(() => new QueryClient(), []);
+interface ProvidersProps {
+    children: React.ReactNode;
+    dehydratedState?: DehydratedState;
+}
 
-  return (
-    <QueryClientProvider client={client}>
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
+export default function Providers({ children, dehydratedState }: ProvidersProps) {
+
+    const [queryClient] = useState(() => new QueryClient());
+// (Global Provider Pattern - обгортка з HydrationBoundary, page.tsx: тепер у <Providers dehydratedState={...}>, а не тільки в HydrationBoundary
+// Per-Route Pattern- убрати Providers і тільки обгортати page.tsx у HydrationBoundary )
+    return (
+        <QueryClientProvider client={queryClient}>
+            <HydrationBoundary state={dehydratedState}>
+                {children}
+            </HydrationBoundary>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
+    );
 }
