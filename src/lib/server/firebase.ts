@@ -1,23 +1,23 @@
-// lib/server/firebase.ts
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-    apiKey: 'AIzaSyATgB2squ4Bb0e1gNhkJvMcSuoS1A8P1ys',
-    authDomain: 'learn-lingo-331bb.firebaseapp.com',
-    databaseURL: 'https://learn-lingo-331bb-default-rtdb.firebaseio.com',
-    projectId: 'learn-lingo-331bb',
-    storageBucket: 'learn-lingo-331bb.appspot.com',
-    messagingSenderId: '82554963329',
-    appId: '1:82554963329:web:8b815decab7628a4235480',
-    measurementId: 'G-91Z93LM5KW',
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
 // Avoid re-initializing
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Optional: Init Realtime Database
-const db = getDatabase(app);
 
-// Export initialized app and db
-export { app, db };
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+export { app, db, auth };
