@@ -1,4 +1,4 @@
-'use api';
+"use client"
 
 import React, { useState } from 'react';
 import {
@@ -18,8 +18,8 @@ interface ProvidersProps {
 export default function Providers({ children, dehydratedState }: ProvidersProps) {
 
     const [queryClient] = useState(() => new QueryClient());
-// (Global Provider Pattern - обгортка з HydrationBoundary, page.tsx: тепер у <Providers dehydratedState={...}>, а не тільки в HydrationBoundary
-// Per-Route Pattern- убрати Providers і тільки обгортати page.tsx у HydrationBoundary )
+// NOTE: (Global Provider Pattern - обгортка з HydrationBoundary, page.tsx: тепер у <Providers dehydratedState={...}>, а не тільки в HydrationBoundary
+// NOTE:Per-Route Pattern- убрати Providers і тільки обгортати page.tsx у HydrationBoundary )
     return (
         <QueryClientProvider client={queryClient}>
             <HydrationBoundary state={dehydratedState}>
@@ -29,6 +29,5 @@ export default function Providers({ children, dehydratedState }: ProvidersProps)
             </HydrationBoundary>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
-
     );
 }
