@@ -1,4 +1,4 @@
-'use client';
+'use api';
 
 import React, { useState } from 'react';
 import {
@@ -8,6 +8,7 @@ import {
     DehydratedState,
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { AuthProvider } from '@/contexts/auth-context';
 
 interface ProvidersProps {
     children: React.ReactNode;
@@ -22,9 +23,12 @@ export default function Providers({ children, dehydratedState }: ProvidersProps)
     return (
         <QueryClientProvider client={queryClient}>
             <HydrationBoundary state={dehydratedState}>
+                <AuthProvider>
                 {children}
+                </AuthProvider>
             </HydrationBoundary>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
+
     );
 }

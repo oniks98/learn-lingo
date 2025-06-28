@@ -1,6 +1,6 @@
 // import React from 'react';
 // import { dehydrate } from '@tans/react-query';
-// import getQueryClient from '@/lib/client/get-query-client';
+// import getQueryClient from '@/lib/api/get-query-api';
 // import Providers from '@/providers/providers';
 //
 // export default async function Page() {
