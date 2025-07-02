@@ -47,22 +47,16 @@ export default function BurgerMenu({ className }: BurgerMenuProps) {
               'z-50 focus:outline-none',
             )}
           >
-            <div className="space-y-1 px-2 py-2">
+            <div className="p-2">
               {items.map((item) => (
                 <MenuItem key={item.href}>
                   {({ focus }) => (
                     <Link
                       href={item.href}
                       className={clsx(
-                        'group flex w-full items-center rounded-lg px-4 py-3',
-                        'text-base font-medium transition-all duration-150',
-                        'border-l-2 border-transparent',
-                        focus
-                          ? [
-                              'to-yellow from-yellow-light bg-gradient-to-r',
-                              'border-yellow',
-                            ]
-                          : ['hover:bg-yellow-light'],
+                        'grid grid-cols-1 px-4 py-3',
+                        'text-base leading-5 font-bold',
+                        focus ? 'text-yellow' : 'hover:text-yellow',
                       )}
                     >
                       <span>{item.label}</span>
