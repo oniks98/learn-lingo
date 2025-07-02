@@ -49,29 +49,6 @@ export async function getAllTeachers(): Promise<TeacherPreview[]> {
     }));
 }
 
-// NOTE: Клієнтська фільтрація (по мовах, рівнях, ціні)
-export function filterTeachers(
-    teachers: TeacherPreview[],
-    filters: {
-        language?: string;
-        level?: string;
-        price?: number;
-    }
-): TeacherPreview[] {
-    return teachers.filter((teacher) => {
-        const matchesLanguage =
-            !filters.language || teacher.languages.includes(filters.language);
-
-        const matchesLevel =
-            !filters.level || teacher.levels.includes(filters.level);
-
-        const matchesPrice =
-            filters.price === undefined || teacher.price_per_hour === filters.price;
-
-        return matchesLanguage && matchesLevel && matchesPrice;
-    });
-}
-
 // NOTE: Отримати повну інформацію про вчителя
 export async function getTeacherById(id: string): Promise<FullTeacherInfo | null> {
     const snapshot = await get(ref(db, `teachers/${id}`));

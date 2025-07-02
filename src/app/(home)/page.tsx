@@ -1,9 +1,11 @@
 import React from 'react';
 
-export default function Home() {
-  return (
-    <main >
-        <h1>Home page</h1>
-    </main>
-  );
+export interface PageProps {}
+
+export default function Page({}: PageProps) {
+    return (
+        <main>
+            <h1>Home page</h1>
+        </main>
+    );
 }
