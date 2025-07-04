@@ -19,7 +19,7 @@ export default function Navigation({ className }: NavigationProps) {
 
   return (
     <nav className={className}>
-      <ul className="grid grid-flow-col items-center gap-[28px]">
+      <ul className="grid grid-flow-col items-center gap-6">
         {items.map((item) => (
           <li key={item.href}>
             <Link href={item.href}>

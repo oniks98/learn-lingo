@@ -22,7 +22,7 @@ export default function Button({
       {...rest}
       className={twMerge(
         clsx(
-          'bg-yellow hover:bg-yellow-light rounded-xl px-12 py-4 transition-colors',
+          'text-dark bg-yellow hover:bg-yellow-light rounded-xl px-12 py-4 leading-[1.56] font-bold transition-colors',
           className,
         ),
       )}

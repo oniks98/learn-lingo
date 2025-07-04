@@ -25,14 +25,14 @@ export default function AuthButtons({ className }: AuthButtonsProps) {
           alt="Log In"
           priority
         />
-        <span className="text-dark text-base leading-5 font-bold">Log in</span>
+        <span className="text-base leading-5">Log in</span>
       </Button>
 
       <Button
-        className="bg-dark hover:text-dark px-[39px] py-[14px] text-white"
+        className="bg-dark hover:text-dark px-[2.8cqw] py-[14px] text-white"
         onClick={() => router.push('/signup', { scroll: false })}
       >
-        <span className="text-base leading-5 font-bold">Registration</span>
+        <span className="text-base leading-5">Registration</span>
       </Button>
     </div>
   );

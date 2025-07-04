@@ -7,11 +7,13 @@
     --color-gray-light: #f8f8f8;
     --color-green: #38cd3e;
     --color-dark: #121417;
+    --color-cream:#fbe9ba;
+    --color-dark-70: rgba(18, 20, 23, 0.7);
 
 
     --breakpoint-sm: 320px;
     --breakpoint-md: 768px;
-    --breakpoint-xl: 1440px;
+    --breakpoint-xl: 1024px;
 
     --font-sans: Roboto, Helvetica, Arial, sans-serif;
 
@@ -38,3 +40,8 @@
     /*}*/
 }
 
+/*@layer utilities {*/
+/*    .container-type-size {*/
+/*        container-type: size;*/
+/*    }*/
+/*}*/
