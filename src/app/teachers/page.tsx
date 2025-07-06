@@ -1,10 +1,93 @@
-import React from 'react';
+'use client';
 
-export interface PageProps {
-}
+import React, { useState, useMemo, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import FilterPanel, { FiltersForm } from '@/app/components/ui/filter-panel';
+import TeacherCard from '@/app/components/ui/teacher-card';
+import { getAllTeachers } from '@/lib/api/teachers';
+import { TeacherPreview } from '@/lib/utils/types';
+import { filterTeachers } from '@/lib/utils/filterTeachers';
+import Button from '@/app/components/ui/button';
+import Loader from '@/app/components/ui/loader';
+import ScrollToTopButton from '@/app/components/ui/ScrollToTopButton';
 
-export default function Page({}: PageProps) {
+export default function TeachersPage() {
+  const [filters, setFilters] = useState<FiltersForm>({
+    language: '',
+    level: '',
+    price: '',
+  });
+
+  const [visibleCount, setVisibleCount] = useState(4);
+
+  const { data: allTeachers = [], isLoading } = useQuery<TeacherPreview[]>({
+    queryKey: ['teachers'],
+    queryFn: getAllTeachers,
+  });
+
+  const filteredTeachers = useMemo(() => {
+    return filterTeachers(allTeachers, {
+      language: filters.language || undefined,
+      level: filters.level || undefined,
+      price: filters.price
+        ? parseFloat(filters.price.replace(' $', ''))
+        : undefined,
+    });
+  }, [allTeachers, filters]);
+
+  const visibleTeachers = useMemo(
+    () => filteredTeachers.slice(0, visibleCount),
+    [filteredTeachers, visibleCount],
+  );
+
+  // Прокрутка вниз після зміни visibleCount (після додавання вчителів)
+  useEffect(() => {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    });
+  }, [visibleCount]);
+
+  const handleFilterChange = (newFilters: FiltersForm) => {
+    setFilters(newFilters);
+    setVisibleCount(4); // Скидаємо видимі при зміні фільтрів
+  };
+
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 4);
+  };
+
+  const hasMore = visibleCount < filteredTeachers.length;
+
   return (
-    <div>Teachers</div>
+    <main className="mx-auto max-w-338 px-5 pb-5">
+      <div className="bg-gray-light mx-auto rounded-3xl px-5 pb-5">
+        <FilterPanel onChange={handleFilterChange} />
+
+        <>
+          <h1 className="sr-only">List teachers</h1>
+          {isLoading ? (
+            <Loader />
+          ) : visibleTeachers.length === 0 ? (
+            <p>No teachers found.</p>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-6">
+                {visibleTeachers.map((teacher) => (
+                  <TeacherCard key={teacher.id} teacher={teacher} />
+                ))}
+              </div>
+
+              {hasMore && (
+                <div className="mt-8 flex justify-center">
+                  <Button onClick={handleLoadMore}>Load More</Button>
+                </div>
+              )}
+            </>
+          )}
+        </>
+        <ScrollToTopButton />
+      </div>
+    </main>
   );
 }
