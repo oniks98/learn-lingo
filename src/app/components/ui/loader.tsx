@@ -8,7 +8,7 @@ export default function Loader() {
       <ThreeDots
         height="60"
         width="60"
-        color="#4f46e5" // Tailwind blue-700
+        color="#f4c550"
         ariaLabel="loading"
         visible={true}
       />
