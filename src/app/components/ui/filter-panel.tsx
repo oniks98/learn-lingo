@@ -82,7 +82,7 @@ const FilterPanel = ({
           type="button"
           onClick={() => {
             reset();
-            onChange({ language: '', level: '', price: '' }); // повідомляємо батьку очистку
+            onChange({ language: '', level: '', price: '' });
           }}
           className="bg-gray-muted text-dark rounded-xl px-5 py-4 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
@@ -121,7 +121,7 @@ const ControlledFilter = ({
         render={({ field }) => (
           <Listbox value={field.value} onChange={field.onChange}>
             <div className="relative">
-              <ListboxButton className="border-gray-muted relative w-full cursor-pointer rounded-[14px] border bg-white py-4 pr-10 pl-[18px] text-left shadow-sm focus:outline-none">
+              <ListboxButton className="relative w-full cursor-pointer rounded-[14px] bg-white py-4 pr-10 pl-[18px] text-left shadow-sm focus:outline-none">
                 <span className="text-dark block truncate text-[18px] leading-[1.11] font-medium">
                   {field.value || placeholder}
                 </span>
@@ -131,7 +131,7 @@ const ControlledFilter = ({
                 </span>
               </ListboxButton>
 
-              <ListboxOptions className="ring-opacity-5 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-[18px] shadow-lg ring-1 ring-black focus:outline-none">
+              <ListboxOptions className="ring-opacity-5 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-[18px] shadow-lg focus:outline-none">
                 {options.map((option) => (
                   <ListboxOption
                     key={option}
