@@ -1,6 +1,6 @@
 import React from 'react';
-import Image from 'next/image';
 import clsx from 'clsx';
+import LogoIcon from '@/lib/icons/logo.svg';
 
 export interface LogoProps {
   className?: string;
@@ -14,12 +14,10 @@ export default function Logo({ className }: LogoProps) {
         className,
       )}
     >
-      <Image
-        width={28}
-        height={28}
-        src="/icons/logo.svg"
-        alt="LearnLingo logo"
-        priority
+      <LogoIcon
+        className="h-[28px] w-[28px]"
+        role="img"
+        aria-label="LearnLingo logo"
       />
       <span className="text-dark text-xl leading-[1.2] font-medium tracking-[-0.02em]">
         LearnLingo
