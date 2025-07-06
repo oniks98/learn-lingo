@@ -23,7 +23,7 @@ export default function Navigation({ className }: NavigationProps) {
         {items.map((item) => (
           <li key={item.href}>
             <Link href={item.href}>
-              <span className="text-dark hover:text-yellow text-base/5 font-normal transition-colors">
+              <span className="text-dark hover:text-yellow text-base leading-5 font-normal transition-colors">
                 {item.label}
               </span>
             </Link>

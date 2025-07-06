@@ -1,6 +1,5 @@
-import { TeacherPreview } from '@/lib/utils/types';
+import { TeacherPreview } from '@/lib/types/types';
 
-// NOTE: Клієнтська фільтрація (по мовах, рівнях, ціні)
 export function filterTeachers(
   teachers: TeacherPreview[],
   filters: {

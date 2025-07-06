@@ -1,6 +1,6 @@
 import { db } from '@/lib/utils/firebase';
 import { ref, get, update, remove } from 'firebase/database';
-import { TeacherPreview, FullTeacherInfo } from '@/lib/utils/types';
+import { TeacherPreview, TeacherExtraInfo } from '@/lib/types/types';
 
 // NOTE: Отримати всіх вчителів (тільки потрібні поля)
 export async function getAllTeachers(): Promise<TeacherPreview[]> {
@@ -25,13 +25,18 @@ export async function getAllTeachers(): Promise<TeacherPreview[]> {
 }
 
 // NOTE: Отримати повну інформацію про вчителя
-export async function getTeacherById(
+export async function getTeacherExtraInfo(
   id: string,
-): Promise<FullTeacherInfo | null> {
+): Promise<TeacherExtraInfo | null> {
   const snapshot = await get(ref(db, `teachers/${id}`));
   if (!snapshot.exists()) return null;
 
-  return { id, ...snapshot.val() };
+  const teacher = snapshot.val();
+
+  return {
+    experience: teacher.experience,
+    reviews: teacher.reviews ?? [],
+  };
 }
 
 // NOTE: Отримати обраних вчителів користувача

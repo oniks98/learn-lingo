@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import FilterPanel, { FiltersForm } from '@/app/components/ui/filter-panel';
 import TeacherCard from '@/app/components/ui/teacher-card';
 import { getAllTeachers } from '@/lib/api/teachers';
-import { TeacherPreview } from '@/lib/utils/types';
+import { TeacherPreview } from '@/lib/types/types';
 import { filterTeachers } from '@/lib/utils/filterTeachers';
 import Button from '@/app/components/ui/button';
 import Loader from '@/app/components/ui/loader';
@@ -40,7 +40,6 @@ export default function TeachersPage() {
     [filteredTeachers, visibleCount],
   );
 
-  // Прокрутка вниз після зміни visibleCount (після додавання вчителів)
   useEffect(() => {
     window.scrollTo({
       top: document.body.scrollHeight,
@@ -50,7 +49,7 @@ export default function TeachersPage() {
 
   const handleFilterChange = (newFilters: FiltersForm) => {
     setFilters(newFilters);
-    setVisibleCount(4); // Скидаємо видимі при зміні фільтрів
+    setVisibleCount(4);
   };
 
   const handleLoadMore = () => {

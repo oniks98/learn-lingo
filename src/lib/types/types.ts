@@ -18,7 +18,7 @@ export interface TeacherPreview {
   conditions: string[];
 }
 
-export interface FullTeacherInfo extends TeacherPreview {
-  reviews: Review[];
+export interface TeacherExtraInfo {
   experience: string;
+  reviews: Review[];
 }
