@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import FilterPanel, { FiltersForm } from '@/app/components/ui/filter-panel';
 import TeacherCard from '@/app/components/ui/teacher-card';
@@ -40,20 +40,24 @@ export default function TeachersPage() {
     [filteredTeachers, visibleCount],
   );
 
-  useEffect(() => {
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth',
-    });
-  }, [visibleCount]);
-
   const handleFilterChange = (newFilters: FiltersForm) => {
     setFilters(newFilters);
     setVisibleCount(4);
   };
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 4);
+    setVisibleCount((prev) => {
+      const newCount = prev + 4;
+
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth',
+        });
+      }, 100);
+
+      return newCount;
+    });
   };
 
   const hasMore = visibleCount < filteredTeachers.length;
@@ -73,7 +77,11 @@ export default function TeachersPage() {
             <>
               <div className="grid grid-cols-1 gap-6">
                 {visibleTeachers.map((teacher) => (
-                  <TeacherCard key={teacher.id} teacher={teacher} />
+                  <TeacherCard
+                    key={teacher.id}
+                    level={filters.level}
+                    teacher={teacher}
+                  />
                 ))}
               </div>
 
