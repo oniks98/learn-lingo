@@ -86,7 +86,7 @@ export default function TeachersPage() {
               </div>
 
               {hasMore && (
-                <div className="mt-8 flex justify-center">
+                <div className="mt-8 grid justify-center">
                   <Button onClick={handleLoadMore}>Load More</Button>
                 </div>
               )}

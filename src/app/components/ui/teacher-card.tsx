@@ -13,12 +13,14 @@ import StarIcon from '@/lib/icons/star.svg';
 import HeartIcon from '@/lib/icons/heart.svg';
 import Button from '@/app/components/ui/button';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
 type Props = {
   teacher: TeacherPreview;
+  level: string;
 };
 
-export default function TeacherCard({ teacher }: Props) {
+export default function TeacherCard({ teacher, level }: Props) {
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
 
@@ -30,23 +32,74 @@ export default function TeacherCard({ teacher }: Props) {
 
   return (
     <div className="rounded-xl bg-white p-6 shadow transition-all duration-300">
-      <div className="grid grid-cols-[120px_1fr] gap-12">
-        <div className="border-yellow relative self-start rounded-full border-3 p-3">
-          <Image
-            width={96}
-            height={96}
-            src={teacher.avatar_url}
-            alt={`${teacher.name} ${teacher.surname}`}
-            className="rounded-full"
-          />
-          <OnlineIcon
-            className="absolute top-[19px] right-[23px] h-3 w-3"
-            aria-hidden="true"
-          />
+      <div className="grid xl:grid-cols-[120px_1fr] xl:gap-12">
+        <div className="md:grid-rows-auto @container mb-[3.03cqw] grid md:grid-cols-[120px_1fr] md:gap-5 xl:block">
+          <div className="border-yellow relative rounded-full border-3 p-3 sm:mb-4 sm:justify-self-center md:place-self-start">
+            <Image
+              width={96}
+              height={96}
+              src={teacher.avatar_url}
+              alt={`${teacher.name} ${teacher.surname}`}
+              className="rounded-full"
+            />
+            <OnlineIcon
+              className="absolute top-[19px] right-[23px] h-3 w-3"
+              aria-hidden="true"
+            />
+          </div>
+
+          <h2 className="row-2 justify-self-center text-2xl font-medium xl:hidden">
+            {teacher.name} {teacher.surname}
+          </h2>
+          <div className="items-center sm:col-[1/2] sm:row-[3/4] md:col-[2/3] md:row-[1/3] xl:hidden">
+            <span className="text-gray-muted mb-5 block text-base leading-6 font-medium">
+              Languages
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <span className="grid grid-cols-[repeat(2,auto)] items-center">
+                <BookIcon className="mr-1 h-4 w-4" />
+                <span className="text-dark text-base leading-6 font-medium">
+                  Lessons online
+                </span>
+              </span>
+              <span className="px-[1.5cqw]">
+                <SeparatorIcon className="h-4 w-0.5" />
+              </span>
+              <span className="grid grid-cols-[repeat(2,auto)] items-center">
+                <span className="text-dark text-base leading-6 font-medium">
+                  Lessons done:
+                </span>
+                <span>{teacher.lessons_done}</span>
+              </span>
+              <span className="px-[1.5cqw]">
+                <SeparatorIcon className="h-4 w-0.5" />
+              </span>
+              <span className="grid grid-cols-[repeat(3,auto)] items-center">
+                <StarIcon className="mr-1 h-4 w-4" />
+                <span className="text-dark text-base leading-6 font-medium">
+                  Rating:
+                </span>
+                <span>{teacher.rating.toFixed(1)}</span>
+              </span>
+              <span className="px-[1.5cqw]">
+                <SeparatorIcon className="h-4 w-0.5" />
+              </span>
+              <span className="grid grid-cols-[repeat(3,auto)] items-center">
+                <span className="text-dark text-base leading-6 font-medium">
+                  Price / 1 hour:
+                </span>
+                <span className="text-green">{teacher.price_per_hour}</span>
+                <span className="text-green">$</span>
+              </span>
+              <span>
+                <HeartIcon className="h-[26px] w-[26px]" />
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="@container grid">
-          <div className="mb-2 grid grid-cols-[auto_3fr_repeat(7,auto)_1fr_auto] items-center">
+          <div className="mb-2 grid grid-cols-[auto_3fr_repeat(7,auto)_1fr_auto] items-center sm:hidden xl:grid">
             <span className="text-gray-muted text-base leading-6 font-medium">
               Languages
             </span>
@@ -90,7 +143,7 @@ export default function TeacherCard({ teacher }: Props) {
             </span>
           </div>
 
-          <h2 className="mb-[3.03cqw] text-2xl font-medium">
+          <h2 className="mb-[3.03cqw] text-2xl font-medium sm:hidden xl:block">
             {teacher.name} {teacher.surname}
           </h2>
 
@@ -133,21 +186,35 @@ export default function TeacherCard({ teacher }: Props) {
                 <ul className="mb-[3.03cqw] space-y-2">
                   {extraInfo.reviews.map((rev: Review, idx: number) => (
                     <li key={idx}>
-                      <strong>{rev.reviewer_name}</strong> ★
-                      {rev.reviewer_rating}
+                      <span className="text-gray-muted mr-2">
+                        {rev.reviewer_name}
+                      </span>
+                      <StarIcon className="mr-2 inline h-4 w-4" />
+                      <span>{rev.reviewer_rating}</span>
                       <p> {rev.comment}</p>
                     </li>
                   ))}
                 </ul>
-                <p className="text-sm leading-[1.14]">
-                  {teacher.levels.join(', ')}
-                </p>
+                <ul className="flex flex-wrap gap-2">
+                  {teacher.levels.map((lev, idx: number) => (
+                    <li key={idx}>
+                      <p
+                        className={clsx(
+                          'border-gray-muted rounded-[35px] border px-3 py-2 text-sm leading-[1.14] font-medium',
+                          level === lev && 'bg-yellow',
+                        )}
+                      >
+                        {lev}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : (
               <p className="text-yellow">Error loading details.</p>
             ))}
           <Button
-            className="w-58"
+            className="s max-w-58 sm:px-1"
             onClick={() => router.push('/booking', { scroll: false })}
           >
             <span className="text-base leading-5">Book trial lesson</span>
