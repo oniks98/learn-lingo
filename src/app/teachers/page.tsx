@@ -75,7 +75,7 @@ export default function TeachersPage() {
             <p>No teachers found.</p>
           ) : (
             <>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid gap-6">
                 {visibleTeachers.map((teacher) => (
                   <TeacherCard
                     key={teacher.id}
