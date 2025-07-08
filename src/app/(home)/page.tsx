@@ -28,7 +28,7 @@ export default function HomePage() {
         >
           <h1
             className={clsx(
-              'text-dark leading-[1.17] font-medium tracking-[-0.02em]',
+              'leading-[1.17] font-medium tracking-[-0.02em]',
               'mb-[3.13cqw] text-[clamp(24px,4.7cqw,48px)]',
               'xl:mb-[4.44cqw] xl:text-[clamp(24px,6.66cqw,48px)]',
             )}
@@ -36,7 +36,7 @@ export default function HomePage() {
             Unlock your potential with the best{' '}
             <span
               className={clsx(
-                'bg-cream font-normal italic',
+                'bg-cream italic',
                 'max-h-10 max-w-[195px] rounded-lg',
               )}
             >
@@ -47,7 +47,7 @@ export default function HomePage() {
 
           <p
             className={clsx(
-              'text-dark leading-[1.375] font-normal tracking-[-0.02em]',
+              'leading-[1.375] tracking-[-0.02em]',
               'mb-[6.25cqw] text-[clamp(14px,2.22cqw,16px)]',
               'text-center xl:mb-[8.88cqw] xl:text-start',
             )}
@@ -110,13 +110,13 @@ export default function HomePage() {
             <div key={value} className="grid grid-cols-2 items-center gap-4">
               <p
                 className={clsx(
-                  'text-dark justify-self-end leading-[1.14] font-medium tracking-[-0.02em]',
+                  'justify-self-end leading-[1.14] font-medium tracking-[-0.02em]',
                   'md:text-[7.53cqw] xl:text-[2.14cqw]',
                 )}
               >
                 {value}
               </p>
-              <p className="text-dark-70 text-sm leading-[1.28] font-normal tracking-[-0.02em] whitespace-pre-line">
+              <p className="text-dark-70 text-sm leading-[1.28] tracking-[-0.02em] whitespace-pre-line">
                 {label}
               </p>
             </div>
