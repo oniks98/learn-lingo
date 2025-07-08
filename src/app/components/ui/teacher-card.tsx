@@ -172,7 +172,7 @@ export default function TeacherCard({ teacher, level }: Props) {
 
           <Button
             onClick={() => setExpanded((v) => !v)}
-            className="hover:text-yellow mb-2 w-[78px] bg-white px-0 py-2 text-base leading-6 font-medium underline hover:bg-white"
+            className="hover:text-yellow mb-2 w-[78px] bg-white px-0 py-2 text-base leading-6 font-medium underline hover:bg-white sm:justify-self-center md:justify-self-start"
           >
             {expanded ? 'Show less' : 'Read more'}
           </Button>
@@ -214,7 +214,7 @@ export default function TeacherCard({ teacher, level }: Props) {
               <p className="text-yellow">Error loading details.</p>
             ))}
           <Button
-            className="s max-w-58 sm:px-1"
+            className="max-w-58 px-[4.55cqw] sm:justify-self-center md:justify-self-start"
             onClick={() => router.push('/booking', { scroll: false })}
           >
             <span className="text-base leading-5">Book trial lesson</span>
