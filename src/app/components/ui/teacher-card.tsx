@@ -31,7 +31,7 @@ export default function TeacherCard({ teacher, level }: Props) {
   });
 
   return (
-    <div
+    <section
       className={clsx(
         'rounded-xl bg-white p-6 shadow transition-all duration-300',
       )}
@@ -116,7 +116,6 @@ export default function TeacherCard({ teacher, level }: Props) {
           </span>
         </div>
 
-        {/* Name */}
         <h2
           className={clsx(
             'row-2 mb-[2.61cqw] text-2xl font-medium',
@@ -221,10 +220,10 @@ export default function TeacherCard({ teacher, level }: Props) {
             )}
             onClick={() => router.push('/booking', { scroll: false })}
           >
-            <span className="leading-5">Book trial lesson</span>
+            <span className="leading-[1.56]">Book trial lesson</span>
           </Button>
         )}
       </div>
-    </div>
+    </section>
   );
 }
