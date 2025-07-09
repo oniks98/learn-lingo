@@ -30,8 +30,10 @@ const FilterPanel = ({
     },
   });
 
+  // NOTE: підписка на зміни форми
   const values = watch();
 
+  // NOTE: повертає true, якщо хоча б один елемент не порожній
   const hasSelectedFilters = Object.values(values).some((v) => v !== '');
 
   const onSubmit = (data: FiltersForm) => {
