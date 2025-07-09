@@ -93,7 +93,7 @@ export default function HomePage() {
 
       <section className="border-yellow @container rounded-[30px] border-[1.5px] border-dashed xl:col-span-2">
         <h2 className="sr-only">Platform statistics</h2>
-        <div
+        <ul
           className={clsx(
             'grid items-center justify-between',
             'grid-cols-[repeat(auto-fit,minmax(210px,_1fr))]',
@@ -107,7 +107,7 @@ export default function HomePage() {
             { value: '120 +', label: 'Subjects\ntaught' },
             { value: '200 +', label: 'Tutor\nnationalities' },
           ].map(({ value, label }) => (
-            <div key={value} className="grid grid-cols-2 items-center gap-4">
+            <li key={value} className="grid grid-cols-2 items-center gap-4">
               <p
                 className={clsx(
                   'justify-self-end leading-[1.14] font-medium tracking-[-0.02em]',
@@ -119,9 +119,9 @@ export default function HomePage() {
               <p className="text-dark-70 text-sm leading-[1.28] tracking-[-0.02em] whitespace-pre-line">
                 {label}
               </p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </main>
   );
