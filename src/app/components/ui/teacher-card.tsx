@@ -218,7 +218,9 @@ export default function TeacherCard({ teacher, level }: Props) {
               'md:col-[1/3] md:row-[7/8] md:justify-self-start',
               'xl:col-2 xl:row-7',
             )}
-            onClick={() => router.push('/booking', { scroll: false })}
+            onClick={() =>
+              router.push(`/teachers/${teacher.id}`, { scroll: false })
+            }
           >
             <span className="leading-[1.56]">Book trial lesson</span>
           </Button>
