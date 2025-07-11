@@ -1,4 +1,3 @@
-// src/lib/api/bookings.ts
 import { db } from '@/lib/utils/firebase';
 import { ref, push, set } from 'firebase/database';
 

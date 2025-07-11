@@ -7,7 +7,6 @@ const RadioButtonIcon = ({ selected }: { selected: boolean }) => (
     fill="none"
     className={selected ? 'text-yellow' : 'text-gray-muted'}
   >
-    {/* Outer circle */}
     <rect
       x="1"
       y="1"
