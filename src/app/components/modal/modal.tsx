@@ -7,8 +7,8 @@ import {
   Transition,
 } from '@headlessui/react';
 import { Fragment, ReactNode } from 'react';
-import { XMarkIcon } from '@heroicons/react/24/solid';
 import clsx from 'clsx';
+import ExitIcon from '@/lib/icons/exit';
 
 interface ModalProps {
   isOpen: boolean;
@@ -43,19 +43,19 @@ export default function Modal({
           >
             <DialogPanel
               className={clsx(
-                'relative w-full max-w-[460px] rounded-3xl bg-white p-8 shadow-xl',
+                'relative w-full max-w-[599px] rounded-[30px] bg-white p-16 shadow-xl',
                 className,
               )}
             >
               <button
                 onClick={onCloseAction}
-                className="text-gray-muted absolute top-6 right-6 hover:text-black"
+                className="hover:text-yellow absolute top-5 right-5 transition"
               >
-                <XMarkIcon className="h-5 w-5" />
+                <ExitIcon className="h-8 w-8" />
               </button>
 
               {title && (
-                <DialogTitle className="mb-4 text-[28px] font-bold">
+                <DialogTitle className="mb-5 text-[40px] leading-[1.2] font-medium tracking-[-0.02em]">
                   {title}
                 </DialogTitle>
               )}
