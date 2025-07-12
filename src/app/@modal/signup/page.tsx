@@ -1,11 +1,9 @@
-import React from 'react';
+'use client';
 
-export interface PageProps {}
+import SignUpFormModal from '@/app/components/modal/sign-up-form-modal';
+import { useRouter } from 'next/navigation';
 
-export default function Page({}: PageProps) {
-    return (
-        <main >
-            <h1>signup modal</h1>
-        </main>
-    );
+export default function SignUpFormModalRoute() {
+  const router = useRouter();
+  return <SignUpFormModal isOpen={true} onCloseAction={() => router.back()} />;
 }

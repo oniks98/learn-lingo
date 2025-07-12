@@ -1,11 +1,9 @@
-import React from 'react';
+'use client';
 
-export interface PageProps {}
+import LoginFormModal from '@/app/components/modal/login-form-modal';
+import { useRouter } from 'next/navigation';
 
-export default function Page({}: PageProps) {
-    return (
-        <main >
-            <h1>login modal</h1>
-        </main>
-    );
+export default function LoginFormModalRoute() {
+  const router = useRouter();
+  return <LoginFormModal isOpen={true} onCloseAction={() => router.back()} />;
 }
