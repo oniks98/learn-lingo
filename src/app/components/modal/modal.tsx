@@ -43,24 +43,26 @@ export default function Modal({
           >
             <DialogPanel
               className={clsx(
-                'relative w-full max-w-[599px] rounded-[30px] bg-white p-16 shadow-xl',
+                '@container relative w-full max-w-[599px] rounded-[30px] bg-white shadow-xl',
                 className,
               )}
             >
-              <button
-                onClick={onCloseAction}
-                className="hover:text-yellow absolute top-5 right-5 transition"
-              >
-                <ExitIcon className="h-8 w-8" />
-              </button>
+              <div className="p-[10.68cqw]">
+                <button
+                  onClick={onCloseAction}
+                  className="hover:text-yellow absolute top-5 right-5 transition"
+                >
+                  <ExitIcon className="h-8 w-8" />
+                </button>
 
-              {title && (
-                <DialogTitle className="mb-5 text-[40px] leading-[1.2] font-medium tracking-[-0.02em]">
-                  {title}
-                </DialogTitle>
-              )}
+                {title && (
+                  <DialogTitle className="mb-5 text-[40px] leading-[1.2] font-medium tracking-[-0.02em]">
+                    {title}
+                  </DialogTitle>
+                )}
 
-              {children}
+                {children}
+              </div>
             </DialogPanel>
           </Transition>
         </div>
