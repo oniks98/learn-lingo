@@ -2,15 +2,23 @@
 
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
 import Modal from '@/app/components/modal/modal';
+import Button from '@/app/components/ui/button';
 import Image from 'next/image';
+
 import { getAllTeachers } from '@/lib/api/teachers';
 import { createBooking, type BookingData } from '@/lib/api/bookings';
-import type { TeacherPreview } from '@/lib/types/types';
+import {
+  bookingSchema,
+  type BookingFormValues,
+} from '@/lib/validation/booking';
 import { learningReasons } from '@/lib/constants/reasons';
+import type { TeacherPreview } from '@/lib/types/types';
 import RadioButtonIcon from '@/lib/icons/radio';
-import Button from '@/app/components/ui/button';
 
 interface Props {
   isOpen: boolean;
@@ -18,24 +26,23 @@ interface Props {
   teacherId: string;
 }
 
-type BookingFormValues = {
-  name: string;
-  email: string;
-  phone: string;
-  reason: string;
-};
-
 export default function BookingFormModal({
   isOpen,
   onCloseAction,
   teacherId,
 }: Props) {
-  const { register, handleSubmit, reset, control } =
-    useForm<BookingFormValues>();
-  const selectedReason = useWatch({ control, name: 'reason' });
+  const {
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+  });
 
+  const selectedReason = useWatch({ control, name: 'reason' });
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const { data: teachers = [] } = useQuery<TeacherPreview[]>({
     queryKey: ['teachers'],
@@ -70,15 +77,23 @@ export default function BookingFormModal({
       });
 
       const result = await response.json();
+
       if (!result.ok) {
-        setError(result.error || 'Email send failed');
+        toast.error(
+          result.error || 'Failed to send email. Please try again later.',
+        );
         return;
       }
 
+      toast.success(
+        'Your booking request was sent successfully. Please check your email.',
+      );
       reset();
       onCloseAction();
     } catch (err: any) {
-      setError(err.message || 'Unknown error');
+      toast.error(
+        err.message || 'Something went wrong. Please try again later.',
+      );
     } finally {
       setSending(false);
     }
@@ -144,28 +159,40 @@ export default function BookingFormModal({
               </label>
             );
           })}
+          {errors.reason && (
+            <p className="text-sm text-red-600">{errors.reason.message}</p>
+          )}
         </fieldset>
 
         <input
-          {...register('name', { required: true })}
+          {...register('name')}
           type="text"
           placeholder="Full Name"
           className="border-gray-muted w-full rounded-xl border p-4"
         />
+        {errors.name && (
+          <p className="text-sm text-red-600">{errors.name.message}</p>
+        )}
+
         <input
-          {...register('email', { required: true })}
+          {...register('email')}
           type="email"
           placeholder="Email"
           className="border-gray-muted w-full rounded-xl border p-4"
         />
+        {errors.email && (
+          <p className="text-sm text-red-600">{errors.email.message}</p>
+        )}
+
         <input
-          {...register('phone', { required: true })}
+          {...register('phone')}
           type="tel"
           placeholder="Phone number"
           className="border-gray-muted mb-10 w-full rounded-xl border p-4"
         />
-
-        {error && <p className="text-red-600">{error}</p>}
+        {errors.phone && (
+          <p className="text-sm text-red-600">{errors.phone.message}</p>
+        )}
 
         <Button
           type="submit"
