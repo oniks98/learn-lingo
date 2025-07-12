@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import Modal from '@/app/components/modal/modal';
 import Image from 'next/image';
@@ -10,6 +10,7 @@ import { createBooking, type BookingData } from '@/lib/api/bookings';
 import type { TeacherPreview } from '@/lib/types/types';
 import { learningReasons } from '@/lib/constants/reasons';
 import RadioButtonIcon from '@/lib/icons/radio';
+import Button from '@/app/components/ui/button';
 
 interface Props {
   isOpen: boolean;
@@ -29,11 +30,12 @@ export default function BookingFormModal({
   onCloseAction,
   teacherId,
 }: Props) {
-  const { register, handleSubmit, reset } = useForm<BookingFormValues>();
+  const { register, handleSubmit, reset, control } =
+    useForm<BookingFormValues>();
+  const selectedReason = useWatch({ control, name: 'reason' });
+
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [selectedReason, setSelectedReason] = useState<string | null>(null);
 
   const { data: teachers = [] } = useQuery<TeacherPreview[]>({
     queryKey: ['teachers'],
@@ -57,6 +59,8 @@ export default function BookingFormModal({
     };
 
     try {
+      setSending(true);
+
       await createBooking(booking);
 
       const response = await fetch('/api/sendBookingEmail', {
@@ -90,6 +94,7 @@ export default function BookingFormModal({
         Our experienced tutor will assess your current language level, discuss
         your learning goals, and tailor the lesson to your specific needs.
       </p>
+
       {teacher && (
         <div className="mb-10 flex items-center gap-[14px]">
           <Image
@@ -110,59 +115,65 @@ export default function BookingFormModal({
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <fieldset className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-[18px]">
+        <fieldset className="mb-10 space-y-4">
           <legend className="mb-5 text-2xl leading-[1.33] font-medium">
             What is your main reason for learning English?
           </legend>
-          {learningReasons.map((reason) => (
-            <label
-              key={reason}
-              className="flex cursor-pointer items-center gap-3"
-            >
-              <input
-                type="radio"
-                value={reason}
-                className="hidden"
-                {...register('reason', {
-                  required: true,
-                  onChange: (e) => setSelectedReason(e.target.value),
-                })}
-              />
-              <RadioButtonIcon selected={selectedReason === reason} />
-              <span>{reason}</span>
-            </label>
-          ))}
+
+          {learningReasons.map((reason) => {
+            const selected = selectedReason === reason;
+
+            return (
+              <label
+                key={reason}
+                className="flex cursor-pointer items-center gap-2"
+              >
+                <input
+                  type="radio"
+                  value={reason}
+                  {...register('reason')}
+                  className="sr-only"
+                />
+                {selected ? (
+                  <RadioButtonIcon />
+                ) : (
+                  <div className="border-gray-muted h-5 w-5 rounded-full border-2" />
+                )}
+                <span>{reason}</span>
+              </label>
+            );
+          })}
         </fieldset>
 
         <input
           {...register('name', { required: true })}
           type="text"
           placeholder="Full Name"
-          className="border-gray-muted w-full rounded-xl border p-3"
+          className="border-gray-muted w-full rounded-xl border p-4"
         />
         <input
           {...register('email', { required: true })}
           type="email"
           placeholder="Email"
-          className="border-gray-muted w-full rounded-xl border p-3"
+          className="border-gray-muted w-full rounded-xl border p-4"
         />
         <input
           {...register('phone', { required: true })}
           type="tel"
           placeholder="Phone number"
-          className="border-gray-muted w-full rounded-xl border p-3"
+          className="border-gray-muted mb-10 w-full rounded-xl border p-4"
         />
 
         {error && <p className="text-red-600">{error}</p>}
 
-        <button
+        <Button
           type="submit"
           disabled={sending}
-          className="bg-yellow text-dark w-full rounded-xl py-4 font-semibold disabled:opacity-50"
+          className="w-full disabled:opacity-50"
         >
           {sending ? 'Sending…' : 'Book'}
-        </button>
+        </Button>
       </form>
     </Modal>
   );
