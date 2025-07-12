@@ -1,11 +1,15 @@
 'use client';
 
-import Modal from '@/app/components/modal/modal';
-import Image from 'next/image';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
+import Modal from '@/app/components/modal/modal';
+import Image from 'next/image';
 import { getAllTeachers } from '@/lib/api/teachers';
+import { createBooking, type BookingData } from '@/lib/api/bookings';
 import type { TeacherPreview } from '@/lib/types/types';
+import { learningReasons } from '@/lib/constants/reasons';
+import RadioButtonIcon from '@/lib/icons/radio';
 
 interface Props {
   isOpen: boolean;
@@ -13,12 +17,23 @@ interface Props {
   teacherId: string;
 }
 
+type BookingFormValues = {
+  name: string;
+  email: string;
+  phone: string;
+  reason: string;
+};
+
 export default function BookingFormModal({
   isOpen,
   onCloseAction,
   teacherId,
 }: Props) {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm<BookingFormValues>();
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
 
   const { data: teachers = [] } = useQuery<TeacherPreview[]>({
     queryKey: ['teachers'],
@@ -27,9 +42,42 @@ export default function BookingFormModal({
 
   const teacher = teachers.find((t) => t.id === teacherId);
 
-  const onSubmit = (data: any) => {
-    console.log({ ...data, teacherId });
-    onCloseAction();
+  const onSubmit = async (formData: BookingFormValues) => {
+    if (!teacher) return;
+
+    const booking: BookingData = {
+      teacherId,
+      teacherName: teacher.name,
+      teacherSurname: teacher.surname,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      reason: formData.reason,
+      createdAt: Date.now(),
+    };
+
+    try {
+      await createBooking(booking);
+
+      const response = await fetch('/api/sendBookingEmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(booking),
+      });
+
+      const result = await response.json();
+      if (!result.ok) {
+        setError(result.error || 'Email send failed');
+        return;
+      }
+
+      reset();
+      onCloseAction();
+    } catch (err: any) {
+      setError(err.message || 'Unknown error');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -38,22 +86,23 @@ export default function BookingFormModal({
       onCloseAction={onCloseAction}
       title="Book trial lesson"
     >
-      <p className="text-gray-muted mb-4 text-sm leading-[1.43]">
+      <p className="text-shadow-gray-muted mb-5 leading-snug">
         Our experienced tutor will assess your current language level, discuss
         your learning goals, and tailor the lesson to your specific needs.
       </p>
-
       {teacher && (
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-10 flex items-center gap-[14px]">
           <Image
             src={teacher.avatar_url}
-            alt="Teacher avatar"
-            width={40}
-            height={40}
+            alt={`${teacher.name} ${teacher.surname}`}
+            width={44}
+            height={44}
             className="rounded-full"
           />
-          <p className="text-sm font-medium">
-            <span className="text-gray-muted block">Your teacher</span>
+          <p className="font-medium">
+            <span className="text-gray-muted block text-sm leading-[1.33]">
+              Your teacher
+            </span>
             <span>
               {teacher.name} {teacher.surname}
             </span>
@@ -62,55 +111,57 @@ export default function BookingFormModal({
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <fieldset className="space-y-2">
-          <legend className="mb-1 text-base font-semibold">
+        <fieldset className="space-y-4">
+          <legend className="mb-5 text-2xl leading-[1.33] font-medium">
             What is your main reason for learning English?
           </legend>
-          {[
-            'Career and business',
-            'Lesson for kids',
-            'Living abroad',
-            'Exams and coursework',
-            'Culture, travel or hobby',
-          ].map((reason) => (
-            <label key={reason} className="flex items-center gap-2">
+          {learningReasons.map((reason) => (
+            <label
+              key={reason}
+              className="flex cursor-pointer items-center gap-3"
+            >
               <input
                 type="radio"
-                {...register('reason')}
                 value={reason}
-                className="accent-yellow"
+                className="hidden"
+                {...register('reason', {
+                  required: true,
+                  onChange: (e) => setSelectedReason(e.target.value),
+                })}
               />
+              <RadioButtonIcon selected={selectedReason === reason} />
               <span>{reason}</span>
             </label>
           ))}
         </fieldset>
 
         <input
-          {...register('name')}
+          {...register('name', { required: true })}
           type="text"
           placeholder="Full Name"
           className="border-gray-muted w-full rounded-xl border p-3"
         />
-
         <input
-          {...register('email')}
+          {...register('email', { required: true })}
           type="email"
           placeholder="Email"
           className="border-gray-muted w-full rounded-xl border p-3"
         />
-
         <input
-          {...register('phone')}
+          {...register('phone', { required: true })}
           type="tel"
           placeholder="Phone number"
           className="border-gray-muted w-full rounded-xl border p-3"
         />
 
+        {error && <p className="text-red-600">{error}</p>}
+
         <button
           type="submit"
-          className="bg-yellow text-dark w-full rounded-xl py-4 font-semibold"
+          disabled={sending}
+          className="bg-yellow text-dark w-full rounded-xl py-4 font-semibold disabled:opacity-50"
         >
-          Book
+          {sending ? 'Sending…' : 'Book'}
         </button>
       </form>
     </Modal>
