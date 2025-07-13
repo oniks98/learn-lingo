@@ -141,7 +141,9 @@ const ControlledFilter = ({
                     className={({ focus }) =>
                       clsx(
                         'cursor-pointer px-4 py-2 select-none',
-                        focus ? 'bg-gray-light text-black' : 'text-dark',
+                        focus
+                          ? 'text-dark transition-colors duration-300'
+                          : 'text-gray-muted',
                       )
                     }
                   >
