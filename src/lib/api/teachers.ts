@@ -1,6 +1,10 @@
 import { db } from '@/lib/utils/firebase';
 import { ref, get, update, remove } from 'firebase/database';
-import { TeacherPreview, TeacherExtraInfo } from '@/lib/types/types';
+import {
+  TeacherPreview,
+  TeacherExtraInfo,
+  TeacherInfoModal,
+} from '@/lib/types/types';
 
 // NOTE: Отримати всіх вчителів (тільки потрібні поля)
 export async function getAllTeachers(): Promise<TeacherPreview[]> {
@@ -36,6 +40,22 @@ export async function getTeacherExtraInfo(
   return {
     experience: teacher.experience,
     reviews: teacher.reviews ?? [],
+  };
+}
+
+// NOTE: Отримати аватар, повне ім'я для модалки по id вчителя
+export async function getTeacherById(
+  id: string,
+): Promise<TeacherInfoModal | null> {
+  const snapshot = await get(ref(db, `teachers/${id}`));
+  if (!snapshot.exists()) return null;
+  const teacher = snapshot.val();
+
+  return {
+    id,
+    name: teacher.name,
+    surname: teacher.surname,
+    avatar_url: teacher.avatar_url,
   };
 }
 
