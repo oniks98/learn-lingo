@@ -22,3 +22,10 @@ export interface TeacherExtraInfo {
   experience: string;
   reviews: Review[];
 }
+
+export interface TeacherInfoModal {
+  id: string;
+  name: string;
+  surname: string;
+  avatar_url: string;
+}
