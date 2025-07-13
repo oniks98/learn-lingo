@@ -3,59 +3,45 @@
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-
 import Modal from '@/app/components/modal/modal';
 import Button from '@/app/components/ui/button';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-import { getAllTeachers } from '@/lib/api/teachers';
 import { createBooking, type BookingData } from '@/lib/api/bookings';
 import {
   bookingSchema,
   type BookingFormValues,
 } from '@/lib/validation/booking';
 import { learningReasons } from '@/lib/constants/reasons';
-import type { TeacherPreview } from '@/lib/types/types';
+import type { TeacherInfoModal } from '@/lib/types/types';
 import RadioButtonIcon from '@/lib/icons/radio';
 
 interface Props {
   isOpen: boolean;
-  onCloseAction: () => void;
-  teacherId: string;
+  teacher: TeacherInfoModal;
 }
 
-export default function BookingFormModal({
-  isOpen,
-  onCloseAction,
-  teacherId,
-}: Props) {
+export default function BookingFormModal({ isOpen, teacher }: Props) {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
     control,
     reset,
     formState: { errors },
-  } = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingSchema),
-  });
+  } = useForm<BookingFormValues>({ resolver: zodResolver(bookingSchema) });
 
+  // NOTE: дає змогу підписатися на зміну значення одного або
+  // декількох полів форми без ре‑рендеру всього компонента форми.
   const selectedReason = useWatch({ control, name: 'reason' });
+
   const [sending, setSending] = useState(false);
 
-  const { data: teachers = [] } = useQuery<TeacherPreview[]>({
-    queryKey: ['teachers'],
-    queryFn: getAllTeachers,
-  });
-
-  const teacher = teachers.find((t) => t.id === teacherId);
-
   const onSubmit = async (formData: BookingFormValues) => {
-    if (!teacher) return;
-
     const booking: BookingData = {
-      teacherId,
+      teacherId: teacher.id,
       teacherName: teacher.name,
       teacherSurname: teacher.surname,
       name: formData.name,
@@ -67,33 +53,25 @@ export default function BookingFormModal({
 
     try {
       setSending(true);
-
+      // NOTE: запис бронювання у базу
       await createBooking(booking);
 
+      // NOTE: відправлення листа з підтвердженням
       const response = await fetch('/api/sendBookingEmail', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(booking),
       });
-
       const result = await response.json();
-
       if (!result.ok) {
-        toast.error(
-          result.error || 'Failed to send email. Please try again later.',
-        );
+        toast.error(result.error || 'Failed to send email.');
         return;
       }
-
-      toast.success(
-        'Your booking request was sent successfully. Please check your email.',
-      );
+      toast.success('Your booking was sent successfully.');
       reset();
-      onCloseAction();
+      router.back();
     } catch (err: any) {
-      toast.error(
-        err.message || 'Something went wrong. Please try again later.',
-      );
+      toast.error(err.message || 'Something went wrong.');
     } finally {
       setSending(false);
     }
@@ -102,48 +80,36 @@ export default function BookingFormModal({
   return (
     <Modal
       isOpen={isOpen}
-      onCloseAction={onCloseAction}
+      onCloseAction={() => router.back()}
       title="Book trial lesson"
     >
-      <p className="text-shadow-gray-muted mb-5 leading-snug">
-        Our experienced tutor will assess your current language level, discuss
-        your learning goals, and tailor the lesson to your specific needs.
+      <p className="text-gray-muted mb-5 leading-snug">
+        Our tutor will assess your level and tailor the lesson.
       </p>
 
-      {teacher && (
-        <div className="mb-10 flex items-center gap-[14px]">
-          <Image
-            src={teacher.avatar_url}
-            alt={`${teacher.name} ${teacher.surname}`}
-            width={44}
-            height={44}
-            className="rounded-full"
-          />
+      <div className="mb-8 flex items-center gap-4">
+        <Image
+          src={teacher.avatar_url}
+          alt={`${teacher.name} ${teacher.surname}`}
+          width={44}
+          height={44}
+          className="rounded-full"
+        />
+        <div>
+          <p className="text-gray-muted text-sm">Your teacher</p>
           <p className="font-medium">
-            <span className="text-gray-muted block text-sm leading-[1.33]">
-              Your teacher
-            </span>
-            <span>
-              {teacher.name} {teacher.surname}
-            </span>
+            {teacher.name} {teacher.surname}
           </p>
         </div>
-      )}
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-[18px]">
-        <fieldset className="mb-10 space-y-4">
-          <legend className="mb-5 text-2xl leading-[1.33] font-medium">
-            What is your main reason for learning English?
-          </legend>
-
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <fieldset className="space-y-3">
+          <legend className="text-lg font-medium">Reason for learning</legend>
           {learningReasons.map((reason) => {
             const selected = selectedReason === reason;
-
             return (
-              <label
-                key={reason}
-                className="flex cursor-pointer items-center gap-2"
-              >
+              <label key={reason} className="flex items-center gap-2">
                 <input
                   type="radio"
                   value={reason}
@@ -153,7 +119,7 @@ export default function BookingFormModal({
                 {selected ? (
                   <RadioButtonIcon />
                 ) : (
-                  <div className="border-gray-muted h-5 w-5 rounded-full border-2" />
+                  <div className="h-5 w-5 rounded-full border" />
                 )}
                 <span>{reason}</span>
               </label>
@@ -166,9 +132,8 @@ export default function BookingFormModal({
 
         <input
           {...register('name')}
-          type="text"
           placeholder="Full Name"
-          className="border-gray-muted w-full rounded-xl border p-4"
+          className="w-full rounded-xl border p-3"
         />
         {errors.name && (
           <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -178,7 +143,7 @@ export default function BookingFormModal({
           {...register('email')}
           type="email"
           placeholder="Email"
-          className="border-gray-muted w-full rounded-xl border p-4"
+          className="w-full rounded-xl border p-3"
         />
         {errors.email && (
           <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -187,18 +152,14 @@ export default function BookingFormModal({
         <input
           {...register('phone')}
           type="tel"
-          placeholder="Phone number"
-          className="border-gray-muted mb-10 w-full rounded-xl border p-4"
+          placeholder="Phone"
+          className="w-full rounded-xl border p-3"
         />
         {errors.phone && (
           <p className="text-sm text-red-600">{errors.phone.message}</p>
         )}
 
-        <Button
-          type="submit"
-          disabled={sending}
-          className="w-full disabled:opacity-50"
-        >
+        <Button type="submit" disabled={sending} className="w-full">
           {sending ? 'Sending…' : 'Book'}
         </Button>
       </form>
