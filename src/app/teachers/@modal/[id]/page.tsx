@@ -1,22 +1,17 @@
-// переробити на сервер для not found
-'use client';
-
-import { useRouter, useParams } from 'next/navigation';
-import BookingFormModal from '@/app/components/modal/booking-form-modal';
 import { notFound } from 'next/navigation';
+import BookingFormModal from '@/app/components/modal/booking-form-modal';
+import { getTeacherById } from '@/lib/api/teachers';
 
-export default function BookingModalRoute() {
-  const router = useRouter();
-  const params = useParams();
-  const teacherId = params.id as string;
-
+export default async function BookingPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: teacherId } = await params;
   if (!teacherId) return notFound();
 
-  return (
-    <BookingFormModal
-      isOpen={true}
-      onCloseAction={() => router.back()}
-      teacherId={teacherId}
-    />
-  );
+  const teacher = await getTeacherById(teacherId);
+  if (!teacher) return notFound();
+
+  return <BookingFormModal isOpen={true} teacher={teacher} />;
 }
