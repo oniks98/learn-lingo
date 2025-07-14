@@ -10,6 +10,7 @@ import Button from '@/app/components/ui/button';
 import { SignUpFormValues, signUpSchema } from '@/lib/validation/signup';
 import GoogleIcon from '@/lib/icons/google-icon.svg';
 import { useAuth } from '@/contexts/auth-context';
+import { useLocationTracker } from '@/contexts/location-context';
 
 interface Props {
   isOpen: boolean;
@@ -18,6 +19,7 @@ interface Props {
 
 export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
   const { signUp, signInWithGoogle } = useAuth();
+  const { prevPath } = useLocationTracker();
   const [sending, setSending] = useState(false);
 
   const {
@@ -33,14 +35,19 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
     setSending(true);
     try {
       await signUp(data.email, data.password, data.name);
-      toast.success('Реєстрація успішна!');
+      toast.success('Registration successful!');
       reset();
       onCloseAction();
     } catch (err: any) {
-      toast.error(err?.message || 'Не вдалося зареєструватися.');
+      toast.error(err?.message || 'Failed to register.');
     } finally {
       setSending(false);
     }
+  };
+
+  const handleGoogle = () => {
+    onCloseAction();
+    signInWithGoogle(prevPath);
   };
 
   return (
@@ -104,7 +111,7 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
         </div>
 
         <Button
-          onClick={signInWithGoogle}
+          onClick={handleGoogle}
           className="flex w-full items-center justify-center gap-2"
         >
           <GoogleIcon className="h-5 w-5" />

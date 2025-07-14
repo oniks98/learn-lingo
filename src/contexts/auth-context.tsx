@@ -24,7 +24,7 @@ interface AuthContextType {
   ) => Promise<void>; // функція реєстрації
   signIn: (email: string, password: string) => Promise<void>; // функція входу
   signOut: () => Promise<void>; // функція виходу
-  signInWithGoogle: () => void;
+  signInWithGoogle: (redirectPath?: string) => void;
 }
 
 // Створюємо контекст авторизації
@@ -46,8 +46,9 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const signInWithGoogle = () => {
-    window.location.href = '/api/auth/google';
+  const signInWithGoogle = (redirectPath = '/') => {
+    const redirectParam = encodeURIComponent(redirectPath);
+    window.location.href = `/api/auth/google?redirect=${redirectParam}`;
   };
 
   // Слідкуємо за змінами стану користувача (увійшов/вийшов); useEffect підписується й автоматично відписується

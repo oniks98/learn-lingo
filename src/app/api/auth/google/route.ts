@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
 import { OAuth2Client } from 'google-auth-library';
-
-// Read OAuth config from JSON
 import path from 'path';
 import { promises as fs } from 'fs';
 
@@ -15,11 +13,18 @@ const client = new OAuth2Client({
   redirectUri: oauthConfig.web.redirect_uris[0],
 });
 
-export async function GET() {
+export async function GET(req: Request) {
+  // Читаємо '?redirect=' із запиту
+  const { searchParams } = new URL(req.url);
+  const redirect = searchParams.get('redirect') || '/';
+
+  // Генеруємо auth URL із передачею state = наш redirect шлях
   const url = client.generateAuthUrl({
     access_type: 'offline',
     scope: ['openid', 'email', 'profile'],
     prompt: 'select_account',
+    state: encodeURIComponent(redirect),
   });
+
   return NextResponse.redirect(url);
 }

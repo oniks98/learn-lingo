@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from '@/contexts/auth-context';
+import { LocationProvider } from '@/contexts/location-context';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -15,7 +16,9 @@ export default function Providers({ children }: ProvidersProps) {
   // NOTE:Per-Route Pattern- убрати Providers і тільки обгортати page.tsx у HydrationBoundary )
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <LocationProvider>{children}</LocationProvider>
+      </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
