@@ -32,3 +32,24 @@
     }
 
 }
+
+@layer utilities {
+    @keyframes float-scale {
+        0%, 100% {
+            transform: translateY(-0.5%) scale(1);
+        }
+        50% {
+            transform: translateY(1%) scale(1.03);
+        }
+        0%, 100% {
+            transform: translateX(-0.2%) scale(1);
+        }
+        50% {
+            transform: translateX(1%) scale(1.03);
+        }
+    }
+
+    .animate-float-scale {
+        animation: float-scale 6s ease-in-out infinite;
+    }
+}

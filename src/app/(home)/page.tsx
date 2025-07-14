@@ -86,6 +86,7 @@ export default function HomePage() {
               'absolute inset-0 scale-125 object-cover opacity-0',
               'transition duration-700 ease-out',
               'group-hover:blur-0 group-hover:scale-100 group-hover:opacity-100',
+              'animate-float-scale',
             )}
           />
         </div>
