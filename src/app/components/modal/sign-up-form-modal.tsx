@@ -20,6 +20,7 @@ interface Props {
 export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
   const { signUp, signInWithGoogle } = useAuth();
   const { prevPath } = useLocationTracker();
+
   const [sending, setSending] = useState(false);
 
   const {
@@ -34,19 +35,38 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
   const onSubmit = async (data: SignUpFormValues) => {
     setSending(true);
     try {
-      await signUp(data.email, data.password, data.name);
-      toast.success('Registration successful!');
+      const user = await signUp(data.email, data.password, data.name);
+
+      const res = await fetch('/api/sendConfirmationEmail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.uid,
+          email: user.email,
+          redirectPath: prevPath,
+        }),
+      });
+
+      const result = await res.json();
+      if (!result.ok) {
+        toast.error(result.error || 'Помилка відправлення листа');
+        return;
+      }
+
+      toast.success(
+        'На вашу пошту надіслано посилання для підтвердження. Перевірте, будь ласка, спам.',
+      );
+
       reset();
       onCloseAction();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to register.');
+      toast.error(err.message || 'Не вдалося зареєструватися.');
     } finally {
       setSending(false);
     }
   };
 
   const handleGoogle = () => {
-    onCloseAction();
     signInWithGoogle(prevPath);
   };
 
