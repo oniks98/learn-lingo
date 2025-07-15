@@ -21,7 +21,7 @@ interface AuthContextType {
     email: string,
     password: string,
     displayName: string,
-  ) => Promise<void>; // функція реєстрації
+  ) => Promise<User>; // функція реєстрації
   signIn: (email: string, password: string) => Promise<void>; // функція входу
   signOut: () => Promise<void>; // функція виходу
   signInWithGoogle: (redirectPath?: string) => void;
@@ -65,20 +65,25 @@ export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({
     email: string,
     password: string,
     displayName: string,
-  ) => {
+  ): Promise<User> => {
     setError(null);
     try {
       const { user } = await createUserWithEmailAndPassword(
         auth,
         email,
         password,
-      ); // створення акаунту
+      );
       await updateProfile(user, { displayName });
+      // прописуємо в БД мінімальні поля
       await set(ref(db, `users/${user.uid}`), {
         email: user.email,
         username: displayName,
         createdAt: Date.now(),
+        favorites: [],
+        emailVerified: false,
+        provider: 'password',
       });
+      return user;
     } catch (err: any) {
       setError(getFriendlyErrorMessage(err.code));
       throw err;
