@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
-import { getTeacherExtraInfo } from '@/lib/api/teachers';
+import { getTeacherExtraInfo } from '@/lib/db/teachers';
 import Loader from '@/app/components/ui/loader';
 import Image from 'next/image';
 import SeparatorIcon from '@/lib/icons/separator.svg';

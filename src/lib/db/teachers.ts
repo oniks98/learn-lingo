@@ -1,4 +1,4 @@
-import { db } from '@/lib/utils/firebase';
+import { db } from '@/lib/db/firebase';
 import { ref, get, update, remove } from 'firebase/database';
 import {
   TeacherPreview,

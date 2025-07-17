@@ -9,7 +9,7 @@ import Button from '@/app/components/ui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { createBooking, type BookingData } from '@/lib/api/bookings';
+import { createBooking, type BookingData } from '@/lib/db/bookings';
 import {
   bookingSchema,
   type BookingFormValues,

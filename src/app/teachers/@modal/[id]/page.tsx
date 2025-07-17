@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import BookingFormModal from '@/app/components/modal/booking-form-modal';
-import { getTeacherById } from '@/lib/api/teachers';
+import { getTeacherById } from '@/lib/db/teachers';
 
 export default async function BookingPage({
   params,

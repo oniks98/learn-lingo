@@ -1,3 +1,4 @@
+// src/app/api/auth/google/route.ts
 import { NextResponse } from 'next/server';
 import { OAuth2Client } from 'google-auth-library';
 import path from 'path';

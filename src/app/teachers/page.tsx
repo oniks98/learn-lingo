@@ -3,7 +3,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import { getAllTeachers } from '@/lib/api/teachers';
+import { getAllTeachers } from '@/lib/db/teachers';
 import TeachersList from '@/app/components/ui/teachers-list';
 
 export default async function TeachersPage() {

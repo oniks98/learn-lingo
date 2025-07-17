@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import type { BookingData } from '@/lib/api/bookings';
+import type { BookingData } from '@/lib/db/bookings';
 
 export async function POST(request: Request) {
   try {

@@ -1,153 +1,112 @@
+// src/contexts/auth-context.tsx
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  updateProfile,
-  type User,
-} from 'firebase/auth';
-import { auth, db } from '@/lib/utils/firebase';
-import { ref, set } from 'firebase/database';
 
-// Тип даних для контексту авторизації
+interface User {
+  email: string;
+  name: string;
+  uid: string; // используется для идентификации пользователя и отправки писем
+}
+
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
   error: string | null;
-  signUp: (
-    email: string,
-    password: string,
-    displayName: string,
-  ) => Promise<User>; // функція реєстрації
-  signIn: (email: string, password: string) => Promise<void>; // функція входу
-  signOut: () => Promise<void>; // функція виходу
+  signUp: (email: string, password: string, name: string) => Promise<User>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
   signInWithGoogle: (redirectPath?: string) => void;
 }
 
-// Створюємо контекст авторизації
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Кастомний хук для зручного доступу до контексту
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };
 
-//  Провайдер, який обгортає додаток , де потрібна авторизація
 export const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const signInWithGoogle = (redirectPath = '/') => {
-    const redirectParam = encodeURIComponent(redirectPath);
-    window.location.href = `/api/auth/google?redirect=${redirectParam}`;
-  };
 
-  // Слідкуємо за змінами стану користувача (увійшов/вийшов); useEffect підписується й автоматично відписується
+  // Проверяем сессию при загрузке
   useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-      setError(null);
-    });
+    void (async function fetchSession() {
+      try {
+        const res = await fetch('/api/auth/me');
+        const data = await res.json();
+        if (data.ok && data.user) {
+          setCurrentUser(data.user);
+        }
+      } catch (err) {
+        console.error('Error fetching session:', err);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  //  Реєстрація нового користувача
-  const signUp = async (
-    email: string,
-    password: string,
-    displayName: string,
-  ): Promise<User> => {
+  const signUp = async (email: string, password: string, name: string) => {
     setError(null);
-    try {
-      const { user } = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-      await updateProfile(user, { displayName });
-      // прописуємо в БД мінімальні поля
-      await set(ref(db, `users/${user.uid}`), {
-        email: user.email,
-        username: displayName,
-        createdAt: Date.now(),
-        favorites: [],
-        emailVerified: false,
-        provider: 'password',
-      });
-      return user;
-    } catch (err: any) {
-      setError(getFriendlyErrorMessage(err.code));
-      throw err;
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, name }),
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      setError(data.error);
+      throw new Error(data.error);
     }
+    setCurrentUser(data.user);
+    return data.user;
   };
 
-  //  Вхід користувача
   const signIn = async (email: string, password: string) => {
     setError(null);
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err: any) {
-      console.error('Error signing in:', err);
-      setError(getFriendlyErrorMessage(err.code));
-      throw err;
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      setError(data.error);
+      throw new Error(data.error);
     }
+    setCurrentUser(data.user);
   };
 
-  //  Вихід користувача
-  const signOutUser = async () => {
-    setError(null);
-    try {
-      await signOut(auth);
-    } catch (err) {
-      setError('Failed to sign out of account. Please try again.');
-      throw err;
-    }
+  const signOut = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    setCurrentUser(null);
   };
 
-  //  Перетворює коди помилок Firebase на зрозумілі повідомлення
-  const getFriendlyErrorMessage = (code: string) => {
-    switch (code) {
-      case 'auth/email-already-in-use':
-        return 'Ця електронна пошта вже використовується.';
-      case 'auth/invalid-email':
-        return 'Неправильний формат електронної пошти.';
-      case 'auth/weak-password':
-        return 'Пароль має містити щонайменше 6 символів.';
-      case 'auth/user-disabled':
-        return 'Ваш обліковий запис вимкнено.';
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-        return 'Неправильна електронна пошта або пароль.';
-      case 'auth/too-many-requests':
-        return 'Занадто багато спроб. Спробуйте пізніше.';
-      default:
-        return `Помилка: ${code}. Спробуйте ще раз.`;
-    }
+  const signInWithGoogle = (redirectPath = '/') => {
+    window.location.href = `/api/auth/google?redirect=${encodeURIComponent(
+      redirectPath,
+    )}`;
   };
 
-  //  Обʼєкт, який буде доступний через контекст
-  const value: AuthContextType = {
-    currentUser,
-    loading,
-    error,
-    signUp,
-    signIn,
-    signInWithGoogle,
-    signOut: signOutUser,
-  };
-
-  // Рендеримо провайдер. Дочірні компоненти показуємо лише після завершення ініціалізації
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        loading,
+        error,
+        signUp,
+        signIn,
+        signOut,
+        signInWithGoogle,
+      }}
+    >
       {!loading && children}
     </AuthContext.Provider>
   );
