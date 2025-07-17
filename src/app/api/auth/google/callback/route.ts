@@ -46,27 +46,47 @@ export async function GET(req: Request) {
     const email = payload.email;
     const name = payload.name ?? 'Unknown';
 
-    // ✅ Проверка, есть ли уже такой email в системе (даже если другой uid)
+    // ✅ Проверяем, есть ли email в системе (по всем провайдерам)
     const emailTaken = await isEmailTaken(email);
+
     if (emailTaken) {
-      console.log('⛔ Email already taken (duplicate manual account)');
-      return NextResponse.redirect(`${getBaseUrl()}/signup?error=user_exists`);
+      // Проверяем, какой провайдер использовался
+      const dbUrl = `${process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}/users.json?auth=${process.env.FIREBASE_DB_SECRET}&orderBy="email"&equalTo="${email}"`;
+      const checkRes = await fetch(dbUrl);
+      const usersData = await checkRes.json();
+
+      if (usersData) {
+        const existingUser = Object.values(usersData)[0] as any;
+
+        if (existingUser.provider === 'password') {
+          // Email занят ручной регистрацией - показываем ошибку
+          console.log('⛔ Email already taken by manual registration');
+          return NextResponse.redirect(
+            `${getBaseUrl()}/signup?error=user_exists`,
+          );
+        }
+
+        if (existingUser.provider === 'google') {
+          // Email занят предыдущей Google-регистрацией - логиним молча
+          console.log('✅ User exists with Google provider, logging in');
+          const response = NextResponse.redirect(
+            `${getBaseUrl()}${redirectPath}`,
+          );
+          await setLoginSession(response, {
+            email,
+            name,
+            sub: uid,
+            picture: payload.picture,
+          });
+          return response;
+        }
+      }
     }
 
-    // ✅ Проверка, есть ли уже такой uid
-    const dbUrl = `${process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}/users/${uid}.json?auth=${process.env.FIREBASE_DB_SECRET}`;
-    const checkRes = await fetch(dbUrl);
-    const exists = await checkRes.json();
-
-    if (exists !== null) {
-      console.log('⛔ User already exists by uid');
-      return NextResponse.redirect(
-        `${getBaseUrl()}${redirectPath}?error=user_exists`,
-      );
-    }
-
-    // ✅ Создание пользователя
+    // ✅ Email свободен - создаем нового пользователя
     console.log('⏎ Creating new user in Firebase DB:', uid);
+    const dbUrl = `${process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL}/users/${uid}.json?auth=${process.env.FIREBASE_DB_SECRET}`;
+
     await fetch(dbUrl, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -80,6 +100,7 @@ export async function GET(req: Request) {
       }),
     });
 
+    // Логиним и редиректим на страницу откуда была регистрация
     const response = NextResponse.redirect(`${getBaseUrl()}${redirectPath}`);
     await setLoginSession(response, {
       email,

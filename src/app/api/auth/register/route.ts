@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { isEmailTaken } from '@/lib/api/auth';
+import { getUserByEmail } from '@/lib/db/users';
 
 const DB_URL = process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL!;
 const DB_SECRET = process.env.FIREBASE_DB_SECRET!;
@@ -25,9 +25,8 @@ export async function POST(req: Request) {
 
     // --- Перевірка: чи email вже використовується ---
     try {
-      const emailTaken = await isEmailTaken(email);
-      console.log('isEmailTaken:', emailTaken);
-      if (emailTaken) {
+      const existingUser = await getUserByEmail(email);
+      if (existingUser) {
         return NextResponse.json(
           { ok: false, error: 'Email already in use' },
           { status: 400 },

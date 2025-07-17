@@ -19,9 +19,8 @@ interface Props {
 
 export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
   const { signUp, signInWithGoogle } = useAuth();
-  const { prevPath } = useLocationTracker();
-
   const [sending, setSending] = useState(false);
+  const { prevPath } = useLocationTracker();
 
   const {
     register,
@@ -135,7 +134,7 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
           className="flex w-full items-center justify-center gap-2"
         >
           <GoogleIcon className="h-5 w-5" />
-          Sign in with Google
+          Sign Up with Google
         </Button>
       </form>
     </Modal>

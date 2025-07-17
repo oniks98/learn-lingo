@@ -9,6 +9,8 @@ import Modal from '@/app/components/modal/modal';
 import Button from '@/app/components/ui/button';
 import { LoginFormValues, loginSchema } from '@/lib/validation/login';
 import { useAuth } from '@/contexts/auth-context';
+import GoogleIcon from '@/lib/icons/google-icon.svg';
+import { useLocationTracker } from '@/contexts/location-context';
 
 interface Props {
   isOpen: boolean;
@@ -16,8 +18,9 @@ interface Props {
 }
 
 export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const [sending, setSending] = useState(false);
+  const { prevPath } = useLocationTracker();
 
   const {
     register,
@@ -40,6 +43,10 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     } finally {
       setSending(false);
     }
+  };
+
+  const handleGoogle = () => {
+    signInWithGoogle(prevPath);
   };
 
   return (
@@ -82,6 +89,20 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           className="w-full disabled:opacity-50"
         >
           {sending ? 'Logging in…' : 'Log In'}
+        </Button>
+
+        <div className="my-4 flex items-center">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-2 text-gray-500">OR</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        <Button
+          onClick={handleGoogle}
+          className="flex w-full items-center justify-center gap-2"
+        >
+          <GoogleIcon className="h-5 w-5" />
+          Sign In with Google
         </Button>
       </form>
     </Modal>

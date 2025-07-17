@@ -1,83 +1,55 @@
 // src/app/api/auth/login/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { getUserByEmail } from '@/lib/db/users';
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { getUserByEmail } from '@/lib/db/users';
 
-const JWT_SECRET = process.env.JWT_SECRET!;
-const TOKEN_EXPIRES_IN = '7d';
-
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const { email, password } = await request.json();
+    const body = await req.json();
+    const { email, password } = body;
 
     if (!email || !password) {
       return NextResponse.json(
-        { ok: false, error: 'Missing credentials' },
+        { ok: false, error: 'Missing email or password' },
         { status: 400 },
       );
     }
 
+    // Находим пользователя по email
     const user = await getUserByEmail(email);
 
     if (!user) {
       return NextResponse.json(
-        { ok: false, error: 'Користувача не знайдено' },
+        { ok: false, error: 'Invalid credentials' },
         { status: 401 },
       );
     }
 
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        { ok: false, error: 'Email не підтверджений' },
-        { status: 403 },
-      );
-    }
-
+    // Проверяем пароль
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+
     if (!passwordMatch) {
       return NextResponse.json(
-        { ok: false, error: 'Невірний пароль' },
+        { ok: false, error: 'Invalid credentials' },
         { status: 401 },
       );
     }
 
-    // Генеруємо JWT
-    const token = jwt.sign(
-      {
-        email: user.email,
-        name: user.username,
-        uid: user.uid,
-      },
-      JWT_SECRET,
-      {
-        expiresIn: TOKEN_EXPIRES_IN,
-        subject: user.uid,
-      },
-    );
-
-    // Формуємо відповідь і встановлюємо куку
-    const response = NextResponse.json({
+    // Успешная авторизация
+    return NextResponse.json({
       ok: true,
       user: {
-        email: user.email,
-        name: user.username,
         uid: user.uid,
+        email: user.email,
+        username: user.username,
+        emailVerified: user.emailVerified,
+        provider: user.provider,
       },
     });
-
-    response.cookies.set('session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 днів
-    });
-
-    return response;
-  } catch (err) {
-    console.error('Login error:', err);
+  } catch (error) {
+    console.error('Login error:', error);
     return NextResponse.json(
-      { ok: false, error: 'Внутрішня помилка сервера' },
+      { ok: false, error: 'Server error' },
       { status: 500 },
     );
   }
