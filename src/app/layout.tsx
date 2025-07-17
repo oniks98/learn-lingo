@@ -21,7 +21,16 @@ export default function RootLayout({
           <Header />
           {children}
           {modal}
-          <Toaster position="top-center" richColors />
+          <Toaster
+            position="top-center"
+            richColors
+            toastOptions={{
+              duration: 6000,
+              classNames: {
+                title: 'text-lg font-bold',
+              },
+            }}
+          />
         </Providers>
       </body>
     </html>
