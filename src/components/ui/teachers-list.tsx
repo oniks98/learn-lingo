@@ -1,15 +1,16 @@
+// src/app/components/ui/teachers-list.tsx
 'use client';
 
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getAllTeachers } from '@/lib/db/teachers';
-import { filterTeachers } from '@/lib/utils/filterTeachers';
+import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { TeacherPreview } from '@/lib/types/types';
-import FilterPanel, { FiltersForm } from '@/app/components/ui/filter-panel';
-import TeacherCard from '@/app/components/ui/teacher-card';
-import Loader from '@/app/components/ui/loader';
-import Button from '@/app/components/ui/button';
-import ScrollToTopButton from '@/app/components/ui/ScrollToTopButton';
+import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
+import TeacherCard from '@/components/ui/teacher-card';
+import Loader from '@/components/ui/loader';
+import Button from '@/components/ui/button';
+import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 export default function TeachersList() {
   const [filters, setFilters] = useState<FiltersForm>({

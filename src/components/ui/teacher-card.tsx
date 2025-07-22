@@ -1,17 +1,18 @@
+// src/app/components/ui/teacher-card.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/db/teachers';
-import Loader from '@/app/components/ui/loader';
+import Loader from '@/components/ui/loader';
 import Image from 'next/image';
 import SeparatorIcon from '@/lib/icons/separator.svg';
 import BookIcon from '@/lib/icons/book.svg';
 import OnlineIcon from '@/lib/icons/online.svg';
 import StarIcon from '@/lib/icons/star.svg';
 import HeartIcon from '@/lib/icons/heart.svg';
-import Button from '@/app/components/ui/button';
+import Button from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 

@@ -1,10 +1,17 @@
+// src/app/api/send-booking-email/route.ts
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import type { BookingData } from '@/lib/db/bookings';
+import type { BookingData } from '@/lib/types/types';
+
+// Дополняем данными преподавателя для письма
+interface SendBookingEmailPayload extends BookingData {
+  teacherName: string;
+  teacherSurname: string;
+}
 
 export async function POST(request: Request) {
   try {
-    const booking: BookingData = await request.json();
+    const booking: SendBookingEmailPayload = await request.json();
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST!,
@@ -33,6 +40,7 @@ Reason for the lesson: ${booking.reason}
 
     return NextResponse.json({ ok: true });
   } catch (error: any) {
+    console.error('Send email failed:', error);
     return NextResponse.json(
       { ok: false, error: error.message || 'Internal Server Error' },
       { status: 500 },

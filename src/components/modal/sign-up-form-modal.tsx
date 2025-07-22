@@ -1,3 +1,5 @@
+// src/app/components/modal/sign-up-form-modal.tsx
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -5,12 +7,11 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
-import Modal from '@/app/components/modal/modal';
-import Button from '@/app/components/ui/button';
+import Modal from '@/components/modal/modal';
+import Button from '@/components/ui/button';
 import { SignUpFormValues, signUpSchema } from '@/lib/validation/signup';
 import GoogleIcon from '@/lib/icons/google-icon.svg';
 import { useAuth } from '@/contexts/auth-context';
-import { useLocationTracker } from '@/contexts/location-context';
 
 interface Props {
   isOpen: boolean;
@@ -20,7 +21,7 @@ interface Props {
 export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
   const { signUp, signInWithGoogle } = useAuth();
   const [sending, setSending] = useState(false);
-  const { prevPath } = useLocationTracker();
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const {
     register,
@@ -34,39 +35,51 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
   const onSubmit = async (data: SignUpFormValues) => {
     setSending(true);
     try {
-      const user = await signUp(data.email, data.password, data.name);
+      // Регистрируем пользователя через Firebase Auth
+      // sendEmailVerification уже вызывается внутри signUp
+      await signUp(data.email, data.password, data.name);
 
-      const res = await fetch('/api/sendConfirmationEmail', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.uid,
-          email: user.email,
-          redirectPath: prevPath,
-        }),
-      });
-
-      const result = await res.json();
-      if (!result.ok) {
-        toast.error(result.error || 'Помилка відправлення листа');
-        return;
-      }
-
+      // Показываем сообщение об успешной регистрации
       toast.success(
-        'На вашу пошту надіслано посилання для підтвердження. Перевірте, будь ласка, спам.',
+        'Реєстрація успішна! На вашу пошту надіслано посилання для підтвердження. Перевірте, будь ласка, спам.',
       );
 
       reset();
       onCloseAction();
     } catch (err: any) {
-      toast.error(err.message || 'Не вдалося зареєструватися.');
+      console.error('Registration error:', err);
+
+      // Обрабатываем различные типы ошибок Firebase
+      let errorMessage = 'Не вдалося зареєструватися.';
+
+      if (err.code === 'auth/email-already-in-use') {
+        errorMessage = 'Користувач з такою електронною поштою вже існує.';
+      } else if (err.code === 'auth/weak-password') {
+        errorMessage = 'Пароль занадто слабкий. Мінімум 6 символів.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'Невірний формат електронної пошти.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
     } finally {
       setSending(false);
     }
   };
 
-  const handleGoogle = () => {
-    signInWithGoogle(prevPath);
+  const handleGoogle = async () => {
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+      toast.success('Успішний вхід через Google!');
+      onCloseAction();
+    } catch (err: any) {
+      console.error('Google auth error:', err);
+      toast.error(err.message || 'Не вдалося увійти через Google.');
+    } finally {
+      setGoogleLoading(false);
+    }
   };
 
   return (
@@ -117,7 +130,7 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
 
         <Button
           type="submit"
-          disabled={sending}
+          disabled={sending || googleLoading}
           className="w-full disabled:opacity-50"
         >
           {sending ? 'Creating account…' : 'Sign Up'}
@@ -130,11 +143,13 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
         </div>
 
         <Button
+          type="button"
           onClick={handleGoogle}
-          className="flex w-full items-center justify-center gap-2"
+          disabled={sending || googleLoading}
+          className="flex w-full items-center justify-center gap-2 disabled:opacity-50"
         >
           <GoogleIcon className="h-5 w-5" />
-          Sign Up with Google
+          {googleLoading ? 'Signing up with Google…' : 'Sign Up with Google'}
         </Button>
       </form>
     </Modal>

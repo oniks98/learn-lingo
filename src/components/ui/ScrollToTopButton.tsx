@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Button from '@/app/components/ui/button';
+import Button from '@/components/ui/button';
 
 export default function ScrollToTopButton() {
   const [visible, setVisible] = useState(false);
