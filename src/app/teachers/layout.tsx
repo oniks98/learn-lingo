@@ -1,3 +1,4 @@
+// src/app/teachers/layout.tsx
 import React from 'react';
 
 export default function Teachers({

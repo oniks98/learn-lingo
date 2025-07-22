@@ -1,10 +1,12 @@
+// src/app/teachers/page.tsx
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
 import { getAllTeachers } from '@/lib/db/teachers';
-import TeachersList from '@/app/components/ui/teachers-list';
+import TeachersList from '@/components/ui/teachers-list';
+import EmailVerification from '@/components/email-verification';
 
 export default async function TeachersPage() {
   const queryClient = new QueryClient();
@@ -17,6 +19,7 @@ export default async function TeachersPage() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <TeachersList />
+      <EmailVerification />
     </HydrationBoundary>
   );
 }

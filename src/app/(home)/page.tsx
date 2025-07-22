@@ -2,7 +2,7 @@
 
 import React from 'react';
 import clsx from 'clsx';
-import Button from '@/app/components/ui/button';
+import Button from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 

@@ -1,7 +1,8 @@
+// src/app/layout.tsx
 import React from 'react';
 import { Roboto } from 'next/font/google';
 import Providers from '@/providers/providers';
-import Header from '@/app/components/header/header';
+import Header from '@/components/header/header';
 import '@/styles/globals.css';
 import { Toaster } from 'sonner';
 
@@ -25,9 +26,9 @@ export default function RootLayout({
             position="top-center"
             richColors
             toastOptions={{
-              duration: 6000,
+              duration: 3000,
               classNames: {
-                title: 'text-lg font-bold',
+                title: 'text-lg font-bold text-center',
               },
             }}
           />

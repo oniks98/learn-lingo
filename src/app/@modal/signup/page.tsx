@@ -1,6 +1,6 @@
 'use client';
 
-import SignUpFormModal from '@/app/components/modal/sign-up-form-modal';
+import SignUpFormModal from '@/components/modal/sign-up-form-modal';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
