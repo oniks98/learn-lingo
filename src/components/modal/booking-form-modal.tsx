@@ -39,6 +39,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     defaultValues: {
       name: user?.username || '',
       email: user?.email || '',
+      comment: '', // Додаємо дефолтне значення
     },
   });
 
@@ -62,6 +63,8 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       email: formData.email,
       phone: formData.phone,
       reason: formData.reason,
+      bookingDate: formData.bookingDate, // Нове поле
+      comment: formData.comment, // Нове поле
       createdAt: Date.now(),
     };
 
@@ -184,6 +187,28 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
         />
         {errors.phone && (
           <p className="text-sm text-red-600">{errors.phone.message}</p>
+        )}
+
+        {/* Нове поле для дати бронювання */}
+        <input
+          {...register('bookingDate')}
+          type="datetime-local"
+          placeholder="Booking Date"
+          className="w-full rounded-xl border p-3"
+        />
+        {errors.bookingDate && (
+          <p className="text-sm text-red-600">{errors.bookingDate.message}</p>
+        )}
+
+        {/* Нове поле для коментаря */}
+        <textarea
+          {...register('comment')}
+          placeholder="Comment (optional)"
+          rows={3}
+          className="w-full resize-none rounded-xl border p-3"
+        />
+        {errors.comment && (
+          <p className="text-sm text-red-600">{errors.comment.message}</p>
         )}
 
         <Button type="submit" disabled={sending} className="w-full">

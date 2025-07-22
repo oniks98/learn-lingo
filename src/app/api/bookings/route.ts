@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, email, phone, reason } = parsed.data;
+    const { name, email, phone, reason, bookingDate, comment } = parsed.data;
     const bookingData: CreateBookingData = {
       userId,
       teacherId: raw.teacherId,
@@ -60,6 +60,8 @@ export async function POST(req: NextRequest) {
       email,
       phone,
       reason,
+      bookingDate, // Нове поле
+      comment, // Нове поле
       createdAt: Date.now(),
     };
 

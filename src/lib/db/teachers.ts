@@ -1,5 +1,6 @@
-import { db } from '@/lib/db/firebase';
-import { ref, get, update, remove } from 'firebase/database';
+// src/lib/db/teachers.ts
+import { db } from '@/lib/db/firebase-client';
+import { ref, get } from 'firebase/database';
 import {
   TeacherPreview,
   TeacherExtraInfo,
@@ -57,30 +58,4 @@ export async function getTeacherById(
     surname: teacher.surname,
     avatar_url: teacher.avatar_url,
   };
-}
-
-// NOTE: Отримати обраних вчителів користувача
-export async function getFavorites(
-  userId: string,
-): Promise<Record<string, boolean>> {
-  const snapshot = await get(ref(db, `users/${userId}/favorites`));
-  return snapshot.exists() ? snapshot.val() : {};
-}
-
-// NOTE: Додати до обраного
-export async function addToFavorites(
-  userId: string,
-  teacherId: string,
-): Promise<void> {
-  await update(ref(db, `users/${userId}/favorites`), {
-    [teacherId]: true,
-  });
-}
-
-// NOTE: Видалити з обраного
-export async function removeFromFavorites(
-  userId: string,
-  teacherId: string,
-): Promise<void> {
-  await remove(ref(db, `users/${userId}/favorites/${teacherId}`));
 }

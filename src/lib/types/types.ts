@@ -78,6 +78,8 @@ export interface CreateBookingData {
   email: string;
   phone: string;
   reason: string;
+  bookingDate: string; // Нове поле
+  comment?: string; // Нове поле (опціональне)
   createdAt: number;
 }
 
