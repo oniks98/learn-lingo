@@ -1,5 +1,5 @@
 // src/lib/db/users.ts
-import { db } from '@/lib/db/firebase';
+import { db } from '@/lib/db/firebase-client';
 import { ref, get, query, orderByChild, equalTo } from 'firebase/database';
 
 export async function getUserByEmail(email: string) {
