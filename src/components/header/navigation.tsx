@@ -1,8 +1,10 @@
+// src/app/components/header/navigation.tsx
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import { useAuth } from '@/contexts/auth-context';
 
 export interface NavigationProps {
   className?: string;
@@ -15,16 +17,27 @@ interface NavigationItemType {
 
 export default function Navigation({ className }: NavigationProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  // Пользователь считается аутентифицированным только если email подтвержден
+  const isAuthenticated = user && user.emailVerified;
 
   const items: NavigationItemType[] = [
     { href: '/', label: 'Home' },
     { href: '/teachers', label: 'Teachers' },
-    { href: '/favorites', label: 'Favorites' },
   ];
+
+  // Приватные разделы доступны только подтвержденным пользователям
+  if (isAuthenticated) {
+    items.push(
+      { href: `/users/${user.uid}/favorites`, label: 'Favorites' },
+      { href: `/users/${user.uid}/bookings`, label: 'Bookings' },
+    );
+  }
 
   return (
     <nav className={className}>
-      <ul className="grid grid-flow-col items-center gap-6">
+      <ul className="grid grid-flow-col items-center gap-[1.8cqw]">
         {items.map((item) => {
           const isActive = pathname === item.href;
 

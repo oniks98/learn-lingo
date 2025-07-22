@@ -1,9 +1,12 @@
+// src/app/components/header/burger-menu.tsx
 'use client';
 
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import { Menu as MenuIcon } from 'lucide-react';
 import clsx from 'clsx';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
+import { useRouter } from 'next/navigation';
 
 export interface BurgerMenuProps {
   className?: string;
@@ -15,14 +18,34 @@ interface MenuItemType {
 }
 
 export default function BurgerMenu({ className }: BurgerMenuProps) {
+  const { user, signOut } = useAuth();
+  const router = useRouter();
   const items: MenuItemType[] = [
-    { href: '/login', label: 'Log in' },
-    { href: '/signup', label: 'Registration' },
+    user
+      ? { href: '#', label: 'Log out' }
+      : { href: '/login', label: 'Log in' },
+    user
+      ? { href: `/users/${user.uid}/profile`, label: 'Profile' }
+      : { href: '/signup', label: 'Registration' },
     { href: '/', label: 'Home' },
     { href: '/teachers', label: 'Teachers' },
-    { href: '/favorites', label: 'Favorites' },
   ];
 
+  if (user) {
+    items.push(
+      { href: `/users/${user.uid}/favorites`, label: 'Favorites' },
+      { href: `/users/${user.uid}/bookings`, label: 'Bookings' },
+    );
+  }
+
+  const handleItemClick = async (href: string, label: string) => {
+    if (label === 'Log out') {
+      await signOut();
+      router.push('/', { scroll: false });
+    } else {
+      router.push(href);
+    }
+  };
   return (
     <Menu as="nav" className={clsx('relative', className)}>
       {({ open }) => (
@@ -49,10 +72,11 @@ export default function BurgerMenu({ className }: BurgerMenuProps) {
           >
             <div className="p-2">
               {items.map((item) => (
-                <MenuItem key={item.href}>
+                <MenuItem key={item.href + item.label}>
                   {({ focus }) => (
                     <Link
                       href={item.href}
+                      onClick={() => handleItemClick(item.href, item.label)}
                       className={clsx(
                         'grid grid-cols-1 px-4 py-3',
                         'text-base leading-5 font-bold',

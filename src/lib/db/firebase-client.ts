@@ -1,3 +1,5 @@
+// src/lib/db/firebase-client.ts
+
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
@@ -13,7 +15,6 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Avoid re-initializing
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
 const db = getDatabase(app);

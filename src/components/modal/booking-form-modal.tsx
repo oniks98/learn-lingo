@@ -4,18 +4,19 @@ import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import Modal from '@/app/components/modal/modal';
-import Button from '@/app/components/ui/button';
+import Modal from '@/components/modal/modal';
+import Button from '@/components/ui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
-import { createBooking, type BookingData } from '@/lib/db/bookings';
 import {
   bookingSchema,
   type BookingFormValues,
 } from '@/lib/validation/booking';
 import { learningReasons } from '@/lib/constants/reasons';
 import type { TeacherInfoModal } from '@/lib/types/types';
+import { useAuth } from '@/contexts/auth-context';
+import { createBooking } from '@/lib/api/bookings'; // Import the API function
 import RadioButtonIcon from '@/lib/icons/radio';
 
 interface Props {
@@ -25,22 +26,35 @@ interface Props {
 
 export default function BookingFormModal({ isOpen, teacher }: Props) {
   const router = useRouter();
+  const { user } = useAuth();
+
   const {
     register,
     handleSubmit,
     control,
     reset,
     formState: { errors },
-  } = useForm<BookingFormValues>({ resolver: zodResolver(bookingSchema) });
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      name: user?.username || '',
+      email: user?.email || '',
+    },
+  });
 
-  // NOTE: дає змогу підписатися на зміну значення одного або
-  // декількох полів форми без ре‑рендеру всього компонента форми.
   const selectedReason = useWatch({ control, name: 'reason' });
 
   const [sending, setSending] = useState(false);
 
   const onSubmit = async (formData: BookingFormValues) => {
-    const booking: BookingData = {
+    // Check if user exists before proceeding
+    if (!user) {
+      toast.error('You must be logged in to book a lesson.');
+      return;
+    }
+
+    // Prepare booking data (without userId as it's added by the API function)
+    const bookingData = {
       teacherId: teacher.id,
       teacherName: teacher.name,
       teacherSurname: teacher.surname,
@@ -53,24 +67,37 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
     try {
       setSending(true);
-      // NOTE: запис бронювання у базу
-      await createBooking(booking);
 
-      // NOTE: відправлення листа з підтвердженням
-      const response = await fetch('/api/sendBookingEmail', {
+      // Use the createBooking function which handles authentication
+      await createBooking(bookingData);
+
+      // After successful booking, send confirmation email
+      const emailPayload = {
+        userId: user.uid,
+        ...bookingData,
+      };
+
+      const emailResponse = await fetch('/api/send-booking-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(booking),
+        body: JSON.stringify(emailPayload),
       });
-      const result = await response.json();
-      if (!result.ok) {
-        toast.error(result.error || 'Failed to send email.');
-        return;
+
+      if (!emailResponse.ok) {
+        const emailResult = await emailResponse.json();
+        console.warn('Email sending failed:', emailResult.error);
+        // Don't fail the entire process if email fails
+        toast.success(
+          'Booking created successfully, but email notification failed.',
+        );
+      } else {
+        toast.success('Your booking was sent successfully.');
       }
-      toast.success('Your booking was sent successfully.');
+
       reset();
       router.back();
     } catch (err: any) {
+      console.error('Booking error:', err);
       toast.error(err.message || 'Something went wrong.');
     } finally {
       setSending(false);

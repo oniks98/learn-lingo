@@ -1,3 +1,4 @@
+// src/app/components/header/header.tsx
 'use client';
 
 import React from 'react';
@@ -13,7 +14,7 @@ export default function Header({}: HeaderProps) {
   return (
     <header
       className={clsx(
-        '@container mx-auto my-5 max-w-338 px-15 py-3 md:px-21',
+        '@container mx-auto my-5 max-w-338 px-15 py-3 md:px-19',
         'grid grid-cols-[133px_1fr] items-center justify-between',
         'md:grid-cols-[153px_1fr_4fr_auto] md:py-[5px]',
       )}

@@ -5,12 +5,11 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
-import Modal from '@/app/components/modal/modal';
-import Button from '@/app/components/ui/button';
+import Modal from '@/components/modal/modal';
+import Button from '@/components/ui/button';
 import { LoginFormValues, loginSchema } from '@/lib/validation/login';
 import { useAuth } from '@/contexts/auth-context';
 import GoogleIcon from '@/lib/icons/google-icon.svg';
-import { useLocationTracker } from '@/contexts/location-context';
 
 interface Props {
   isOpen: boolean;
@@ -20,7 +19,6 @@ interface Props {
 export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const { signIn, signInWithGoogle } = useAuth();
   const [sending, setSending] = useState(false);
-  const { prevPath } = useLocationTracker();
 
   const {
     register,
@@ -34,8 +32,16 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const onSubmit = async (data: LoginFormValues) => {
     setSending(true);
     try {
-      await signIn(data.email, data.password);
-      toast.success('Вхід виконано успішно!');
+      const userData = await signIn(data.email, data.password);
+
+      if (!userData.emailVerified) {
+        toast.warning(
+          'Вхід виконано, але потрібно підтвердити email. Перевірте свою пошту.',
+        );
+      } else {
+        toast.success('Вхід виконано успішно!');
+      }
+
       reset();
       onCloseAction();
     } catch (err: any) {
@@ -45,8 +51,14 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     }
   };
 
-  const handleGoogle = () => {
-    signInWithGoogle(prevPath);
+  const handleGoogle = async () => {
+    try {
+      await signInWithGoogle();
+      // После успешного входа через Google можем показать сообщение
+      // но лучше это делать в AuthContext после получения данных пользователя
+    } catch (error) {
+      toast.error('Не вдалося увійти через Google.');
+    }
   };
 
   return (
