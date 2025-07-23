@@ -1,13 +1,102 @@
+// src/app/(home)/page.tsx
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
 import Button from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
+
+// Компонент анимированного счетчика
+const AnimatedCounter = ({
+  value,
+  duration = 2000,
+  suffix = '',
+  className = '',
+}: {
+  value: number;
+  duration?: number;
+  suffix?: string;
+  className?: string;
+}) => {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const counterRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isVisible) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    if (counterRef.current) {
+      observer.observe(counterRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [isVisible]);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const startTime = Date.now();
+    const startValue = 0;
+    const endValue = value;
+
+    const animate = () => {
+      const now = Date.now();
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Easing function для плавности
+      const easeOutExpo = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+
+      const currentValue = Math.floor(
+        startValue + (endValue - startValue) * easeOutExpo,
+      );
+      setCount(currentValue);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    animate();
+  }, [isVisible, value, duration]);
+
+  const formatNumber = (num: number) => {
+    return num.toLocaleString('en-US');
+  };
+
+  return (
+    <p ref={counterRef} className={className}>
+      {formatNumber(count)}
+      {suffix}
+    </p>
+  );
+};
 
 export default function HomePage() {
-  const router = useRouter();
+  const stats = [
+    {
+      value: 32000,
+      suffix: ' +',
+      label: 'Experienced\ntutors',
+      duration: 2500,
+    },
+    {
+      value: 300000,
+      suffix: ' +',
+      label: '5-star tutor\nreviews',
+      duration: 3000,
+    },
+    { value: 120, suffix: ' +', label: 'Subjects\ntaught', duration: 1500 },
+    { value: 200, suffix: ' +', label: 'Tutor\nnationalities', duration: 2000 },
+  ];
 
   return (
     <main
@@ -57,12 +146,9 @@ export default function HomePage() {
             connecting with highly qualified and experienced tutors.
           </p>
 
-          <Button
-            className="px-[11.46cqw] md:px-[88px]"
-            onClick={() => router.push('/teachers', { scroll: false })}
-          >
-            Get started
-          </Button>
+          <Link href="/teachers" scroll={false}>
+            <Button className="px-[11.46cqw] md:px-[88px]">Get started</Button>
+          </Link>
         </div>
       </section>
 
@@ -102,21 +188,19 @@ export default function HomePage() {
             'px-[9.3cqw] py-[3cqw] md:pt-[20.73cqw] md:pl-[15.7cqw] xl:px-[9.3cqw] xl:py-[3cqw]',
           )}
         >
-          {[
-            { value: '32,000 +', label: 'Experienced\ntutors' },
-            { value: '300,000 +', label: '5-star tutor\nreviews' },
-            { value: '120 +', label: 'Subjects\ntaught' },
-            { value: '200 +', label: 'Tutor\nnationalities' },
-          ].map(({ value, label }) => (
+          {stats.map(({ value, suffix, label, duration }) => (
             <li key={value} className="grid grid-cols-2 items-center gap-4">
-              <p
+              <AnimatedCounter
+                value={value}
+                suffix={suffix}
+                duration={duration}
                 className={clsx(
                   'justify-self-end leading-[1.14] font-medium tracking-[-0.02em]',
                   'md:text-[7.53cqw] xl:text-[2.14cqw]',
+                  'transition-all duration-200',
+                  'bg-clip-text text-black',
                 )}
-              >
-                {value}
-              </p>
+              />
               <p className="text-dark-70 text-sm leading-[1.28] tracking-[-0.02em] whitespace-pre-line">
                 {label}
               </p>
