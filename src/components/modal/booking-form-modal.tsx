@@ -112,7 +112,8 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       title="Book trial lesson"
     >
       <p className="text-gray-muted mb-5 leading-snug">
-        Our tutor will assess your level and tailor the lesson.
+        Our experienced tutor will assess your current language level, discuss
+        your learning goals, and tailor the lesson to your specific needs.
       </p>
 
       <div className="mb-8 flex items-center gap-4">
