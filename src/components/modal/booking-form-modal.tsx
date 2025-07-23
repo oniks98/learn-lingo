@@ -56,15 +56,14 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
     // Prepare booking data (without userId as it's added by the API function)
     const bookingData = {
+      userId: user.uid,
       teacherId: teacher.id,
-      teacherName: teacher.name,
-      teacherSurname: teacher.surname,
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       reason: formData.reason,
-      bookingDate: formData.bookingDate, // Нове поле
-      comment: formData.comment, // Нове поле
+      bookingDate: formData.bookingDate,
+      comment: formData.comment,
       createdAt: Date.now(),
     };
 
@@ -76,7 +75,6 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
       // After successful booking, send confirmation email
       const emailPayload = {
-        userId: user.uid,
         ...bookingData,
       };
 

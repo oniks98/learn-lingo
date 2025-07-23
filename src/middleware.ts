@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Список захищених маршрутів
-  const protectedRoutes = ['/dashboard', '/profile', '/bookings', '/favorites'];
+  const protectedRoutes = ['/profile', '/bookings', '/favorites'];
 
   // Перевіряємо, чи поточний маршрут захищений
   const isProtectedRoute = protectedRoutes.some((route) =>

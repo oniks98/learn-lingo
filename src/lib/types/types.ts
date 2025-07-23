@@ -1,3 +1,5 @@
+// src/lib/types/types.ts
+
 // Общий тип для отзывов
 export interface Review {
   reviewer_name: string;

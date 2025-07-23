@@ -1,6 +1,7 @@
+// src/app/teachers/@modal/[id]/page.tsx
 import { notFound } from 'next/navigation';
 import BookingFormModal from '@/components/modal/booking-form-modal';
-import { getTeacherById } from '@/lib/db/teachers';
+import { getTeacherById } from '@/lib/api/teachers';
 
 export default async function BookingPage({
   params,

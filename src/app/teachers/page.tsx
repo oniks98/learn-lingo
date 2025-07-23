@@ -4,7 +4,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import { getAllTeachers } from '@/lib/db/teachers';
+import { getAllTeachers } from '@/lib/api/teachers';
 import TeachersList from '@/components/ui/teachers-list';
 import EmailVerification from '@/components/email-verification';
 

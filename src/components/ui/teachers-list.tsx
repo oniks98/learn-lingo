@@ -3,7 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getAllTeachers } from '@/lib/db/teachers';
+import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { TeacherPreview } from '@/lib/types/types';
 import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
