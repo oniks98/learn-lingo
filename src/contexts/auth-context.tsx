@@ -1,27 +1,28 @@
-// src/contexts/AuthContext.tsx
+// src/contexts/auth-context.tsx
 'use client';
 
 import {
   createContext,
   useContext,
   useEffect,
-  useState,
+  useMemo,
   ReactNode,
 } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  GoogleAuthProvider,
-  signInWithPopup,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   User as FirebaseUser,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-  sendEmailVerification,
-  reload,
 } from 'firebase/auth';
 import { auth } from '@/lib/db/firebase-client';
-import { UserData, AuthContextType } from '@/lib/types/types';
+import { UserData } from '@/lib/types/types';
+
+interface AuthContextType {
+  user: UserData | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+  refetchUser: () => Promise<any>;
+}
 
 /**
  * Контекст аутентификации для управления состоянием пользователя
@@ -33,211 +34,79 @@ interface AuthProviderProps {
 }
 
 /**
+ * Функция для получения данных пользователя с сервера
+ */
+const fetchUserData = async (
+  firebaseUser: FirebaseUser | null,
+): Promise<UserData | null> => {
+  if (!firebaseUser) {
+    return null;
+  }
+
+  try {
+    console.log('Fetching user data from server...');
+
+    // Принудительно обновляем информацию о Firebase‑пользователе
+    await firebaseUser.reload();
+
+    const idToken = await firebaseUser.getIdToken(true);
+
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken }),
+    });
+
+    if (!response.ok) {
+      console.error('Failed to fetch user data:', response.status);
+      // Вместо throw — сразу возвращаем null (неавторизован)
+      return null;
+    }
+
+    const userData = await response.json();
+    console.log('User data fetched successfully:', userData);
+    console.log('Email verified status:', userData.emailVerified);
+
+    // Если email не верифицирован — считаем, что юзер не аутентифицирован
+    if (!userData.emailVerified) {
+      console.log('User email is not verified, treating as unauthenticated');
+      return null;
+    }
+
+    return userData;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    // При ошибках сети или парсинга тоже возвращаем null
+    return null;
+  }
+};
+
+/**
  * Провайдер аутентификации
- * Управляет состоянием авторизации пользователя и предоставляет методы для входа/выхода
+ * Управляет состоянием авторизации пользователя с помощью React Query
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  /**
-   * Преобразует Firebase User в UserData
-   */
-  const convertFirebaseUserToUserData = (
-    firebaseUser: FirebaseUser,
-  ): UserData => {
-    return {
-      uid: firebaseUser.uid,
-      email: firebaseUser.email || '',
-      username:
-        firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'User',
-      emailVerified: firebaseUser.emailVerified,
-      provider: firebaseUser.providerData[0]?.providerId.includes('google')
-        ? 'google'
-        : 'email',
-      createdAt: Date.now(),
-      photoURL: firebaseUser.photoURL || undefined,
-    };
-  };
-
-  /**
-   * Обрабатывает изменения состояния аутентификации Firebase
-   * Создает или обновляет сессионный куки через API
-   */
-  const handleAuthStateChange = async (firebaseUser: FirebaseUser | null) => {
-    if (firebaseUser) {
-      try {
-        console.log('Auth state changed - user detected');
-        await reload(firebaseUser); // Обновляем состояние пользователя
-        const idToken = await firebaseUser.getIdToken(true); // force refresh
-
-        console.log('Sending auth request to server...');
-        // Отправляем токен на сервер для создания session cookie
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ idToken }),
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-          console.log('Server response successful:', userData);
-          setUser(userData);
-        } else {
-          console.error('Server response error:', response.status);
-          const errorText = await response.text();
-          console.error('Error details:', errorText);
-
-          // В случае ошибки используем данные из Firebase
-          const userData = convertFirebaseUserToUserData(firebaseUser);
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error('Auth state change error:', error);
-        const userData = convertFirebaseUserToUserData(firebaseUser);
-        setUser(userData);
+  // React Query для управления данными пользователя
+  const {
+    data: user = null,
+    isLoading: loading,
+    refetch: refetchUser,
+  } = useQuery<UserData | null>({
+    queryKey: ['user'],
+    queryFn: () => fetchUserData(auth.currentUser),
+    enabled: false, // Отключаем автоматическое выполнение
+    staleTime: 30 * 1000, // 30 секunds - короче для быстрого обновления после верификации
+    gcTime: 5 * 60 * 1000, // 5 минут
+    retry: (failureCount, error) => {
+      // Не повторяем запросы, если пользователь не верифицирован
+      if (error.message.includes('not verified')) {
+        return false;
       }
-    } else {
-      console.log('Auth state changed - user signed out');
-      // Пользователь вышел из системы - удаляем session cookie
-      try {
-        await fetch('/api/auth/logout', { method: 'POST' });
-      } catch (error) {
-        console.error('Logout error:', error);
-      }
-      setUser(null);
-    }
-    setLoading(false);
-  };
-
-  /**
-   * Принудительно обновляет данные пользователя и синхронизирует с сервером
-   * Полезно после операций вроде верификации email
-   */
-  const refreshUser = async (): Promise<void> => {
-    if (!auth.currentUser) {
-      console.warn('No current user to refresh');
-      return;
-    }
-
-    try {
-      console.log('Refreshing user data...');
-      await reload(auth.currentUser);
-      const idToken = await auth.currentUser.getIdToken(true);
-
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        console.log('User data refreshed:', userData);
-        setUser(userData);
-      } else {
-        const errorText = await response.text();
-        console.error(
-          'Failed to refresh user data:',
-          response.status,
-          errorText,
-        );
-        return;
-      }
-    } catch (error) {
-      console.error('Error refreshing user:', error);
-      return;
-    }
-  };
-
-  /**
-   * Регистрация с email и паролем
-   */
-  const signUp = async (
-    email: string,
-    password: string,
-    name: string,
-  ): Promise<UserData> => {
-    try {
-      console.log('Starting email/password registration...');
-
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-
-      console.log('User created, updating profile...');
-      // Обновляем профиль пользователя с именем
-      await updateProfile(userCredential.user, {
-        displayName: name,
-      });
-
-      console.log('Sending email verification...');
-      // Отправляем письмо с верификацией email
-      await sendEmailVerification(userCredential.user);
-      console.log('Email verification sent to:', userCredential.user.email);
-
-      // Принудительно обновляем токен чтобы включить displayName
-      await reload(userCredential.user);
-
-      // Возвращаем UserData
-      const userData = convertFirebaseUserToUserData(userCredential.user);
-      console.log('Registration successful:', userData);
-      return userData;
-    } catch (error) {
-      console.error('Sign up error:', error);
-      throw error;
-    }
-  };
-
-  /**
-   * Вход с email и паролем
-   */
-  const signIn = async (email: string, password: string): Promise<UserData> => {
-    try {
-      console.log('Starting email/password sign in...');
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password,
-      );
-
-      // При входе, обновляем данные пользователя
-      await reload(userCredential.user);
-      const userData = convertFirebaseUserToUserData(userCredential.user);
-      console.log('Sign in successful:', userData);
-      return userData;
-    } catch (error) {
-      console.error('Sign in error:', error);
-      throw error;
-    }
-  };
-
-  /**
-   * Вход через Google OAuth
-   */
-  const signInWithGoogle = async (redirectPath?: string) => {
-    const provider = new GoogleAuthProvider();
-    provider.addScope('email');
-
-    try {
-      console.log('Starting Google sign in...');
-      await signInWithPopup(auth, provider);
-      console.log('Google sign in successful');
-
-      if (redirectPath) {
-        window.location.href = redirectPath;
-      }
-    } catch (error) {
-      console.error('Google sign in error:', error);
-      throw error;
-    }
-  };
+      return failureCount < 3;
+    },
+  });
 
   /**
    * Выход из системы
@@ -245,7 +114,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signOut = async () => {
     try {
       console.log('Starting sign out...');
+
+      // Очищаем кеш React Query
+      queryClient.setQueryData(['user'], null);
+
+      // Выходим из Firebase
       await firebaseSignOut(auth);
+
+      // Вызываем API для удаления session cookie
+      await fetch('/api/auth/logout', { method: 'POST' });
+
       console.log('Sign out successful');
     } catch (error) {
       console.error('Sign out error:', error);
@@ -253,31 +131,51 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  // Подписка на изменения состояния аутентификации Firebase
+  // Слушатель изменений состояния аутентификации Firebase
   useEffect(() => {
     console.log('Setting up auth state listener...');
-    const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        console.log('Auth state changed - user detected, refetching data...');
+        console.log('Firebase user emailVerified:', firebaseUser.emailVerified);
+
+        // Обновляем данные пользователя Firebase перед проверкой
+        await firebaseUser.reload();
+        console.log(
+          'After reload - emailVerified:',
+          firebaseUser.emailVerified,
+        );
+
+        await refetchUser();
+      } else {
+        console.log('Auth state changed - user signed out');
+        queryClient.setQueryData(['user'], null);
+      }
+    });
+
     return () => {
       console.log('Cleaning up auth state listener...');
       unsubscribe();
     };
-  }, []);
+  }, [refetchUser, queryClient]);
 
-  const value: AuthContextType = {
-    user,
-    loading,
-    signUp,
-    signIn,
-    signInWithGoogle,
-    signOut,
-    refreshUser, // Добавляем новый метод
-  };
+  // Мемоизируем контекст для оптимизации
+  const value = useMemo<AuthContextType>(
+    () => ({
+      user,
+      loading,
+      signOut,
+      refetchUser,
+    }),
+    [user, loading, refetchUser],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 /**
- * Хук для использования контекста аутентификации
+ * Hook для использования контекста аутентификации
  */
 export function useAuth() {
   const context = useContext(AuthContext);

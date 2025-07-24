@@ -2,7 +2,6 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import Modal from '@/components/modal/modal';
@@ -25,49 +24,23 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      const userData = await signIn.mutateAsync({
+      const user = await signIn.mutateAsync({
         email: data.email,
         password: data.password,
       });
-
       // Додаткова перевірка email верифікації
-      if (!userData.emailVerified) {
-        toast.warning(
-          'Вхід виконано, але потрібно підтвердити email. Перевірте свою пошту.',
-        );
+      if (!user.emailVerified) {
+        // залишаємо мутацію покривати це повідомлення, якщо потрібно
       }
-
       reset();
       onCloseAction();
-    } catch (err: any) {
-      console.error('Login error:', err);
-
-      // Обробляємо різні типи помилок Firebase
-      let errorMessage = 'Не вдалося виконати вхід.';
-
-      if (err.code === 'auth/user-not-found') {
-        errorMessage = 'Користувача з такою електронною поштою не знайдено.';
-      } else if (err.code === 'auth/wrong-password') {
-        errorMessage = 'Невірний пароль.';
-      } else if (err.code === 'auth/invalid-email') {
-        errorMessage = 'Невірний формат електронної пошти.';
-      } else if (err.code === 'auth/user-disabled') {
-        errorMessage = 'Цей акаунт було заблоковано.';
-      } else if (err.code === 'auth/too-many-requests') {
-        errorMessage = 'Забагато спроб входу. Спробуйте пізніше.';
-      } else if (err.code === 'auth/invalid-credential') {
-        errorMessage = 'Невірні дані для входу. Перевірте email та пароль.';
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-
-      toast.error(errorMessage);
+    } catch (err) {
+      console.error('Login error in component:', err);
+      // toast removed — хуки вже показують повідомлення
     }
   };
 
@@ -75,29 +48,12 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     try {
       await signInWithGoogle.mutateAsync({ redirectPath: '/' });
       onCloseAction();
-    } catch (error: any) {
-      console.error('Google auth error:', error);
-
-      // Додаткова обробка помилок для Google OAuth
-      let errorMessage = 'Не вдалося увійти через Google.';
-
-      if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Вхід через Google було скасовано.';
-      } else if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Спливаюче вікно заблоковано браузером.';
-      } else if (
-        error.code === 'auth/account-exists-with-different-credential'
-      ) {
-        errorMessage = 'Акаунт з цією поштою вже існує з іншим способом входу.';
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-
-      toast.error(errorMessage);
+    } catch (err) {
+      console.error('Google auth error in component:', err);
+      // toast removed — хуки вже показують повідомлення
     }
   };
 
-  // Використовуємо стани loading з хуків
   const isSignInLoading = signIn.isPending;
   const isGoogleLoading = signInWithGoogle.isPending;
   const isAnyLoading = isSignInLoading || isGoogleLoading;

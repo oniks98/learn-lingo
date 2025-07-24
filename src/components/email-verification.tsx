@@ -1,48 +1,79 @@
 // src/components/email-verification.tsx
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { auth } from '@/lib/db/firebase-client';
-import { applyActionCode, reload } from 'firebase/auth';
-import { toast } from 'sonner';
+import { useVerifyEmailOnServer } from '@/hooks/use-verify-email-on-server';
 import { useAuth } from '@/contexts/auth-context';
 
+/**
+ * Компонент для обработки верификации email через URL параметры
+ */
 export default function EmailVerification() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { refreshUser } = useAuth();
+  const { refetchUser } = useAuth();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const verifyEmailMutation = useVerifyEmailOnServer();
 
   useEffect(() => {
     const mode = searchParams.get('mode');
     const oobCode = searchParams.get('oobCode');
 
-    if (mode !== 'verifyEmail' || !oobCode) return;
+    // Проверяем, является ли это запросом на верификацию email
+    if (mode !== 'verifyEmail' || !oobCode || isProcessing) {
+      return;
+    }
 
-    const verifyEmail = async () => {
-      try {
-        await applyActionCode(auth, oobCode);
+    console.log('Email verification URL detected, starting verification...');
+    console.log('OOB Code from URL:', oobCode);
 
-        if (auth.currentUser) {
-          await reload(auth.currentUser);
-          await refreshUser();
-        }
+    // СРАЗУ очищаем URL, чтобы предотвратить повторные вызовы
+    const cleanUrl = window.location.pathname;
+    router.replace(cleanUrl);
 
-        toast.success('Email verified successfully!');
+    setIsProcessing(true);
 
-        router.replace(window.location.pathname);
-      } catch (error: any) {
-        toast.error(
-          error.code === 'auth/invalid-action-code'
-            ? 'Invalid or expired verification code.'
-            : 'Email verification failed.',
-        );
-        router.replace(window.location.pathname);
-      }
-    };
+    // Декодируем oobCode на случай, если он URL-encoded
+    const decodedOobCode = decodeURIComponent(oobCode);
+    console.log('Decoded OOB Code:', decodedOobCode);
 
-    verifyEmail();
-  }, []);
+    // Верифицируем email через сервер
+    verifyEmailMutation.mutate(
+      { oobCode: decodedOobCode },
+      {
+        onSuccess: async () => {
+          console.log('Email verification successful, refreshing user data...');
 
+          // Даем время Firebase обновить статус
+          setTimeout(async () => {
+            await refetchUser();
+            setIsProcessing(false);
+          }, 1000);
+        },
+        onError: (error) => {
+          console.error('Email verification failed:', error);
+          setIsProcessing(false);
+        },
+      },
+    );
+  }, [searchParams, router, verifyEmailMutation, refetchUser, isProcessing]);
+
+  // Показываем индикатор загрузки во время обработки
+  if (isProcessing) {
+    return (
+      <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+        <div className="rounded-lg bg-white p-6 shadow-lg">
+          <div className="flex items-center space-x-3">
+            <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <span>Verifying your email...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Компонент не рендерит ничего видимого в обычном состоянии
   return null;
 }

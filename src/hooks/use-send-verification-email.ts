@@ -1,4 +1,4 @@
-// src/hooks/use-resend-verification-email.ts
+// src/hooks/use-send-verification-email.ts
 import { useMutation } from '@tanstack/react-query';
 import { sendEmailVerification, reload } from 'firebase/auth';
 import { auth } from '@/lib/db/firebase-client';
@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 /**
  * Hook для повторної відправки листа верифікації
  */
-export const useResendVerificationEmail = () => {
+export const useSendVerificationEmail = () => {
   return useMutation<void, Error, void>({
     mutationFn: async () => {
       if (!auth.currentUser) {
