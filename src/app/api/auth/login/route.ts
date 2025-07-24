@@ -39,17 +39,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Определяем провайдера аутентификации
+    // Визначаємо провайдера аутентифікації
     const provider = firebase?.sign_in_provider || 'email';
     console.log('Authentication provider:', provider);
 
-    // Создаем или обновляем данные пользователя в Realtime Database
+    // Створюємо або оновлюємо дані користувача в Realtime Database
     const userData: UserData = {
       uid,
       email,
       username: name || email.split('@')[0],
       createdAt: Date.now(),
-      emailVerified: email_verified ?? false, // Исправляем TypeScript ошибку
+      emailVerified: email_verified ?? false,
       provider: provider === 'google.com' ? 'google' : 'email',
     };
     console.log('Constructed userData for RTDB:', userData);
@@ -60,31 +60,31 @@ export async function POST(request: NextRequest) {
 
     let finalUserData: UserData;
 
-    // Проверяем, существует ли пользователь уже
+    // Перевіряємо, чи існує користувач вже
     console.log('Checking if user exists in Realtime Database...');
     const existingUserSnapshot = await userRef.once('value');
 
     if (!existingUserSnapshot.exists()) {
-      // Новый пользователь - создаем запись
+      // Новий користувач - створюємо запис
       console.log('User does NOT exist in RTDB. Creating new record...');
       await userRef.set(userData);
       console.log('New user record set in RTDB.');
       finalUserData = userData;
     } else {
-      // Существующий пользователь - обновляем данные при необходимости
+      // Існуючий користувач - оновлюємо дані при необхідності
       console.log('User already exists in RTDB. Checking for updates...');
       const existingData = existingUserSnapshot.val();
       console.log('Existing RTDB data:', existingData);
 
       const updates: Partial<UserData> = {};
 
-      // Обновляем emailVerified только если оно изменилось
+      // Оновлюємо emailVerified тільки якщо воно змінилося
       if (existingData.emailVerified !== email_verified) {
         updates.emailVerified = email_verified ?? false;
         console.log('Email verified status changed. Adding to updates.');
       }
 
-      // Обновляем username если в Firebase есть displayName
+      // Оновлюємо username якщо в Firebase є displayName
       if (
         name &&
         (!existingData.username ||
@@ -95,13 +95,18 @@ export async function POST(request: NextRequest) {
         console.log('Username needs update. Adding to updates.');
       }
 
-      // Если в существующих данных нет createdAt, добавим
+      // Якщо в існуючих даних немає createdAt, додамо
       if (!existingData.createdAt && userData.createdAt) {
         updates.createdAt = userData.createdAt;
         console.log('Adding createdAt for existing user.');
       }
 
-      // Применяем обновления, если есть что обновлять
+      // Додаємо updatedAt для відстеження останніх змін
+      if (Object.keys(updates).length > 0) {
+        updates.updatedAt = Date.now();
+      }
+
+      // Застосовуємо оновлення, якщо є що оновлювати
       if (Object.keys(updates).length > 0) {
         console.log('Applying updates to existing user:', updates);
         await userRef.update(updates);
@@ -113,20 +118,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Создаем ответ с данными пользователя
+    // Створюємо відповідь з даними користувача
     const response = NextResponse.json(finalUserData);
 
-    // Создаем сессионный куки ТОЛЬКО если email подтвержден
+    // Створюємо сесійний куки ТІЛЬКИ якщо email підтверджено
     if (email_verified) {
       try {
-        const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 дней в миллисекундах
+        const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 днів у мілісекундах
         const sessionCookie = await admin
           .auth()
           .createSessionCookie(idToken, { expiresIn });
         console.log('Session cookie created (email verified).');
 
         response.cookies.set('session', sessionCookie, {
-          maxAge: expiresIn / 1000, // maxAge в секундах
+          maxAge: expiresIn / 1000, // maxAge у секундах
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
@@ -135,11 +140,11 @@ export async function POST(request: NextRequest) {
         console.log('Session cookie set in response.');
       } catch (cookieError) {
         console.error('Error creating session cookie:', cookieError);
-        // Не прерываем выполнение, просто логируем ошибку
+        // Не перериваємо виконання, просто логуємо помилку
       }
     } else {
       console.log('Email not verified. Session cookie not created.');
-      // Удаляем старый куки, если он есть
+      // Видаляємо старий куки, якщо він є
       response.cookies.delete('session');
     }
 
@@ -157,7 +162,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Возвращаем 500 для неожиданных ошибок
+    // Повертаємо 500 для неочікуваних помилок
     return NextResponse.json(
       { error: 'Internal server error during authentication process.' },
       { status: 500 },

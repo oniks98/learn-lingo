@@ -1,13 +1,13 @@
 // src/lib/types/types.ts
 
-// Общий тип для отзывов
+// Загальний тип для відгуків
 export interface Review {
   reviewer_name: string;
   reviewer_rating: number;
   comment: string;
 }
 
-// Минимальная информация об учителе
+// Мінімальна інформація про вчителя
 export interface TeacherPreview {
   id: string;
   name: string;
@@ -22,13 +22,13 @@ export interface TeacherPreview {
   conditions: string[];
 }
 
-// Расширенная информация об учителе
+// Розширена інформація про вчителя
 export interface TeacherExtraInfo {
   experience: string;
   reviews: Review[];
 }
 
-// Краткая информация об учителе (для модалки)
+// Коротка інформація про вчителя (для модалки)
 export interface TeacherInfoModal {
   id: string;
   name: string;
@@ -36,7 +36,7 @@ export interface TeacherInfoModal {
   avatar_url: string;
 }
 
-// Данные пользователя в базе
+// Дані користувача в базі
 export interface UserData {
   uid: string;
   email: string;
@@ -48,31 +48,35 @@ export interface UserData {
   photoURL?: string;
 }
 
-// Контекст аутентификации на клиенте
+// Оновлений контекст аутентифікації на клієнті (тільки для управління станом)
 export interface AuthContextType {
   user: UserData | null;
   loading: boolean;
+  signOut: () => Promise<void>;
+  refetchUser: () => Promise<any>;
+}
+
+// Окремі типи для auth actions (можна винести в окремі хуки)
+export interface AuthActionsType {
   signUp: (email: string, password: string, name: string) => Promise<UserData>;
   signIn: (email: string, password: string) => Promise<UserData>;
   signInWithGoogle: (redirectPath?: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  refreshUser: () => Promise<void>; // Новый метод
 }
 
-// Учитель при создании/редактировании
-export interface Teacher {
-  name: string;
-  languages: string[];
-  levels: string[];
-  price_per_hour: number;
-  description?: string;
-  avatar?: string;
-}
+// Вчитель при створенні/редагуванні
+// export interface Teacher {
+//   name: string;
+//   languages: string[];
+//   levels: string[];
+//   price_per_hour: number;
+//   description?: string;
+//   avatar?: string;
+// }
 
-// Тип избранных учителей
+// Тип обраних вчителів
 export type Favorites = Record<string, boolean>;
 
-// Данные для создания бронирования (без ID)
+// Дані для створення бронювання (без ID)
 export interface CreateBookingData {
   userId: string;
   teacherId: string;
@@ -80,12 +84,12 @@ export interface CreateBookingData {
   email: string;
   phone: string;
   reason: string;
-  bookingDate: string; // Нове поле
-  comment?: string; // Нове поле (опціональне)
+  bookingDate: string;
+  comment?: string;
   createdAt: number;
 }
 
-// Данные бронирования с сервера (с ID)
+// Дані бронювання з сервера (з ID)
 export interface BookingData extends CreateBookingData {
   id: string;
 }

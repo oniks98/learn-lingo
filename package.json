@@ -19,6 +19,7 @@
     "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "firebase": "^11.9.1",
+    "firebase-admin": "^13.4.0",
     "google-auth-library": "^10.1.0",
     "jose": "^6.0.12",
     "jsonwebtoken": "^9.0.2",

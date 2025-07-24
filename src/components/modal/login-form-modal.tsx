@@ -1,14 +1,14 @@
+// src/components/modal/login-form-modal.tsx
 'use client';
 
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 import { LoginFormValues, loginSchema } from '@/lib/validation/login';
-import { useAuth } from '@/contexts/auth-context';
+import { useSignIn, useSignInWithGoogle } from '@/hooks/use-auth-actions';
 import GoogleIcon from '@/lib/icons/google-icon.svg';
 
 interface Props {
@@ -17,8 +17,8 @@ interface Props {
 }
 
 export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
-  const { signIn, signInWithGoogle } = useAuth();
-  const [sending, setSending] = useState(false);
+  const signIn = useSignIn();
+  const signInWithGoogle = useSignInWithGoogle();
 
   const {
     register,
@@ -30,36 +30,77 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    setSending(true);
     try {
-      const userData = await signIn(data.email, data.password);
+      const userData = await signIn.mutateAsync({
+        email: data.email,
+        password: data.password,
+      });
 
+      // Додаткова перевірка email верифікації
       if (!userData.emailVerified) {
         toast.warning(
           'Вхід виконано, але потрібно підтвердити email. Перевірте свою пошту.',
         );
-      } else {
-        toast.success('Вхід виконано успішно!');
       }
 
       reset();
       onCloseAction();
     } catch (err: any) {
-      toast.error(err?.message || 'Не вдалося виконати вхід.');
-    } finally {
-      setSending(false);
+      console.error('Login error:', err);
+
+      // Обробляємо різні типи помилок Firebase
+      let errorMessage = 'Не вдалося виконати вхід.';
+
+      if (err.code === 'auth/user-not-found') {
+        errorMessage = 'Користувача з такою електронною поштою не знайдено.';
+      } else if (err.code === 'auth/wrong-password') {
+        errorMessage = 'Невірний пароль.';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'Невірний формат електронної пошти.';
+      } else if (err.code === 'auth/user-disabled') {
+        errorMessage = 'Цей акаунт було заблоковано.';
+      } else if (err.code === 'auth/too-many-requests') {
+        errorMessage = 'Забагато спроб входу. Спробуйте пізніше.';
+      } else if (err.code === 'auth/invalid-credential') {
+        errorMessage = 'Невірні дані для входу. Перевірте email та пароль.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
   const handleGoogle = async () => {
     try {
-      await signInWithGoogle();
-      // После успешного входа через Google можем показать сообщение
-      // но лучше это делать в AuthContext после получения данных пользователя
-    } catch (error) {
-      toast.error('Не вдалося увійти через Google.');
+      await signInWithGoogle.mutateAsync({ redirectPath: '/' });
+      onCloseAction();
+    } catch (error: any) {
+      console.error('Google auth error:', error);
+
+      // Додаткова обробка помилок для Google OAuth
+      let errorMessage = 'Не вдалося увійти через Google.';
+
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Вхід через Google було скасовано.';
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = 'Спливаюче вікно заблоковано браузером.';
+      } else if (
+        error.code === 'auth/account-exists-with-different-credential'
+      ) {
+        errorMessage = 'Акаунт з цією поштою вже існує з іншим способом входу.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
     }
   };
+
+  // Використовуємо стани loading з хуків
+  const isSignInLoading = signIn.isPending;
+  const isGoogleLoading = signInWithGoogle.isPending;
+  const isAnyLoading = isSignInLoading || isGoogleLoading;
 
   return (
     <Modal isOpen={isOpen} onCloseAction={onCloseAction} title="Log In">
@@ -75,6 +116,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
             placeholder="Email"
             {...register('email')}
             className="border-gray-muted w-full rounded-xl border p-4"
+            disabled={isAnyLoading}
           />
           {errors.email && (
             <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
@@ -87,6 +129,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
             placeholder="Password"
             {...register('password')}
             className="border-gray-muted w-full rounded-xl border p-4"
+            disabled={isAnyLoading}
           />
           {errors.password && (
             <p className="mt-1 text-sm text-red-600">
@@ -97,10 +140,10 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
 
         <Button
           type="submit"
-          disabled={sending}
+          disabled={isAnyLoading}
           className="w-full disabled:opacity-50"
         >
-          {sending ? 'Logging in…' : 'Log In'}
+          {isSignInLoading ? 'Logging in…' : 'Log In'}
         </Button>
 
         <div className="my-4 flex items-center">
@@ -110,11 +153,13 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         </div>
 
         <Button
+          type="button"
           onClick={handleGoogle}
-          className="flex w-full items-center justify-center gap-2"
+          disabled={isAnyLoading}
+          className="flex w-full items-center justify-center gap-2 disabled:opacity-50"
         >
           <GoogleIcon className="h-5 w-5" />
-          Sign In with Google
+          {isGoogleLoading ? 'Signing in with Google…' : 'Sign In with Google'}
         </Button>
       </form>
     </Modal>
