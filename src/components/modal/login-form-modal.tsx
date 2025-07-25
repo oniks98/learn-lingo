@@ -10,6 +10,7 @@ import Button from '@/components/ui/button';
 import { LoginFormValues, loginSchema } from '@/lib/validation/login';
 import { useSignIn, useSignInWithGoogle } from '@/hooks/use-auth-actions';
 import { useSendVerificationEmail } from '@/hooks/use-send-verification-email';
+import { useSendPasswordReset } from '@/hooks/use-password-reset';
 import GoogleIcon from '@/lib/icons/google-icon.svg';
 
 interface Props {
@@ -21,8 +22,10 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const signIn = useSignIn();
   const signInWithGoogle = useSignInWithGoogle();
   const sendVerification = useSendVerificationEmail();
+  const sendPasswordReset = useSendPasswordReset();
 
   const [showEmailVerificationUI, setShowEmailVerificationUI] = useState(false);
+  const [showForgotPasswordUI, setShowForgotPasswordUI] = useState(false);
   const [userEmail, setUserEmail] = useState('');
 
   const {
@@ -75,13 +78,123 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
 
   const handleBackToLogin = () => {
     setShowEmailVerificationUI(false);
+    setShowForgotPasswordUI(false);
     setUserEmail('');
+  };
+
+  const handleForgotPassword = () => {
+    setShowForgotPasswordUI(true);
+  };
+
+  const handleSendPasswordReset = async (email: string) => {
+    try {
+      await sendPasswordReset.mutateAsync({ email });
+    } catch (err) {
+      console.error('Send password reset error:', err);
+    }
   };
 
   const isSignInLoading = signIn.isPending;
   const isGoogleLoading = signInWithGoogle.isPending;
   const isResendLoading = sendVerification.isPending;
-  const isAnyLoading = isSignInLoading || isGoogleLoading || isResendLoading;
+  const isPasswordResetLoading = sendPasswordReset.isPending;
+  const isAnyLoading =
+    isSignInLoading ||
+    isGoogleLoading ||
+    isResendLoading ||
+    isPasswordResetLoading;
+
+  // UI для відновлення паролю
+  if (showForgotPasswordUI) {
+    return (
+      <Modal
+        isOpen={isOpen}
+        onCloseAction={onCloseAction}
+        title="Reset Password"
+      >
+        <div className="space-y-4">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+            <svg
+              className="h-8 w-8 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+              />
+            </svg>
+          </div>
+
+          <div className="text-center">
+            <h3 className="mb-2 text-lg font-medium text-gray-900">
+              Reset Your Password
+            </h3>
+            <p className="text-shadow-gray-muted mb-4 leading-snug">
+              Enter your email address and we'll send you a link to reset your
+              password.
+            </p>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.currentTarget);
+              const email = formData.get('email') as string;
+              handleSendPasswordReset(email);
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+                className="border-gray-muted w-full rounded-xl border p-4"
+                disabled={isPasswordResetLoading}
+              />
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                type="submit"
+                disabled={isPasswordResetLoading}
+                className="w-full"
+              >
+                {isPasswordResetLoading ? 'Sending...' : 'Send Reset Link'}
+              </Button>
+
+              <Button
+                type="button"
+                onClick={handleBackToLogin}
+                disabled={isAnyLoading}
+                className="w-full bg-gray-500 hover:bg-gray-600"
+              >
+                Back to Login
+              </Button>
+            </div>
+          </form>
+
+          <div className="mt-4 text-center text-xs text-gray-500">
+            <p>
+              Remember your password?{' '}
+              <button
+                type="button"
+                onClick={handleBackToLogin}
+                className="text-blue-600 hover:underline"
+              >
+                Sign in
+              </button>
+            </p>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
 
   // UI для повторної відправки верифікації
   if (showEmailVerificationUI) {
@@ -184,6 +297,16 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               {errors.password.message}
             </p>
           )}
+          <div className="mt-2 text-right">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              disabled={isAnyLoading}
+            >
+              Forgot Password?
+            </button>
+          </div>
         </div>
 
         <Button

@@ -158,7 +158,10 @@ export const useSignIn = () => {
       console.error('Sign in error:', error);
       // Деталізовані повідомлення англійською
       let msg = 'Sign in failed. Please try again.';
-      if (error.code === 'auth/user-not-found') {
+      if (error.code === 'auth/invalid-credential') {
+        msg =
+          'Invalid email or password. Please check your credentials and try again.';
+      } else if (error.code === 'auth/user-not-found') {
         msg = 'No user found with this email.';
       } else if (error.code === 'auth/wrong-password') {
         msg = 'Incorrect password.';
