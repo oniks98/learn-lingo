@@ -26,7 +26,7 @@ export default function RootLayout({
             position="top-center"
             richColors
             toastOptions={{
-              duration: 8000,
+              duration: 3000,
               classNames: {
                 title: 'text-lg font-bold text-center',
               },

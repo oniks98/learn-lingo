@@ -14,6 +14,11 @@ import { UserData } from '@/lib/types/types';
 import { useSendVerificationEmail } from '@/hooks/use-send-verification-email';
 import { toast } from 'sonner';
 
+// Додаємо новий тип для результату логіна
+export interface SignInResult extends UserData {
+  needsEmailVerification?: boolean;
+}
+
 /**
  * Перетворює Firebase User в UserData
  */
@@ -122,19 +127,32 @@ export const useSignUp = () => {
 export const useSignIn = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<UserData, any, { email: string; password: string }>({
+  return useMutation<SignInResult, any, { email: string; password: string }>({
     mutationFn: async ({ email, password }) => {
       console.log('Starting email/password sign in...');
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       await reload(userCred.user);
       const userData = await syncUserWithServer(userCred.user);
       console.log('Sign in successful:', userData);
+
+      // Перевіряємо, чи email верифіковано
+      if (!userData.emailVerified) {
+        console.log('Email not verified, returning with flag');
+        return { ...userData, needsEmailVerification: true };
+      }
+
       return userData;
     },
-    onSuccess: (userData) => {
-      // Оновлюємо кеш React Query
-      queryClient.setQueryData(['user'], userData);
-      toast.success(`Welcome back, ${userData.username}!`);
+    onSuccess: (result) => {
+      // Якщо потрібна верифікація email, не оновлюємо кеш і не показуємо success
+      if (result.needsEmailVerification) {
+        console.log('User needs email verification, skipping cache update');
+        return;
+      }
+
+      // Оновлюємо кеш React Query тільки для повністю верифікованих користувачів
+      queryClient.setQueryData(['user'], result);
+      // toast.success(`Welcome back, ${result.username}!`);
     },
     onError: (error) => {
       console.error('Sign in error:', error);
