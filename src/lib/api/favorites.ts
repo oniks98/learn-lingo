@@ -1,141 +1,62 @@
-// src/app/api/favorites/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { admin } from '@/lib/db/firebase-admin';
-import { favoriteActionSchema } from '@/lib/validation/favorites';
-import { requireAuth } from '@/lib/auth/server-auth';
+// src/lib/api/favorites.ts
+import { TeacherPreview } from '@/lib/types/types';
 
-/**
- * GET - отримати список обраних вчителів
- */
-export async function GET(req: NextRequest) {
-  try {
-    const authResult = await requireAuth(req);
+const API_BASE = '/api';
 
-    if ('error' in authResult) {
-      return NextResponse.json(
-        { message: authResult.error },
-        { status: authResult.status },
-      );
-    }
+// Отримати всі улюблені вчителі поточного користувача
+export async function getFavorites(): Promise<{ favorites: TeacherPreview[] }> {
+  const response = await fetch(`${API_BASE}/favorites`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    cache: 'no-store',
+  });
 
-    const { user } = authResult;
-    const db = admin.database();
-    const ref = db.ref(`users/${user.uid}/favorites`);
-    const snapshot = await ref.once('value');
+  if (!response.ok) {
+    throw new Error(`Failed to fetch favorites: ${response.statusText}`);
+  }
 
-    const favorites = snapshot.exists() ? snapshot.val() : {};
+  return response.json();
+}
 
-    return NextResponse.json({ favorites });
-  } catch (error) {
-    console.error('Favorites fetch failed:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 },
-    );
+// Додати вчителя в улюблене
+export async function addToFavorites(teacherId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/favorites`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ teacherId }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to add to favorites: ${response.statusText}`);
   }
 }
 
-/**
- * POST - додати до обраного
- */
-export async function POST(req: NextRequest) {
-  try {
-    const authResult = await requireAuth(req);
+// Видалити вчителя з улюбленого
+export async function removeFromFavorites(teacherId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/favorites`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ teacherId }),
+  });
 
-    if ('error' in authResult) {
-      return NextResponse.json(
-        { message: authResult.error },
-        { status: authResult.status },
-      );
-    }
-
-    const { user } = authResult;
-    const rawData = await req.json();
-
-    const validationResult = favoriteActionSchema.safeParse(rawData);
-
-    if (!validationResult.success) {
-      return NextResponse.json(
-        {
-          message: 'Validation failed',
-          errors: validationResult.error.issues.map((err) => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { teacherId } = validationResult.data;
-    const db = admin.database();
-    const ref = db.ref(`users/${user.uid}/favorites`);
-
-    await ref.update({
-      [teacherId]: true,
-    });
-
-    return NextResponse.json({
-      message: 'Teacher added to favorites',
-      teacherId,
-    });
-  } catch (error) {
-    console.error('Add to favorites failed:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 },
-    );
+  if (!response.ok) {
+    throw new Error(`Failed to remove from favorites: ${response.statusText}`);
   }
 }
 
-/**
- * DELETE - видалити з обраного
- */
-export async function DELETE(req: NextRequest) {
+// Перевірити, чи вчитель в улюбленому
+export async function checkIsFavorite(teacherId: string): Promise<boolean> {
   try {
-    const authResult = await requireAuth(req);
-
-    if ('error' in authResult) {
-      return NextResponse.json(
-        { message: authResult.error },
-        { status: authResult.status },
-      );
-    }
-
-    const { user } = authResult;
-
-    const url = new URL(req.url);
-    const teacherId = url.searchParams.get('teacherId');
-
-    if (!teacherId) {
-      return NextResponse.json(
-        { message: 'Teacher ID is required' },
-        { status: 400 },
-      );
-    }
-
-    const db = admin.database();
-    const ref = db.ref(`users/${user.uid}/favorites/${teacherId}`);
-
-    const snapshot = await ref.once('value');
-    if (!snapshot.exists()) {
-      return NextResponse.json(
-        { message: 'Teacher not found in favorites' },
-        { status: 404 },
-      );
-    }
-
-    await ref.remove();
-
-    return NextResponse.json({
-      message: 'Teacher removed from favorites',
-      teacherId,
-    });
+    const { favorites } = await getFavorites();
+    return favorites.some((teacher) => teacher.id === teacherId);
   } catch (error) {
-    console.error('Remove from favorites failed:', error);
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 },
-    );
+    // Якщо помилка (наприклад, не авторизований), вважаємо що не в фаворитах
+    return false;
   }
 }

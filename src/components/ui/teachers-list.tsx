@@ -1,4 +1,4 @@
-// src/app/components/ui/teachers-list.tsx
+// src/components/ui/teachers-list.tsx
 'use client';
 
 import React, { useMemo, useState } from 'react';
@@ -82,12 +82,13 @@ export default function TeachersList() {
                     key={teacher.id}
                     level={filters.level}
                     teacher={teacher}
+                    // Убираем пропсы для модалки, так как теперь она управляется внутри TeacherCard
                   />
                 ))}
               </div>
 
               {hasMore && (
-                <div className="mt-8 grid justify-center">
+                <div className="mt-8 text-center">
                   <Button onClick={handleLoadMore}>Load More</Button>
                 </div>
               )}

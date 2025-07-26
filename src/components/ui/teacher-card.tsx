@@ -5,13 +5,16 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/api/teachers';
+import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
+import { useAuth } from '@/contexts/auth-context';
+import { savePendingAction } from '@/lib/utils/pending-actions';
 import Loader from '@/components/ui/loader';
 import Image from 'next/image';
 import SeparatorIcon from '@/lib/icons/separator.svg';
 import BookIcon from '@/lib/icons/book.svg';
 import OnlineIcon from '@/lib/icons/online.svg';
 import StarIcon from '@/lib/icons/star.svg';
-import HeartIcon from '@/lib/icons/heart.svg';
+import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
@@ -19,17 +22,62 @@ import clsx from 'clsx';
 type Props = {
   teacher: TeacherPreview;
   level: string;
+  pendingFavoriteTeacherId?: string;
 };
 
-export default function TeacherCard({ teacher, level }: Props) {
+export default function TeacherCard({
+  teacher,
+  level,
+  pendingFavoriteTeacherId,
+}: Props) {
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   const { data: extraInfo, isLoading } = useQuery<TeacherExtraInfo | null>({
     queryKey: ['teacherExtra', teacher.id],
     queryFn: () => getTeacherExtraInfo(teacher.id),
     enabled: expanded,
   });
+
+  const { data: isFavorite = false } = useFavoriteStatus(teacher.id);
+  const { toggleFavorite, isLoading: isFavoriteLoading } = useToggleFavorite();
+
+  const isPendingFavorite = pendingFavoriteTeacherId === teacher.id;
+  const displayAsFavorite = isFavorite || isPendingFavorite;
+
+  const handleFavoriteClick = () => {
+    if (!user || !user.emailVerified) {
+      // Сохраняем намерение добавить в избранное
+      savePendingAction({
+        type: 'favorite',
+        teacherId: teacher.id,
+      });
+
+      // Переходим на страницу регистрации
+      router.push('/signup');
+      return;
+    }
+
+    toggleFavorite(teacher.id, isFavorite);
+  };
+
+  const handleBookingClick = () => {
+    if (!user || !user.emailVerified) {
+      // Сохраняем намерение забронировать урок
+      savePendingAction({
+        type: 'booking',
+        teacherId: teacher.id,
+      });
+
+      // Переходим на страницу регистрации
+      router.push('/signup');
+      return;
+    }
+
+    // Если пользователь авторизован, переходим сразу на страницу учителя
+    router.push(`/teachers/${teacher.id}`, { scroll: false });
+  };
 
   return (
     <section
@@ -112,9 +160,27 @@ export default function TeacherCard({ teacher, level }: Props) {
             <span className="text-green">$</span>
           </span>
 
-          <span className="text-right xl:grow-1">
-            <HeartIcon className="inline-block h-[26px] w-[26px]" />
-          </span>
+          <button
+            onClick={handleFavoriteClick}
+            disabled={isFavoriteLoading}
+            className={clsx(
+              'text-right transition-all duration-200 xl:grow-1',
+              'hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50',
+              isFavoriteLoading && 'animate-pulse',
+            )}
+            aria-label={
+              displayAsFavorite ? 'Remove from favorites' : 'Add to favorites'
+            }
+          >
+            <HeartIcon
+              className={clsx(
+                'inline-block h-[26px] w-[26px] transition-colors duration-200',
+                displayAsFavorite
+                  ? 'fill-yellow stroke-yellow'
+                  : 'hover:text-yellow fill-none text-black',
+              )}
+            />
+          </button>
         </div>
 
         <h2
@@ -219,9 +285,7 @@ export default function TeacherCard({ teacher, level }: Props) {
               'md:col-[1/3] md:row-[7/8] md:justify-self-start',
               'xl:col-2 xl:row-7',
             )}
-            onClick={() =>
-              router.push(`/teachers/${teacher.id}`, { scroll: false })
-            }
+            onClick={handleBookingClick}
           >
             <span className="leading-[1.56]">Book trial lesson</span>
           </Button>

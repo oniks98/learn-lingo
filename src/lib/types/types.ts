@@ -48,7 +48,7 @@ export interface UserData {
   photoURL?: string;
 }
 
-// Оновлений контекст аутентифікації на клієнті (тільки для управління станом)
+// Контекст аутентифікації на клієнті
 export interface AuthContextType {
   user: UserData | null;
   loading: boolean;
@@ -56,24 +56,19 @@ export interface AuthContextType {
   refetchUser: () => Promise<any>;
 }
 
-// Окремі типи для auth actions (можна винести в окремі хуки)
+// Типи для auth actions
 export interface AuthActionsType {
   signUp: (email: string, password: string, name: string) => Promise<UserData>;
   signIn: (email: string, password: string) => Promise<UserData>;
   signInWithGoogle: (redirectPath?: string) => Promise<void>;
 }
 
-// Вчитель при створенні/редагуванні
-// export interface Teacher {
-//   name: string;
-//   languages: string[];
-//   levels: string[];
-//   price_per_hour: number;
-//   description?: string;
-//   avatar?: string;
-// }
+// Тип для результата входа/регистрации
+export interface SignInResult extends UserData {
+  needsEmailVerification?: boolean;
+}
 
-// Тип обраних вчителів
+// Тип избранных учителей
 export type Favorites = Record<string, boolean>;
 
 // Дані для створення бронювання (без ID)
@@ -92,4 +87,19 @@ export interface CreateBookingData {
 // Дані бронювання з сервера (з ID)
 export interface BookingData extends CreateBookingData {
   id: string;
+}
+
+// Тип для добавления/удаления избранного
+export interface FavoriteAction {
+  teacherId: string;
+}
+
+// Тип для ответа API избранных
+export interface FavoritesResponse {
+  favorites: TeacherPreview[];
+}
+
+// Тип для проверки статуса избранного
+export interface FavoriteStatusResponse {
+  isFavorite: boolean;
 }
