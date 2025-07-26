@@ -1,6 +1,6 @@
 // src/app/teachers/layout.tsx
 import React from 'react';
-import PendingActionsHandler from '@/components/pending-actions-handler';
+import PendingActionsHandler from '@/components/handlers/pending-actions-handler';
 
 export default function Teachers({
   children,

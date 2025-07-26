@@ -7,7 +7,7 @@ import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { TeacherPreview } from '@/lib/types/types';
 import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
-import TeacherCard from '@/components/ui/teacher-card';
+import TeacherCard from '@/components/teachers/teacher-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';

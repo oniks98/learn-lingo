@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useAuth } from '@/contexts/auth-context';
-import TeacherCard from '@/components/ui/teacher-card';
+import TeacherCard from '@/components/teachers/teacher-card';
 import SignUpFormModal from '@/components/modal/sign-up-form-modal';
 import Loader from '@/components/ui/loader';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';

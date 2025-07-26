@@ -99,9 +99,9 @@ export const useSignUp = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      toast.success(
-        `Вітаємо, ${userData.username}! Перевірте пошту для підтвердження акаунту.`,
-      );
+      // toast.success(
+      //   `Вітаємо, ${userData.username}! Перевірте пошту для підтвердження акаунту.`,
+      // );
     },
     onError: (error) => {
       console.error('Sign up error:', error);
@@ -152,7 +152,7 @@ export const useSignIn = () => {
 
       // Оновлюємо кеш React Query тільки для повністю верифікованих користувачів
       queryClient.setQueryData(['user'], result);
-      toast.success(`Вітаємо знову, ${result.username}!`);
+      // toast.success(`Вітаємо знову, ${result.username}!`);
     },
     onError: (error) => {
       console.error('Sign in error:', error);
@@ -200,7 +200,7 @@ export const useSignInWithGoogle = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      toast.success('Успішний вхід через Google!');
+      // toast.success('Успішний вхід через Google!');
     },
     onError: (error) => {
       console.error('Google sign in error:', error);

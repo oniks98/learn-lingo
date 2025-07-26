@@ -4,7 +4,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import BookingsList from '@/components/ui/bookings-list';
+import BookingsList from '@/components/bookings/bookings-list';
 import { getBookings } from '@/lib/api/bookings';
 import { getFavorites } from '@/lib/api/favorites';
 

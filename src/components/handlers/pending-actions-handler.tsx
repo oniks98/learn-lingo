@@ -51,7 +51,7 @@ export default function PendingActionsHandler() {
             router.push(`/teachers/${pendingAction.teacherId}`, {
               scroll: false,
             });
-            toast.success('Тепер ви можете забронювати урок!');
+            // toast.success('Тепер ви можете забронювати урок!');
           }, 1000); // Небольшая задержка для лучшего UX
         }
 

@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Email verification confirmed successfully',
+      // message: 'Email verification confirmed successfully',
       email: email,
       user: userData,
     });

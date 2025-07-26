@@ -1,9 +1,11 @@
 // src/components/password-reset-handler.tsx
 'use client';
-
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useHandlePasswordReset } from '@/hooks/use-handle-password-reset';
+import Modal from '@/components/modal/modal';
+import Button from '@/components/ui/button';
 
 /**
  * Компонент для обробки скидання паролю через URL параметри
@@ -76,61 +78,65 @@ export default function PasswordResetHandler() {
   // Показуємо форму введення нового паролю
   if (showPasswordForm) {
     return (
-      <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-        <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-          <h2 className="mb-4 text-xl font-semibold">Reset Your Password</h2>
-          <p className="mb-6 text-gray-600">
-            Please enter your new password below.
-          </p>
+      <Modal
+        isOpen={showPasswordForm}
+        onCloseAction={handleClose}
+        title="Reset Your Password"
+      >
+        <p className="text-shadow-gray-muted mb-5 leading-snug">
+          Please enter your new password below. Make sure it's secure and easy
+          for you to remember.
+        </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <input
-                type="password"
-                name="password"
-                placeholder="New Password"
-                required
-                minLength={6}
-                className="w-full rounded-xl border border-gray-300 p-4"
-                disabled={handlePasswordReset.isPending}
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-[18px]">
+          <div>
+            <input
+              type="password"
+              name="password"
+              placeholder="New Password"
+              required
+              minLength={6}
+              className="border-gray-muted w-full rounded-xl border p-4"
+              disabled={handlePasswordReset.isPending}
+            />
+          </div>
 
-            <div>
-              <input
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm New Password"
-                required
-                minLength={6}
-                className="w-full rounded-xl border border-gray-300 p-4"
-                disabled={handlePasswordReset.isPending}
-              />
-            </div>
+          <div>
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm New Password"
+              required
+              minLength={6}
+              className="border-gray-muted w-full rounded-xl border p-4"
+              disabled={handlePasswordReset.isPending}
+            />
+          </div>
 
-            <div className="flex space-x-3">
-              <button
-                type="submit"
-                disabled={handlePasswordReset.isPending}
-                className="flex-1 rounded-xl bg-blue-600 p-4 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {handlePasswordReset.isPending
-                  ? 'Resetting...'
-                  : 'Reset Password'}
-              </button>
+          <Button
+            type="submit"
+            disabled={handlePasswordReset.isPending}
+            className="w-full disabled:opacity-50"
+          >
+            {handlePasswordReset.isPending ? 'Resetting…' : 'Reset Password'}
+          </Button>
 
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={handlePasswordReset.isPending}
-                className="flex-1 rounded-xl bg-gray-500 p-4 text-white hover:bg-gray-600 disabled:opacity-50"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+          <div className="my-4 flex items-center">
+            <hr className="flex-grow border-gray-300" />
+            <span className="px-2 text-gray-500">OR</span>
+            <hr className="flex-grow border-gray-300" />
+          </div>
+
+          <Button
+            type="button"
+            onClick={handleClose}
+            disabled={handlePasswordReset.isPending}
+            className="w-full bg-gray-500 hover:bg-gray-600 disabled:opacity-50"
+          >
+            Cancel
+          </Button>
+        </form>
+      </Modal>
     );
   }
 

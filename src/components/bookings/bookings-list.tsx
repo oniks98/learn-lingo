@@ -4,7 +4,7 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getBookings } from '@/lib/api/bookings';
-import BookingCard from '@/components/ui/booking-card';
+import BookingCard from '@/components/bookings/booking-card';
 import Loader from '@/components/ui/loader';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 import Button from '@/components/ui/button';

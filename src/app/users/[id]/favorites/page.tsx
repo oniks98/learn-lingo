@@ -4,7 +4,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from '@tanstack/react-query';
-import FavoritesList from '@/components/ui/favorites-list';
+import FavoritesList from '@/components/favorites/favorites-list';
 import { getFavorites } from '@/lib/api/favorites';
 
 export default async function FavoritesPage() {

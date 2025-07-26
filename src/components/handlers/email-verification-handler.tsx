@@ -1,4 +1,4 @@
-// src/components/email-verification.tsx
+// src/components/email-verification-handler.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import { useAuth } from '@/contexts/auth-context';
 /**
  * Компонент для обработки верификации email через URL параметры
  */
-export default function EmailVerification() {
+export default function EmailVerificationHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { refetchUser } = useAuth();
@@ -62,16 +62,7 @@ export default function EmailVerification() {
 
   // Показываем индикатор загрузки во время обработки
   if (isProcessing) {
-    return (
-      <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-        <div className="rounded-lg bg-white p-6 shadow-lg">
-          <div className="flex items-center space-x-3">
-            <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            <span>Verifying your email...</span>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Компонент не рендерит ничего видимого в обычном состоянии

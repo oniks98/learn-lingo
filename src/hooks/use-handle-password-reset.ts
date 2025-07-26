@@ -22,9 +22,9 @@ export const useHandlePasswordReset = () => {
       console.log('Password reset completed successfully');
     },
     onSuccess: () => {
-      toast.success(
-        'Password has been reset successfully! You can now log in with your new password.',
-      );
+      // toast.success(
+      //   'Password has been reset successfully! You can now log in with your new password.',
+      // );
     },
     onError: (error) => {
       console.error('Password reset failed:', error);

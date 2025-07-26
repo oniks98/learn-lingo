@@ -5,9 +5,9 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import { getAllTeachers } from '@/lib/api/teachers';
-import TeachersList from '@/components/ui/teachers-list';
-import EmailVerification from '@/components/email-verification';
-import PasswordResetHandler from '@/components/password-reset-handler';
+import TeachersList from '@/components/teachers/teachers-list';
+import EmailVerificationHandler from '@/components/handlers/email-verification-handler';
+import PasswordResetHandler from '@/components/handlers/password-reset-handler';
 
 export default async function TeachersPage() {
   const queryClient = new QueryClient();
@@ -20,7 +20,7 @@ export default async function TeachersPage() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <TeachersList />
-      <EmailVerification />
+      <EmailVerificationHandler />
       <PasswordResetHandler />
     </HydrationBoundary>
   );

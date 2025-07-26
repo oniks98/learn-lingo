@@ -301,7 +301,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+              className="hover:text-yellow text-sm text-black hover:underline"
               disabled={isAnyLoading}
             >
               Forgot Password?
