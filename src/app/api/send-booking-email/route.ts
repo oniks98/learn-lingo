@@ -1,17 +1,22 @@
-// src/app/api/send-booking-email/route.ts
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import type { BookingData } from '@/lib/types/types';
 
-// Дополняем данными преподавателя для письма
-interface SendBookingEmailPayload extends BookingData {
+// Расширяем BookingData для передачи имени учителя
+interface BookingWithTeacherData extends BookingData {
   teacherName: string;
   teacherSurname: string;
 }
 
 export async function POST(request: Request) {
   try {
-    const booking: SendBookingEmailPayload = await request.json();
+    const booking: BookingWithTeacherData = await request.json();
+
+    console.log('Processing booking with teacher data:', {
+      teacherId: booking.teacherId,
+      teacherName: booking.teacherName,
+      teacherSurname: booking.teacherSurname,
+    });
 
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST!,
@@ -23,6 +28,20 @@ export async function POST(request: Request) {
       },
     });
 
+    // Форматируем дату для письма
+    const bookingDateTime = new Date(booking.bookingDate);
+    const formattedDate = bookingDateTime.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    const formattedTime = bookingDateTime.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+
     await transporter.sendMail({
       from: process.env.SMTP_FROM!,
       to: booking.email,
@@ -32,12 +51,20 @@ Hello ${booking.name},
 
 Thank you for booking a trial lesson with teacher ${booking.teacherName} ${booking.teacherSurname}.
 
-We will contact you at ${booking.phone} to confirm the date and time.
+Lesson Details:
+- Date: ${formattedDate}
+- Time: ${formattedTime}
+- Reason: ${booking.reason}
+${booking.comment ? `- Additional notes: ${booking.comment}` : ''}
 
-Reason for the lesson: ${booking.reason}
+We will contact you at ${booking.phone} shortly to confirm this booking and provide any additional information you may need.
+
+Best regards,
+Learn Lingo Team
       `.trim(),
     });
 
+    console.log('Email sent successfully to:', booking.email);
     return NextResponse.json({ ok: true });
   } catch (error: any) {
     console.error('Send email failed:', error);

@@ -99,20 +99,20 @@ export const useSignUp = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      // toast.success(
-      //   `Welcome, ${userData.username}! Check your email to verify your account.`,
-      // );
+      toast.success(
+        `Вітаємо, ${userData.username}! Перевірте пошту для підтвердження акаунту.`,
+      );
     },
     onError: (error) => {
       console.error('Sign up error:', error);
-      // Деталізовані повідомлення англійською
-      let msg = 'Registration failed. Please try again.';
+      // Деталізовані повідомлення
+      let msg = 'Помилка реєстрації. Спробуйте ще раз.';
       if (error.code === 'auth/email-already-in-use') {
-        msg = 'This email is already in use.';
+        msg = 'Ця електронна пошта вже використовується.';
       } else if (error.code === 'auth/weak-password') {
-        msg = 'Password is too weak. Minimum 6 characters required.';
+        msg = 'Пароль занадто слабкий. Мінімум 6 символів.';
       } else if (error.code === 'auth/invalid-email') {
-        msg = 'Invalid email format.';
+        msg = 'Неправильний формат електронної пошти.';
       } else if (error.message) {
         msg = error.message;
       }
@@ -152,25 +152,25 @@ export const useSignIn = () => {
 
       // Оновлюємо кеш React Query тільки для повністю верифікованих користувачів
       queryClient.setQueryData(['user'], result);
-      // toast.success(`Welcome back, ${result.username}!`);
+      toast.success(`Вітаємо знову, ${result.username}!`);
     },
     onError: (error) => {
       console.error('Sign in error:', error);
-      // Деталізовані повідомлення англійською
-      let msg = 'Sign in failed. Please try again.';
+      // Деталізовані повідомлення
+      let msg = 'Помилка входу. Спробуйте ще раз.';
       if (error.code === 'auth/invalid-credential') {
         msg =
-          'Invalid email or password. Please check your credentials and try again.';
+          'Неправильна пошта або пароль. Перевірте дані та спробуйте ще раз.';
       } else if (error.code === 'auth/user-not-found') {
-        msg = 'No user found with this email.';
+        msg = 'Користувача з такою поштою не знайдено.';
       } else if (error.code === 'auth/wrong-password') {
-        msg = 'Incorrect password.';
+        msg = 'Неправильний пароль.';
       } else if (error.code === 'auth/invalid-email') {
-        msg = 'Invalid email format.';
+        msg = 'Неправильний формат електронної пошти.';
       } else if (error.code === 'auth/user-disabled') {
-        msg = 'This account has been disabled.';
+        msg = 'Цей акаунт заблоковано.';
       } else if (error.code === 'auth/too-many-requests') {
-        msg = 'Too many login attempts. Please try again later.';
+        msg = 'Забагато спроб входу. Спробуйте пізніше.';
       } else if (error.message) {
         msg = error.message;
       }
@@ -200,21 +200,20 @@ export const useSignInWithGoogle = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      toast.success('Successfully signed in with Google!');
+      toast.success('Успішний вхід через Google!');
     },
     onError: (error) => {
       console.error('Google sign in error:', error);
-      // Деталізовані повідомлення англійською
-      let msg = 'Google sign in failed. Please try again.';
+      // Деталізовані повідомлення
+      let msg = 'Помилка входу через Google. Спробуйте ще раз.';
       if (error.code === 'auth/popup-closed-by-user') {
-        msg = 'Google sign in was canceled.';
+        msg = 'Вхід через Google було скасовано.';
       } else if (error.code === 'auth/popup-blocked') {
-        msg = 'Popup was blocked by the browser.';
+        msg = 'Спливаюче вікно заблоковано браузером.';
       } else if (
         error.code === 'auth/account-exists-with-different-credential'
       ) {
-        msg =
-          'An account with this email exists with a different sign-in method.';
+        msg = 'Акаунт з цією поштою існує з іншим способом входу.';
       } else if (error.message) {
         msg = error.message;
       }
