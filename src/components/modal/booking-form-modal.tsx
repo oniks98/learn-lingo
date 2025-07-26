@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 import Image from 'next/image';
@@ -14,9 +15,11 @@ import {
   type BookingFormValues,
 } from '@/lib/validation/booking';
 import { learningReasons } from '@/lib/constants/reasons';
-import type { TeacherInfoModal } from '@/lib/types/types';
+import type { TeacherInfoModal, TeacherPreview } from '@/lib/types/types';
 import { useAuth } from '@/contexts/auth-context';
-import { createBooking } from '@/lib/api/bookings'; // Import the API function
+import { createBooking } from '@/lib/api/bookings';
+import { getAllTeachers } from '@/lib/api/teachers';
+import { sendBookingEmail } from '@/lib/api/send-booking-email';
 import RadioButtonIcon from '@/lib/icons/radio';
 
 interface Props {
@@ -27,6 +30,12 @@ interface Props {
 export default function BookingFormModal({ isOpen, teacher }: Props) {
   const router = useRouter();
   const { user } = useAuth();
+
+  // Получаем всех учителей из кеша React Query
+  const { data: teachers } = useQuery({
+    queryKey: ['teachers'],
+    queryFn: getAllTeachers,
+  });
 
   const {
     register,
@@ -39,22 +48,30 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     defaultValues: {
       name: user?.username || '',
       email: user?.email || '',
-      comment: '', // Додаємо дефолтне значення
+      comment: '',
     },
   });
 
   const selectedReason = useWatch({ control, name: 'reason' });
-
   const [sending, setSending] = useState(false);
 
   const onSubmit = async (formData: BookingFormValues) => {
-    // Check if user exists before proceeding
     if (!user) {
       toast.error('You must be logged in to book a lesson.');
       return;
     }
 
-    // Prepare booking data (without userId as it's added by the API function)
+    // Находим полные данные учителя в кеше
+    const fullTeacherData = teachers?.find(
+      (t: TeacherPreview) => t.id === teacher.id,
+    );
+
+    if (!fullTeacherData) {
+      toast.error('Teacher data not found. Please refresh the page.');
+      return;
+    }
+
+    // Подготавливаем данные бронирования
     const bookingData = {
       userId: user.uid,
       teacherId: teacher.id,
@@ -70,31 +87,29 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     try {
       setSending(true);
 
-      // Use the createBooking function which handles authentication
-      await createBooking(bookingData);
+      // 1. Создаем бронирование
+      const createdBooking = await createBooking(bookingData);
 
-      // After successful booking, send confirmation email
+      // 2. Отправляем email с данными учителя из кеша
       const emailPayload = {
-        ...bookingData,
+        ...createdBooking,
+        teacherName: fullTeacherData.name,
+        teacherSurname: fullTeacherData.surname,
       };
 
-      const emailResponse = await fetch('/api/send-booking-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailPayload),
-      });
-
-      if (!emailResponse.ok) {
-        const emailResult = await emailResponse.json();
-        console.warn('Email sending failed:', emailResult.error);
-        // Don't fail the entire process if email fails
+      try {
+        await sendBookingEmail(emailPayload);
+        toast.success(
+          'Your booking was sent successfully and email confirmation was sent.',
+        );
+      } catch (emailError) {
+        console.warn('Email sending failed:', emailError);
         toast.success(
           'Booking created successfully, but email notification failed.',
         );
-      } else {
-        toast.success('Your booking was sent successfully.');
       }
 
+      // 3. Очищаем форму и закрываем модалку
       reset();
       router.back();
     } catch (err: any) {
@@ -188,7 +203,6 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
           <p className="text-sm text-red-600">{errors.phone.message}</p>
         )}
 
-        {/* Нове поле для дати бронювання */}
         <input
           {...register('bookingDate')}
           type="datetime-local"
@@ -199,7 +213,6 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
           <p className="text-sm text-red-600">{errors.bookingDate.message}</p>
         )}
 
-        {/* Нове поле для коментаря */}
         <textarea
           {...register('comment')}
           placeholder="Comment (optional)"

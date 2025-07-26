@@ -16,6 +16,7 @@ import {
 } from 'firebase/auth';
 import { auth } from '@/lib/db/firebase-client';
 import { UserData } from '@/lib/types/types';
+import { removePendingAction } from '@/lib/utils/pending-actions';
 
 interface AuthContextType {
   user: UserData | null;
@@ -115,8 +116,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log('Starting sign out...');
 
-      // Очищаем кеш React Query
+      // Очищаем кеш React Query для пользователя
       queryClient.setQueryData(['user'], null);
+
+      // Очищаем все кеши, связанные с избранным
+      queryClient.removeQueries({ queryKey: ['favorites'] });
+      queryClient.removeQueries({ queryKey: ['favoriteStatus'] });
+
+      // Очищаем отложенные действия
+      removePendingAction();
 
       // Выходим из Firebase
       await firebaseSignOut(auth);
@@ -151,6 +159,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         console.log('Auth state changed - user signed out');
         queryClient.setQueryData(['user'], null);
+
+        // Очищаем кеши избранного при выходе
+        queryClient.removeQueries({ queryKey: ['favorites'] });
+        queryClient.removeQueries({ queryKey: ['favoriteStatus'] });
+
+        // Очищаем отложенные действия при выходе
+        removePendingAction();
       }
     });
 

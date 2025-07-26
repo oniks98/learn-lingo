@@ -6,10 +6,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BookingData, TeacherPreview } from '@/lib/types/types';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { deleteBooking } from '@/lib/api/bookings';
+import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
 import Loader from '@/components/ui/loader';
 import Image from 'next/image';
 import OnlineIcon from '@/lib/icons/online.svg';
-import HeartIcon from '@/lib/icons/heart.svg';
+import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
 import ConfirmDeleteModal from '@/components/modal/confirm-delete-modal';
 import clsx from 'clsx';
@@ -32,6 +33,10 @@ export default function BookingCard({ booking }: Props) {
   const teacher = teachers?.find((t) => t.id === booking.teacherId) || null;
   const isLoadingTeacher = isLoadingTeachers;
 
+  // Добавляем логику избранного
+  const { data: isFavorite = false } = useFavoriteStatus(booking.teacherId);
+  const { toggleFavorite, isLoading: isFavoriteLoading } = useToggleFavorite();
+
   const deleteBookingMutation = useMutation({
     mutationFn: deleteBooking,
     onSuccess: async () => {
@@ -46,6 +51,11 @@ export default function BookingCard({ booking }: Props) {
   const handleConfirmDelete = () => {
     deleteBookingMutation.mutate(booking.id);
     setIsConfirmOpen(false);
+  };
+
+  const handleFavoriteClick = () => {
+    // На странице bookings пользователь уже залогинен и подтвержден
+    toggleFavorite(booking.teacherId, isFavorite);
   };
 
   const formatDate = (timestamp: number) => {
@@ -131,9 +141,27 @@ export default function BookingCard({ booking }: Props) {
             )}
           >
             <span className="text-gray-muted font-medium">Booking</span>
-            <span className="text-right">
-              <HeartIcon className="inline-block h-[26px] w-[26px]" />
-            </span>
+            <button
+              onClick={handleFavoriteClick}
+              disabled={isFavoriteLoading}
+              className={clsx(
+                'text-right transition-all duration-200',
+                'hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50',
+                isFavoriteLoading && 'animate-pulse',
+              )}
+              aria-label={
+                isFavorite ? 'Remove from favorites' : 'Add to favorites'
+              }
+            >
+              <HeartIcon
+                className={clsx(
+                  'inline-block h-[26px] w-[26px] transition-colors duration-200',
+                  isFavorite
+                    ? 'fill-yellow stroke-yellow'
+                    : 'hover:text-yellow fill-none text-black',
+                )}
+              />
+            </button>
           </div>
 
           {/* Teacher Name */}

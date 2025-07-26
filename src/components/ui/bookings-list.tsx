@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { getBookings } from '@/lib/api/bookings';
 import BookingCard from '@/components/ui/booking-card';
 import Loader from '@/components/ui/loader';
-import Button from '@/components/ui/button';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
+import Button from '@/components/ui/button';
 
 export default function BookingsList() {
   const [visibleCount, setVisibleCount] = useState(4);
@@ -53,54 +53,91 @@ export default function BookingsList() {
 
   const hasMore = visibleCount < sortedBookings.length;
 
+  if (isLoading) {
+    return (
+      <main className="mx-auto max-w-338 px-5 pb-5">
+        <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
+          <Loader />
+        </div>
+      </main>
+    );
+  }
+
+  if (bookingsError) {
+    return (
+      <main className="mx-auto max-w-338 px-5 pb-5">
+        <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
+          <div className="text-center">
+            <p className="mb-4 text-red-500">Error loading bookings</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-yellow hover:bg-yellow/80 rounded px-4 py-2 text-white"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto max-w-338 px-5 pb-5">
-      <div className="bg-gray-light mx-auto rounded-3xl px-5 pb-5">
-        {/* Header */}
-        <div className="py-6">
-          <h1 className="text-center text-3xl font-bold">My Bookings</h1>
-          <p className="mt-2 text-center text-gray-600">
-            Total bookings: {allBookings.length}
+      <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-3xl font-bold text-gray-800">My Bookings</h1>
+          <p className="text-gray-600">
+            {allBookings.length > 0
+              ? `You have ${allBookings.length} booking${allBookings.length === 1 ? '' : 's'}`
+              : 'No bookings yet'}
           </p>
         </div>
 
-        <>
-          <h2 className="sr-only">Bookings list</h2>
-          {isLoading ? (
-            <div className="py-8">
-              <Loader />
-              <p className="mt-4 text-center">Loading bookings...</p>
+        {allBookings.length === 0 ? (
+          <div className="py-16 text-center">
+            <div className="mb-6">
+              <svg
+                className="mx-auto h-24 w-24 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                />
+              </svg>
             </div>
-          ) : bookingsError ? (
-            <div className="py-8">
-              <p className="text-center text-red-500">
-                Error loading bookings: {bookingsError.message}
-              </p>
+            <h3 className="mb-2 text-xl font-medium text-gray-800">
+              No bookings yet
+            </h3>
+            <p className="mb-6 text-gray-600">
+              Start booking lessons with teachers to see them here.
+            </p>
+            <a
+              href="/teachers"
+              className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
+            >
+              Browse Teachers
+            </a>
+          </div>
+        ) : (
+          <>
+            <div className="grid gap-6">
+              {visibleBookings.map((booking) => (
+                <BookingCard key={booking.id} booking={booking} />
+              ))}
             </div>
-          ) : visibleBookings.length === 0 ? (
-            <div className="py-8">
-              <p className="text-center text-gray-500">
-                You don't have any bookings yet
-              </p>
-            </div>
-          ) : (
-            <>
-              <div className="grid gap-6">
-                {visibleBookings.map((booking) => (
-                  <BookingCard key={booking.id} booking={booking} />
-                ))}
-              </div>
 
-              {hasMore && (
-                <div className="mt-8 grid justify-center">
-                  <Button onClick={handleLoadMore}>
-                    Load More ({sortedBookings.length - visibleCount} remaining)
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-        </>
+            {hasMore && (
+              <div className="mt-8 text-center">
+                <Button onClick={handleLoadMore}>Load More</Button>
+              </div>
+            )}
+          </>
+        )}
 
         <ScrollToTopButton />
       </div>
