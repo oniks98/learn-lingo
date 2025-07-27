@@ -66,13 +66,33 @@ export default function BookingCard({ booking }: Props) {
     });
   };
 
-  const formatBookingDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatBookingDateTime = (dateValue: Date | string) => {
+    // Правильно обрабатываем и Date объекты, и строки
+    const date =
+      typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+
+    // Проверяем, что дата валидна
+    if (isNaN(date.getTime())) {
+      return { date: 'Invalid Date', time: '' };
+    }
+
+    const formattedDate = date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       weekday: 'long',
     });
+
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false, // 24-часовой формат
+    });
+
+    return {
+      date: formattedDate,
+      time: formattedTime,
+    };
   };
 
   const formatPrice = (price: number) => {
@@ -85,6 +105,8 @@ export default function BookingCard({ booking }: Props) {
   const formatRating = (rating: number) => {
     return rating.toFixed(1);
   };
+
+  const bookingDateTime = formatBookingDateTime(booking.bookingDate);
 
   return (
     <>
@@ -191,7 +213,15 @@ export default function BookingCard({ booking }: Props) {
               <p>
                 <span className="text-gray-muted">Lesson Date:</span>{' '}
                 <span className="font-semibold text-blue-600">
-                  {formatBookingDate(booking.bookingDate)}
+                  {bookingDateTime.date}
+                </span>
+              </p>
+            </li>
+            <li>
+              <p>
+                <span className="text-gray-muted">Lesson Time:</span>{' '}
+                <span className="font-semibold text-green-600">
+                  {bookingDateTime.time}
                 </span>
               </p>
             </li>

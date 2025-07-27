@@ -1,3 +1,4 @@
+// src/components/header/logo.tsx
 import React from 'react';
 import clsx from 'clsx';
 import LogoIcon from '@/lib/icons/logo.svg';

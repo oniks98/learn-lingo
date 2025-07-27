@@ -31,6 +31,8 @@ export async function GET(request: NextRequest) {
       ([id, booking]: [string, any]) => ({
         id,
         ...booking,
+        // Конвертируем строку обратно в Date при получении из базы
+        bookingDate: new Date(booking.bookingDate),
       }),
     );
 
@@ -58,7 +60,13 @@ export async function POST(request: NextRequest) {
     }
 
     const { user } = authResult;
-    const bookingData: CreateBookingData = await request.json();
+    const requestData = await request.json();
+
+    // Конвертируем bookingDate из строки в Date если нужно
+    const bookingData: CreateBookingData = {
+      ...requestData,
+      bookingDate: new Date(requestData.bookingDate),
+    };
 
     if (bookingData.userId !== user.uid) {
       return NextResponse.json(
@@ -82,12 +90,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const booking: CreateBookingData = {
+    // Подготавливаем данные для сохранения в базу
+    const bookingForDatabase = {
       ...bookingData,
+      // Конвертируем Date в ISO строку для сохранения в Firebase
+      bookingDate: bookingData.bookingDate.toISOString(),
       createdAt: bookingData.createdAt || Date.now(),
     };
 
-    const bookingRef = await admin.database().ref('bookings').push(booking);
+    const bookingRef = await admin
+      .database()
+      .ref('bookings')
+      .push(bookingForDatabase);
     const bookingId = bookingRef.key;
 
     if (!bookingId) {
@@ -98,9 +112,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Возвращаем данные с Date объектом
     const createdBooking: BookingData = {
       id: bookingId,
-      ...booking,
+      ...bookingData, // Здесь bookingDate уже Date
     };
 
     console.log('Booking created successfully:', bookingId);

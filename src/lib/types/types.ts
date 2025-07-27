@@ -79,7 +79,7 @@ export interface CreateBookingData {
   email: string;
   phone: string;
   reason: string;
-  bookingDate: string;
+  bookingDate: Date;
   comment?: string;
   createdAt: number;
 }

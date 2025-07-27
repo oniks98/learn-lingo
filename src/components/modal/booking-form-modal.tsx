@@ -1,12 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
+import { DateTimePicker } from '@/components/calendar/date-time-picker';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -79,7 +80,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       email: formData.email,
       phone: formData.phone,
       reason: formData.reason,
-      bookingDate: formData.bookingDate,
+      bookingDate: formData.bookingDate, // Передаем Date как есть
       comment: formData.comment,
       createdAt: Date.now(),
     };
@@ -174,54 +175,84 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
           )}
         </fieldset>
 
-        <input
-          {...register('name')}
-          placeholder="Full Name"
-          className="w-full rounded-xl border p-3"
-        />
-        {errors.name && (
-          <p className="text-sm text-red-600">{errors.name.message}</p>
-        )}
+        {/* Responsive grid layout */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* Left column - Personal info */}
+          <div className="space-y-4">
+            <div>
+              <input
+                {...register('name')}
+                placeholder="Full Name"
+                className="w-full rounded-xl border p-3 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
 
-        <input
-          {...register('email')}
-          type="email"
-          placeholder="Email"
-          className="w-full rounded-xl border p-3"
-        />
-        {errors.email && (
-          <p className="text-sm text-red-600">{errors.email.message}</p>
-        )}
+            <div>
+              <input
+                {...register('email')}
+                type="email"
+                placeholder="Email"
+                className="w-full rounded-xl border p-3 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-        <input
-          {...register('phone')}
-          type="tel"
-          placeholder="Phone"
-          className="w-full rounded-xl border p-3"
-        />
-        {errors.phone && (
-          <p className="text-sm text-red-600">{errors.phone.message}</p>
-        )}
+            <div>
+              <input
+                {...register('phone')}
+                type="tel"
+                placeholder="Phone number"
+                className="w-full rounded-xl border p-3 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+              />
+              {errors.phone && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
+          </div>
 
-        <input
-          {...register('bookingDate')}
-          type="datetime-local"
-          placeholder="Booking Date"
-          className="w-full rounded-xl border p-3"
-        />
-        {errors.bookingDate && (
-          <p className="text-sm text-red-600">{errors.bookingDate.message}</p>
-        )}
+          {/* Right column - Booking data */}
+          <div className="space-y-4">
+            {/* Custom Date Time Picker */}
+            <Controller
+              control={control}
+              name="bookingDate"
+              render={({ field }) => (
+                <DateTimePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={errors.bookingDate?.message}
+                  disablePastDates={true}
+                  defaultTime="10:00"
+                />
+              )}
+            />
 
-        <textarea
-          {...register('comment')}
-          placeholder="Comment (optional)"
-          rows={3}
-          className="w-full resize-none rounded-xl border p-3"
-        />
-        {errors.comment && (
-          <p className="text-sm text-red-600">{errors.comment.message}</p>
-        )}
+            <div>
+              <textarea
+                {...register('comment')}
+                placeholder="Comment"
+                rows={4}
+                className="w-full resize-none rounded-xl border px-3 py-2 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+              />
+              {errors.comment && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.comment.message}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
 
         <Button type="submit" disabled={sending} className="w-full">
           {sending ? 'Sending…' : 'Book'}

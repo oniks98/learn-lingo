@@ -108,7 +108,7 @@ export const useSignUp = () => {
       // Деталізовані повідомлення
       let msg = 'Помилка реєстрації. Спробуйте ще раз.';
       if (error.code === 'auth/email-already-in-use') {
-        msg = 'Ця електронна пошта вже використовується.';
+        msg = 'This email is already in use.';
       } else if (error.code === 'auth/weak-password') {
         msg = 'Пароль занадто слабкий. Мінімум 6 символів.';
       } else if (error.code === 'auth/invalid-email') {
