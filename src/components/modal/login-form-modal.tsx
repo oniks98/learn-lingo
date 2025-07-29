@@ -3,7 +3,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 
 import Modal from '@/components/modal/modal';
@@ -29,13 +29,44 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const [showEmailVerificationUI, setShowEmailVerificationUI] = useState(false);
   const [showForgotPasswordUI, setShowForgotPasswordUI] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
+
+  // Наблюдаем за изменениями в полях формы
+  const watchedEmail = watch('email');
+
+  // Загружаем сохраненные данные при открытии модалки
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const savedEmail = localStorage.getItem('loginForm_email');
+        if (savedEmail) {
+          setValue('email', savedEmail);
+        }
+      } catch (error) {
+        console.warn('Could not load saved form data:', error);
+      }
+    }
+  }, [isOpen, setValue]);
+
+  // Сохраняем email при его изменении
+  useEffect(() => {
+    if (watchedEmail) {
+      try {
+        localStorage.setItem('loginForm_email', watchedEmail);
+      } catch (error) {
+        console.warn('Could not save form data:', error);
+      }
+    }
+  }, [watchedEmail]);
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -51,7 +82,12 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         return; // НЕ закриваємо модалку
       }
 
-      // Якщо все ок, закриваємо модалку
+      // Якщо все ок, очищаем сохраненные данные и закриваємо модалку
+      try {
+        localStorage.removeItem('loginForm_email');
+      } catch (error) {
+        console.warn('Could not clear saved form data:', error);
+      }
       reset();
       onCloseAction();
     } catch (err) {
@@ -63,6 +99,12 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const handleGoogle = async () => {
     try {
       await signInWithGoogle.mutateAsync({ redirectPath: '/' });
+      // Очищаем сохраненные данные при успешном входе через Google
+      try {
+        localStorage.removeItem('loginForm_email');
+      } catch (error) {
+        console.warn('Could not clear saved form data:', error);
+      }
       onCloseAction();
     } catch (err) {
       console.error('Google auth error in component:', err);
@@ -94,6 +136,10 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     } catch (err) {
       console.error('Send password reset error:', err);
     }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const isSignInLoading = signIn.isPending;
@@ -285,13 +331,59 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         </div>
 
         <div>
-          <input
-            type="password"
-            placeholder={t('placeholders.password')}
-            {...register('password')}
-            className="border-gray-muted w-full rounded-xl border p-4"
-            disabled={isAnyLoading}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder={t('placeholders.password')}
+              {...register('password')}
+              className="border-gray-muted w-full rounded-xl border p-4 pr-12"
+              disabled={isAnyLoading}
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              disabled={isAnyLoading}
+            >
+              {showPassword ? (
+                // Закрытый глаз (скрыть пароль)
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                  />
+                </svg>
+              ) : (
+                // Открытый глаз (показать пароль)
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
           {errors.password && (
             <p className="mt-1 text-sm text-red-600">
               {errors.password.message}

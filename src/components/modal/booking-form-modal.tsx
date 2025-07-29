@@ -1,7 +1,7 @@
 // src/components/modal/booking-form-modal.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -47,6 +47,8 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     handleSubmit,
     control,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -59,6 +61,111 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
   const selectedReason = useWatch({ control, name: 'reason' });
   const [sending, setSending] = useState(false);
+
+  // Наблюдаем за изменениями в полях формы
+  const watchedName = watch('name');
+  const watchedEmail = watch('email');
+  const watchedPhone = watch('phone');
+  const watchedComment = watch('comment');
+
+  // Функция для очистки сохраненных данных
+  const clearSavedData = () => {
+    try {
+      localStorage.removeItem(`bookingForm_name_${teacher.id}`);
+      localStorage.removeItem(`bookingForm_email_${teacher.id}`);
+      localStorage.removeItem(`bookingForm_phone_${teacher.id}`);
+      localStorage.removeItem(`bookingForm_comment_${teacher.id}`);
+    } catch (error) {
+      console.warn('Could not clear saved form data:', error);
+    }
+  };
+
+  // Загружаем сохраненные данные при открытии модалки
+  useEffect(() => {
+    if (isOpen) {
+      try {
+        const savedName = localStorage.getItem(
+          `bookingForm_name_${teacher.id}`,
+        );
+        const savedEmail = localStorage.getItem(
+          `bookingForm_email_${teacher.id}`,
+        );
+        const savedPhone = localStorage.getItem(
+          `bookingForm_phone_${teacher.id}`,
+        );
+        const savedComment = localStorage.getItem(
+          `bookingForm_comment_${teacher.id}`,
+        );
+
+        // Загружаем имя только если нет данных пользователя
+        if (savedName && !user?.username) {
+          setValue('name', savedName);
+        }
+
+        // Загружаем email только если нет данных пользователя
+        if (savedEmail && !user?.email) {
+          setValue('email', savedEmail);
+        }
+
+        if (savedPhone) {
+          setValue('phone', savedPhone);
+        }
+
+        if (savedComment) {
+          setValue('comment', savedComment);
+        }
+      } catch (error) {
+        console.warn('Could not load saved form data:', error);
+      }
+    }
+  }, [isOpen, setValue, teacher.id, user?.username, user?.email]);
+
+  // Сохраняем имя при его изменении (только если это не данные пользователя)
+  useEffect(() => {
+    if (watchedName && !user?.username) {
+      try {
+        localStorage.setItem(`bookingForm_name_${teacher.id}`, watchedName);
+      } catch (error) {
+        console.warn('Could not save name:', error);
+      }
+    }
+  }, [watchedName, teacher.id, user?.username]);
+
+  // Сохраняем email при его изменении (только если это не данные пользователя)
+  useEffect(() => {
+    if (watchedEmail && !user?.email) {
+      try {
+        localStorage.setItem(`bookingForm_email_${teacher.id}`, watchedEmail);
+      } catch (error) {
+        console.warn('Could not save email:', error);
+      }
+    }
+  }, [watchedEmail, teacher.id, user?.email]);
+
+  // Сохраняем телефон при его изменении
+  useEffect(() => {
+    if (watchedPhone) {
+      try {
+        localStorage.setItem(`bookingForm_phone_${teacher.id}`, watchedPhone);
+      } catch (error) {
+        console.warn('Could not save phone:', error);
+      }
+    }
+  }, [watchedPhone, teacher.id]);
+
+  // Сохраняем комментарий при его изменении
+  useEffect(() => {
+    if (watchedComment) {
+      try {
+        localStorage.setItem(
+          `bookingForm_comment_${teacher.id}`,
+          watchedComment,
+        );
+      } catch (error) {
+        console.warn('Could not save comment:', error);
+      }
+    }
+  }, [watchedComment, teacher.id]);
 
   const onSubmit = async (formData: BookingFormValues) => {
     if (!user) {
@@ -110,7 +217,8 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
         toast.success(t('success.bookingWithoutEmail'));
       }
 
-      // 3. Очищаем форму и закрываем модалку
+      // 3. Очищаем сохраненные данные, форму и закрываем модалку
+      clearSavedData();
       reset();
       router.back();
     } catch (err: any) {
