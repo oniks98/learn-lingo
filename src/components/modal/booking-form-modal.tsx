@@ -1,3 +1,4 @@
+// src/components/modal/booking-form-modal.tsx
 'use client';
 
 import { useState } from 'react';
@@ -5,6 +6,7 @@ import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 import { DateTimePicker } from '@/components/calendar/date-time-picker';
@@ -31,6 +33,8 @@ interface Props {
 export default function BookingFormModal({ isOpen, teacher }: Props) {
   const router = useRouter();
   const { user } = useAuth();
+  const t = useTranslations('bookingForm');
+  const tReasons = useTranslations('learningReasons');
 
   // Получаем всех учителей из кеша React Query
   const { data: teachers } = useQuery({
@@ -58,7 +62,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
   const onSubmit = async (formData: BookingFormValues) => {
     if (!user) {
-      toast.error('You must be logged in to book a lesson.');
+      toast.error(t('errors.loginRequired'));
       return;
     }
 
@@ -68,7 +72,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     );
 
     if (!fullTeacherData) {
-      toast.error('Teacher data not found. Please refresh the page.');
+      toast.error(t('errors.teacherNotFound'));
       return;
     }
 
@@ -100,14 +104,10 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
       try {
         await sendBookingEmail(emailPayload);
-        toast.success(
-          'Your booking was sent successfully and email confirmation was sent.',
-        );
+        toast.success(t('success.bookingWithEmail'));
       } catch (emailError) {
         console.warn('Email sending failed:', emailError);
-        toast.success(
-          'Booking created successfully, but email notification failed.',
-        );
+        toast.success(t('success.bookingWithoutEmail'));
       }
 
       // 3. Очищаем форму и закрываем модалку
@@ -115,7 +115,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       router.back();
     } catch (err: any) {
       console.error('Booking error:', err);
-      toast.error(err.message || 'Something went wrong.');
+      toast.error(err.message || t('errors.general'));
     } finally {
       setSending(false);
     }
@@ -125,12 +125,9 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     <Modal
       isOpen={isOpen}
       onCloseAction={() => router.back()}
-      title="Book trial lesson"
+      title={t('title')}
     >
-      <p className="text-gray-muted mb-5 leading-snug">
-        Our experienced tutor will assess your current language level, discuss
-        your learning goals, and tailor the lesson to your specific needs.
-      </p>
+      <p className="text-gray-muted mb-5 leading-snug">{t('description')}</p>
 
       <div className="mb-8 flex items-center gap-4">
         <Image
@@ -141,7 +138,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
           className="rounded-full"
         />
         <div>
-          <p className="text-gray-muted text-sm">Your teacher</p>
+          <p className="text-gray-muted text-sm">{t('yourTeacher')}</p>
           <p className="font-medium">
             {teacher.name} {teacher.surname}
           </p>
@@ -150,7 +147,9 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <fieldset className="space-y-3">
-          <legend className="text-lg font-medium">Reason for learning</legend>
+          <legend className="text-lg font-medium">
+            {t('reasonForLearning')}
+          </legend>
           {learningReasons.map((reason) => {
             const selected = selectedReason === reason;
             return (
@@ -166,7 +165,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
                 ) : (
                   <div className="h-5 w-5 rounded-full border" />
                 )}
-                <span>{reason}</span>
+                <span>{tReasons(reason)}</span>
               </label>
             );
           })}
@@ -182,7 +181,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
             <div>
               <input
                 {...register('name')}
-                placeholder="Full Name"
+                placeholder={t('placeholders.fullName')}
                 className="w-full rounded-xl border p-3 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
               />
               {errors.name && (
@@ -196,7 +195,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
               <input
                 {...register('email')}
                 type="email"
-                placeholder="Email"
+                placeholder={t('placeholders.email')}
                 className="w-full rounded-xl border p-3 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
               />
               {errors.email && (
@@ -210,7 +209,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
               <input
                 {...register('phone')}
                 type="tel"
-                placeholder="Phone number"
+                placeholder={t('placeholders.phone')}
                 className="w-full rounded-xl border p-3 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
               />
               {errors.phone && (
@@ -241,7 +240,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
             <div>
               <textarea
                 {...register('comment')}
-                placeholder="Comment"
+                placeholder={t('placeholders.comment')}
                 rows={4}
                 className="w-full resize-none rounded-xl border px-3 py-2 transition-colors hover:border-yellow-400 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
               />
@@ -255,7 +254,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
         </div>
 
         <Button type="submit" disabled={sending} className="w-full">
-          {sending ? 'Sending…' : 'Book'}
+          {sending ? t('buttons.sending') : t('buttons.book')}
         </Button>
       </form>
     </Modal>

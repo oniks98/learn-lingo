@@ -46,7 +46,7 @@ export default function AuthButtons({ className }: AuthButtonsProps) {
           </Button>
 
           <Button
-            className="bg-dark hover:text-dark px-[2.8cqw] py-[14px] text-white"
+            className="bg-dark hover:text-dark w-40 px-9 py-[14px] text-white"
             onClick={() => router.push('/signup', { scroll: false })}
           >
             <span className="text-base leading-5">{t('registration')}</span>
@@ -67,7 +67,7 @@ export default function AuthButtons({ className }: AuthButtonsProps) {
           </Button>
 
           <Button
-            className="bg-dark hover:text-dark px-[2.8cqw] py-[14px] text-white"
+            className="bg-dark hover:text-dark w-32 px-9 py-[14px] text-white"
             onClick={() =>
               router.push(`/users/${user.uid}/profile`, { scroll: false })
             }

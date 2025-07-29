@@ -226,7 +226,19 @@ export default function TeacherCard({
             'md:col-[1/3] md:row-[4/5] xl:col-2 xl:row-4',
           )}
         >
-          {expanded ? 'Show less' : 'Read more'}
+          <span className="animated-text">
+            {(expanded ? 'Show less' : 'Read more')
+              .split('')
+              .map((char, index) => (
+                <span
+                  key={index}
+                  className="animated-letter"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+          </span>
         </Button>
 
         {expanded &&

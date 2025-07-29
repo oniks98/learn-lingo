@@ -19,7 +19,7 @@ export default function LanguageSwitcher({ className }: LanguageSwitcherProps) {
   };
 
   return (
-    <div className={clsx('flex items-center gap-1', className)}>
+    <div className={clsx('flex items-center gap-1 px-3', className)}>
       <button
         onClick={() => handleLanguageChange('en')}
         className={clsx(

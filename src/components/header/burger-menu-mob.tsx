@@ -7,6 +7,8 @@ import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { useRouter } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
+import LanguageSwitcher from '@/components/header/language-switcher';
+import React from 'react';
 
 export interface BurgerMenuProps {
   className?: string;
@@ -26,7 +28,7 @@ type ActionItem = {
 
 type MenuItemType = NavigationItem | ActionItem;
 
-export default function BurgerMenu({ className }: BurgerMenuProps) {
+export default function BurgerMenuMob({ className }: BurgerMenuProps) {
   const { user, signOut } = useAuth();
   const router = useRouter();
   const t = useTranslations('auth');
@@ -105,6 +107,10 @@ export default function BurgerMenu({ className }: BurgerMenuProps) {
               'z-50 focus:outline-none',
             )}
           >
+            <div className="flex justify-center p-2">
+              <LanguageSwitcher className="md:hidden" />
+            </div>
+
             <div className="p-2">
               {items.map((item, index) => (
                 <MenuItem key={index}>

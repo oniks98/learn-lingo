@@ -3,6 +3,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useHandlePasswordReset } from '@/hooks/use-handle-password-reset';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
@@ -13,9 +14,11 @@ import Button from '@/components/ui/button';
 export default function PasswordResetHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const t = useTranslations('passwordResetHandler');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [oobCode, setOobCode] = useState('');
+  const [error, setError] = useState('');
 
   const handlePasswordReset = useHandlePasswordReset();
 
@@ -42,17 +45,19 @@ export default function PasswordResetHandler() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError('');
+
     const formData = new FormData(e.currentTarget);
     const newPassword = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
+      setError(t('validation.passwordMismatch'));
       return;
     }
 
     if (newPassword.length < 6) {
-      alert('Password must be at least 6 characters long');
+      setError(t('validation.passwordTooShort'));
       return;
     }
 
@@ -67,12 +72,14 @@ export default function PasswordResetHandler() {
       setIsProcessing(false);
     } catch (error) {
       console.error('Password reset failed:', error);
+      setError(t('validation.resetFailed'));
     }
   };
 
   const handleClose = () => {
     setShowPasswordForm(false);
     setIsProcessing(false);
+    setError('');
   };
 
   // Показуємо форму введення нового паролю
@@ -81,19 +88,24 @@ export default function PasswordResetHandler() {
       <Modal
         isOpen={showPasswordForm}
         onCloseAction={handleClose}
-        title="Reset Your Password"
+        title={t('title')}
       >
         <p className="text-shadow-gray-muted mb-5 leading-snug">
-          Please enter your new password below. Make sure it's secure and easy
-          for you to remember.
+          {t('description')}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-[18px]">
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
           <div>
             <input
               type="password"
               name="password"
-              placeholder="New Password"
+              placeholder={t('placeholders.newPassword')}
               required
               minLength={6}
               className="border-gray-muted w-full rounded-xl border p-4"
@@ -105,7 +117,7 @@ export default function PasswordResetHandler() {
             <input
               type="password"
               name="confirmPassword"
-              placeholder="Confirm New Password"
+              placeholder={t('placeholders.confirmPassword')}
               required
               minLength={6}
               className="border-gray-muted w-full rounded-xl border p-4"
@@ -118,12 +130,14 @@ export default function PasswordResetHandler() {
             disabled={handlePasswordReset.isPending}
             className="w-full disabled:opacity-50"
           >
-            {handlePasswordReset.isPending ? 'Resetting…' : 'Reset Password'}
+            {handlePasswordReset.isPending
+              ? t('buttons.resetting')
+              : t('buttons.resetPassword')}
           </Button>
 
           <div className="my-4 flex items-center">
             <hr className="flex-grow border-gray-300" />
-            <span className="px-2 text-gray-500">OR</span>
+            <span className="px-2 text-gray-500">{t('or')}</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
@@ -133,7 +147,7 @@ export default function PasswordResetHandler() {
             disabled={handlePasswordReset.isPending}
             className="w-full bg-gray-500 hover:bg-gray-600 disabled:opacity-50"
           >
-            Cancel
+            {t('buttons.cancel')}
           </Button>
         </form>
       </Modal>

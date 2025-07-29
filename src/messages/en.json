@@ -77,5 +77,118 @@
     "listTitle": "List teachers",
     "noTeachersFound": "No teachers found.",
     "loadMore": "Load More"
+  },
+  "dateTimePicker": {
+    "bookingDate": "Booking date"
+  },
+  "bookingForm": {
+    "title": "Book trial lesson",
+    "description": "Our experienced tutor will assess your current language level, discuss your learning goals, and tailor the lesson to your specific needs.",
+    "yourTeacher": "Your teacher",
+    "reasonForLearning": "Reason for learning",
+    "placeholders": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone number",
+      "comment": "Comment"
+    },
+    "buttons": {
+      "book": "Book",
+      "sending": "Sending…"
+    },
+    "success": {
+      "bookingWithEmail": "Your booking was sent successfully and email confirmation was sent.",
+      "bookingWithoutEmail": "Booking created successfully, but email notification failed."
+    },
+    "errors": {
+      "loginRequired": "You must be logged in to book a lesson.",
+      "teacherNotFound": "Teacher data not found. Please refresh the page.",
+      "general": "Something went wrong."
+    }
+  },
+  "learningReasons": {
+    "careerAndBusiness": "Career and business",
+    "lessonForKids": "Lesson for kids",
+    "livingAbroad": "Living abroad",
+    "examsAndCoursework": "Exams and coursework",
+    "cultureTravel": "Culture, travel or hobby"
+  },
+  "loginForm": {
+    "title": "Log In",
+    "description": "Welcome back! Please enter your credentials to access your account and continue your search for a teacher.",
+    "placeholders": {
+      "email": "Email",
+      "password": "Password"
+    },
+    "forgotPassword": "Forgot Password?",
+    "or": "OR",
+    "buttons": {
+      "logIn": "Log In",
+      "loggingIn": "Logging in…",
+      "signInWithGoogle": "Sign In with Google",
+      "signingInWithGoogle": "Signing in with Google…",
+      "backToLogin": "Back to Login",
+      "signIn": "Sign in"
+    },
+    "passwordReset": {
+      "title": "Reset Password",
+      "heading": "Reset Your Password",
+      "description": "Enter your email address and we'll send you a link to reset your password.",
+      "sendLink": "Send Reset Link",
+      "sending": "Sending...",
+      "rememberPassword": "Remember your password?"
+    },
+    "emailVerification": {
+      "title": "Email Verification Required",
+      "heading": "Email Verification Required",
+      "description": "Your email {email} is not verified yet. Please check your inbox and click the verification link, or request a new one.",
+      "resendEmail": "Resend Verification Email",
+      "sending": "Sending...",
+      "helpText": "Didn't receive the email? Check your spam folder or try resending."
+    }
+  },
+  "signUpForm": {
+    "title": "Sign Up",
+    "description": "Create your account to find the best teachers and start your learning journey today.",
+    "placeholders": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "or": "OR",
+    "buttons": {
+      "signUp": "Sign Up",
+      "creatingAccount": "Creating account…",
+      "signUpWithGoogle": "Sign Up with Google",
+      "signingUpWithGoogle": "Signing up with Google…"
+    }
+  },
+  "confirmDeleteModal": {
+    "title": "Confirm Deletion",
+    "message": "Are you sure you want to delete this reservation?",
+    "buttons": {
+      "cancel": "Cancel",
+      "confirm": "Yes, Delete",
+      "deleting": "Deleting…"
+    }
+  },
+  "passwordResetHandler": {
+    "title": "Reset Your Password",
+    "description": "Please enter your new password below. Make sure it's secure and easy for you to remember.",
+    "placeholders": {
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password"
+    },
+    "buttons": {
+      "resetPassword": "Reset Password",
+      "resetting": "Resetting…",
+      "cancel": "Cancel"
+    },
+    "or": "OR",
+    "validation": {
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters long",
+      "resetFailed": "Password reset failed. Please try again."
+    }
   }
 }

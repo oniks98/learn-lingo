@@ -1,9 +1,11 @@
+// src/lib/constants/reasons.ts
+
 export const learningReasons = [
-  'Career and business',
-  'Lesson for kids',
-  'Living abroad',
-  'Exams and coursework',
-  'Culture, travel or hobby',
+  'careerAndBusiness',
+  'lessonForKids',
+  'livingAbroad',
+  'examsAndCoursework',
+  'cultureTravel',
 ] as const;
 
 export type LearningReason = (typeof learningReasons)[number];

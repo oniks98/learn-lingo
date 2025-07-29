@@ -1,5 +1,7 @@
+// src/components/modal/confirm-delete-modal.tsx
 'use client';
 
+import { useTranslations } from 'next-intl';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 
@@ -17,22 +19,25 @@ export default function ConfirmDeleteModal({
   onCloseAction,
   onConfirmAction,
   isLoading = false,
+  title,
+  message,
 }: Props) {
+  const t = useTranslations('confirmDeleteModal');
+
   return (
     <Modal isOpen={isOpen} onCloseAction={onCloseAction}>
       <div className="text-center">
-        <h2 className="mb-5 text-2xl font-bold">Confirm Deletion</h2>
-        <p className="mb-5 text-lg">
-          Are you sure you want to delete this reservation?
-        </p>
+        <h2 className="mb-5 text-2xl font-bold">{title || t('title')}</h2>
+        <p className="mb-5 text-lg">{message || t('message')}</p>
 
         <div className="flex justify-center gap-4">
           <Button
             type="button"
             className="bg-gray-200 text-black hover:bg-gray-300"
             onClick={onCloseAction}
+            disabled={isLoading}
           >
-            Cancel
+            {t('buttons.cancel')}
           </Button>
           <Button
             type="button"
@@ -40,7 +45,7 @@ export default function ConfirmDeleteModal({
             onClick={onConfirmAction}
             disabled={isLoading}
           >
-            {isLoading ? 'Deleting…' : 'Yes, Delete'}
+            {isLoading ? t('buttons.deleting') : t('buttons.confirm')}
           </Button>
         </div>
       </div>

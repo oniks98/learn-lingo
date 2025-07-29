@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { ChevronDownIcon } from 'lucide-react';
+import { useTranslations, useLocale } from 'next-intl';
 
 import { Button } from '@/components/calendar/button';
 import { Calendar } from '@/components/calendar/calendar';
@@ -28,6 +29,9 @@ export function DateTimePicker({
   disablePastDates = false,
   defaultTime = '10:00',
 }: DateTimePickerProps) {
+  const t = useTranslations('dateTimePicker');
+  const locale = useLocale();
+
   const [open, setOpen] = React.useState(false);
   const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
     value,
@@ -99,6 +103,11 @@ export function DateTimePicker({
     return date < today;
   };
 
+  // Format date based on locale
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString(locale === 'uk' ? 'uk-UA' : 'en-US');
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex gap-4">
@@ -110,9 +119,7 @@ export function DateTimePicker({
                 id="date-picker"
                 className="w-35 justify-between font-normal"
               >
-                {selectedDate
-                  ? selectedDate.toLocaleDateString('en-US')
-                  : 'Booking date'}
+                {selectedDate ? formatDate(selectedDate) : t('bookingDate')}
                 <ChevronDownIcon className="h-4 w-4" />
               </Button>
             </PopoverTrigger>

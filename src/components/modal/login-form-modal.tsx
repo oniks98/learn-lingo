@@ -4,6 +4,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
@@ -23,6 +24,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const signInWithGoogle = useSignInWithGoogle();
   const sendVerification = useSendVerificationEmail();
   const sendPasswordReset = useSendPasswordReset();
+  const t = useTranslations('loginForm');
 
   const [showEmailVerificationUI, setShowEmailVerificationUI] = useState(false);
   const [showForgotPasswordUI, setShowForgotPasswordUI] = useState(false);
@@ -110,7 +112,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
       <Modal
         isOpen={isOpen}
         onCloseAction={onCloseAction}
-        title="Reset Password"
+        title={t('passwordReset.title')}
       >
         <div className="space-y-4">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
@@ -131,11 +133,10 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
 
           <div className="text-center">
             <h3 className="mb-2 text-lg font-medium text-gray-900">
-              Reset Your Password
+              {t('passwordReset.heading')}
             </h3>
             <p className="text-shadow-gray-muted mb-4 leading-snug">
-              Enter your email address and we'll send you a link to reset your
-              password.
+              {t('passwordReset.description')}
             </p>
           </div>
 
@@ -152,7 +153,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               <input
                 type="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder={t('placeholders.email')}
                 required
                 className="border-gray-muted w-full rounded-xl border p-4"
                 disabled={isPasswordResetLoading}
@@ -165,7 +166,9 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
                 disabled={isPasswordResetLoading}
                 className="w-full"
               >
-                {isPasswordResetLoading ? 'Sending...' : 'Send Reset Link'}
+                {isPasswordResetLoading
+                  ? t('passwordReset.sending')
+                  : t('passwordReset.sendLink')}
               </Button>
 
               <Button
@@ -174,20 +177,20 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
                 disabled={isAnyLoading}
                 className="w-full bg-gray-500 hover:bg-gray-600"
               >
-                Back to Login
+                {t('buttons.backToLogin')}
               </Button>
             </div>
           </form>
 
           <div className="mt-4 text-center text-xs text-gray-500">
             <p>
-              Remember your password?{' '}
+              {t('passwordReset.rememberPassword')}{' '}
               <button
                 type="button"
                 onClick={handleBackToLogin}
                 className="text-blue-600 hover:underline"
               >
-                Sign in
+                {t('buttons.signIn')}
               </button>
             </p>
           </div>
@@ -202,7 +205,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
       <Modal
         isOpen={isOpen}
         onCloseAction={onCloseAction}
-        title="Email Verification Required"
+        title={t('emailVerification.title')}
       >
         <div className="space-y-4">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
@@ -223,12 +226,10 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
 
           <div className="text-center">
             <h3 className="mb-2 text-lg font-medium text-gray-900">
-              Email Verification Required
+              {t('emailVerification.heading')}
             </h3>
             <p className="text-shadow-gray-muted mb-4 leading-snug">
-              Your email <strong>{userEmail}</strong> is not verified yet.
-              Please check your inbox and click the verification link, or
-              request a new one.
+              {t('emailVerification.description', { email: userEmail })}
             </p>
           </div>
 
@@ -239,7 +240,9 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               disabled={isResendLoading}
               className="w-full"
             >
-              {isResendLoading ? 'Sending...' : 'Resend Verification Email'}
+              {isResendLoading
+                ? t('emailVerification.sending')
+                : t('emailVerification.resendEmail')}
             </Button>
 
             <Button
@@ -248,14 +251,12 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               disabled={isAnyLoading}
               className="w-full bg-gray-500 hover:bg-gray-600"
             >
-              Back to Login
+              {t('buttons.backToLogin')}
             </Button>
           </div>
 
           <div className="mt-4 text-center text-xs text-gray-500">
-            <p>
-              Didn't receive the email? Check your spam folder or try resending.
-            </p>
+            <p>{t('emailVerification.helpText')}</p>
           </div>
         </div>
       </Modal>
@@ -264,17 +265,16 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
 
   // Звичайний UI логіна
   return (
-    <Modal isOpen={isOpen} onCloseAction={onCloseAction} title="Log In">
+    <Modal isOpen={isOpen} onCloseAction={onCloseAction} title={t('title')}>
       <p className="text-shadow-gray-muted mb-5 leading-snug">
-        Welcome back! Please enter your credentials to access your account and
-        continue your search for a teacher.
+        {t('description')}
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-[18px]">
         <div>
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t('placeholders.email')}
             {...register('email')}
             className="border-gray-muted w-full rounded-xl border p-4"
             disabled={isAnyLoading}
@@ -287,7 +287,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         <div>
           <input
             type="password"
-            placeholder="Password"
+            placeholder={t('placeholders.password')}
             {...register('password')}
             className="border-gray-muted w-full rounded-xl border p-4"
             disabled={isAnyLoading}
@@ -304,7 +304,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               className="hover:text-yellow text-sm text-black hover:underline"
               disabled={isAnyLoading}
             >
-              Forgot Password?
+              {t('forgotPassword')}
             </button>
           </div>
         </div>
@@ -314,12 +314,12 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           disabled={isAnyLoading}
           className="w-full disabled:opacity-50"
         >
-          {isSignInLoading ? 'Logging in…' : 'Log In'}
+          {isSignInLoading ? t('buttons.loggingIn') : t('buttons.logIn')}
         </Button>
 
         <div className="my-4 flex items-center">
           <hr className="flex-grow border-gray-300" />
-          <span className="px-2 text-gray-500">OR</span>
+          <span className="px-2 text-gray-500">{t('or')}</span>
           <hr className="flex-grow border-gray-300" />
         </div>
 
@@ -330,7 +330,9 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           className="flex w-full items-center justify-center gap-2 disabled:opacity-50"
         >
           <GoogleIcon className="h-5 w-5" />
-          {isGoogleLoading ? 'Signing in with Google…' : 'Sign In with Google'}
+          {isGoogleLoading
+            ? t('buttons.signingInWithGoogle')
+            : t('buttons.signInWithGoogle')}
         </Button>
       </form>
     </Modal>

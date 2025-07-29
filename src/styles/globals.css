@@ -176,3 +176,22 @@
     }
 
 }
+
+@keyframes letterJump {
+    0%, 90%, 100% {
+        transform: translateY(0);
+    }
+    45% {
+        transform: translateY(-4px);
+    }
+}
+
+.animated-text {
+    display: inline-block;
+}
+
+.animated-letter {
+    display: inline-block;
+    animation: letterJump 2s infinite;
+    animation-delay: 1s;
+}
