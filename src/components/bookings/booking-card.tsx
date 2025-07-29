@@ -7,6 +7,7 @@ import { BookingData, TeacherPreview } from '@/lib/types/types';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { deleteBooking } from '@/lib/api/bookings';
 import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
+import { useCurrencyConverter } from '@/hooks/use-currency-converter';
 import Loader from '@/components/ui/loader';
 import Image from 'next/image';
 import OnlineIcon from '@/lib/icons/online.svg';
@@ -22,6 +23,9 @@ type Props = {
 export default function BookingCard({ booking }: Props) {
   const queryClient = useQueryClient();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
+  // Currency converter hook
+  const { formatPrice: formatCurrencyPrice } = useCurrencyConverter();
 
   const { data: teachers, isLoading: isLoadingTeachers } = useQuery<
     TeacherPreview[]
@@ -93,13 +97,6 @@ export default function BookingCard({ booking }: Props) {
       date: formattedDate,
       time: formattedTime,
     };
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(price);
   };
 
   const formatRating = (rating: number) => {
@@ -245,7 +242,7 @@ export default function BookingCard({ booking }: Props) {
                   <p>
                     <span className="text-gray-muted">Price per hour:</span>{' '}
                     <span className="font-semibold text-green-600">
-                      {formatPrice(teacher.price_per_hour)}
+                      {formatCurrencyPrice(teacher.price_per_hour)}
                     </span>
                   </p>
                 </li>

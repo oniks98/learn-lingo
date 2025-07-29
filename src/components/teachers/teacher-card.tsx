@@ -1,4 +1,4 @@
-// src/app/components/ui/teacher-card.tsx
+// src/components/teachers/teacher-card.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/api/teachers';
 import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
+import { useCurrencyConverter } from '@/hooks/use-currency-converter';
 import { useAuth } from '@/contexts/auth-context';
 import { savePendingAction } from '@/lib/utils/pending-actions';
 import Loader from '@/components/ui/loader';
@@ -33,6 +34,7 @@ export default function TeacherCard({
   const [expanded, setExpanded] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
+  const { formatPrice } = useCurrencyConverter();
 
   const { data: extraInfo, isLoading } = useQuery<TeacherExtraInfo | null>({
     queryKey: ['teacherExtra', teacher.id],
@@ -154,10 +156,11 @@ export default function TeacherCard({
             <SeparatorIcon className="h-4 w-0.5" />
           </span>
 
-          <span className="mr-4 grid grid-cols-[repeat(3,auto)] items-center">
+          <span className="mr-4 grid grid-cols-[repeat(2,auto)] items-center">
             <span className="font-medium">Price / 1 hour:</span>
-            <span className="text-green">{teacher.price_per_hour}</span>
-            <span className="text-green">$</span>
+            <span className="text-green ml-1 font-medium">
+              {formatPrice(teacher.price_per_hour)}
+            </span>
           </span>
 
           <button

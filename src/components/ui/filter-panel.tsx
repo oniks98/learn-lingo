@@ -1,3 +1,4 @@
+// src/components/ui/filter-panel.tsx
 'use client';
 
 import { useForm, Controller } from 'react-hook-form';
@@ -10,6 +11,7 @@ import {
 import { LANGUAGES, LEVELS, PRICES } from '@/lib/constants/filters';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useTranslations } from 'next-intl';
+import CurrencySwitcher from '@/components/ui/currency-switcher';
 import clsx from 'clsx';
 
 export interface FiltersForm {
@@ -79,10 +81,10 @@ const FilterPanel = ({
         placeholder={t('price.placeholder')}
       />
 
-      <div className="grid grid-cols-2 gap-3 self-end md:col-start-2 xl:col-start-4">
+      <div className="grid grid-cols-2 gap-3 self-end">
         <button
           type="submit"
-          className="bg-yellow text-dark rounded-xl px-5 py-4 disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-yellow text-dark rounded-xl px-5 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
           {t('search')}
@@ -91,11 +93,16 @@ const FilterPanel = ({
         <button
           type="button"
           onClick={handleReset}
-          className="bg-gray-muted text-dark rounded-xl px-5 py-4 disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-gray-muted text-dark rounded-xl px-5 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
           {t('reset')}
         </button>
+      </div>
+
+      {/* Currency Switcher */}
+      <div className="justify-self-center md:self-end md:justify-self-end">
+        <CurrencySwitcher />
       </div>
     </form>
   );
