@@ -111,6 +111,41 @@ export default function HomePage() {
     },
   ];
 
+  // Функция для стилизации текста заголовка
+  const renderStyledTitle = (title: string) => {
+    // Для английского языка - выделяем "language"
+    if (title.includes('language')) {
+      const parts = title.split('language');
+      return (
+        <>
+          {parts[0]}
+          <span className="relative inline-block px-2 italic">
+            <span className="bg-cream absolute top-[10px] right-0 bottom-[6px] left-0 rounded-lg" />
+            <span className="relative z-10">language</span>
+          </span>
+          {parts[1]}
+        </>
+      );
+    }
+
+    // Для украинского языка - выделяем "мов"
+    if (title.includes('мов')) {
+      const parts = title.split('мов');
+      return (
+        <>
+          {parts[0]}
+          <span className="relative inline-block px-2 italic">
+            <span className="bg-cream absolute top-[10px] right-0 bottom-[6px] left-0 rounded-lg" />
+            <span className="relative z-10">мов</span>
+          </span>
+          {parts[1]}
+        </>
+      );
+    }
+
+    return title;
+  };
+
   return (
     <main
       className={clsx(
@@ -135,7 +170,7 @@ export default function HomePage() {
               'xl:mb-[4.44cqw] xl:text-[clamp(24px,6.66cqw,48px)]',
             )}
           >
-            {t('title')}
+            {renderStyledTitle(t('title'))}
           </h1>
 
           <p
