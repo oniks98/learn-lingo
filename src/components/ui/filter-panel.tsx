@@ -9,6 +9,7 @@ import {
 } from '@headlessui/react';
 import { LANGUAGES, LEVELS, PRICES } from '@/lib/constants/filters';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
+import { useTranslations } from 'next-intl';
 import clsx from 'clsx';
 
 export interface FiltersForm {
@@ -22,6 +23,8 @@ const FilterPanel = ({
 }: {
   onChange: (filters: FiltersForm) => void;
 }) => {
+  const t = useTranslations('filters');
+
   const { control, handleSubmit, reset, watch } = useForm<FiltersForm>({
     defaultValues: {
       language: '',
@@ -40,35 +43,40 @@ const FilterPanel = ({
     onChange(data);
   };
 
+  const handleReset = () => {
+    reset();
+    onChange({ language: '', level: '', price: '' });
+  };
+
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-[repeat(auto-fit,minmax(213px,_1fr))] gap-5 px-3 py-8"
     >
-      <h2 className="sr-only">Filters Panel</h2>
+      <h2 className="sr-only">{t('title')}</h2>
 
       <ControlledFilter
         control={control}
         name="language"
-        label="Languages"
-        options={['', ...LANGUAGES]} //
-        placeholder="Choose a language"
+        label={t('language.label')}
+        options={['', ...LANGUAGES]}
+        placeholder={t('language.placeholder')}
       />
 
       <ControlledFilter
         control={control}
         name="level"
-        label="Level of knowledge"
+        label={t('level.label')}
         options={['', ...LEVELS]}
-        placeholder="Choose a level"
+        placeholder={t('level.placeholder')}
       />
 
       <ControlledFilter
         control={control}
         name="price"
-        label="Price"
+        label={t('price.label')}
         options={['', ...PRICES.map((p) => `${p} $`)]}
-        placeholder="Choose a price"
+        placeholder={t('price.placeholder')}
       />
 
       <div className="grid grid-cols-2 gap-3 self-end md:col-start-2 xl:col-start-4">
@@ -77,19 +85,16 @@ const FilterPanel = ({
           className="bg-yellow text-dark rounded-xl px-5 py-4 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
-          Search
+          {t('search')}
         </button>
 
         <button
           type="button"
-          onClick={() => {
-            reset();
-            onChange({ language: '', level: '', price: '' });
-          }}
+          onClick={handleReset}
           className="bg-gray-muted text-dark rounded-xl px-5 py-4 disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
-          Reset
+          {t('reset')}
         </button>
       </div>
     </form>
@@ -134,9 +139,9 @@ const ControlledFilter = ({
               </ListboxButton>
 
               <ListboxOptions className="ring-opacity-5 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-[18px] shadow-lg focus:outline-none">
-                {options.map((option) => (
+                {options.map((option, index) => (
                   <ListboxOption
-                    key={option}
+                    key={option || `empty-${index}`}
                     value={option}
                     className={({ focus }) =>
                       clsx(

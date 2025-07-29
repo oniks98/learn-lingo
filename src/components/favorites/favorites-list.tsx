@@ -1,4 +1,3 @@
-// src/components/favorites/favorites-list.tsx
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -7,11 +6,12 @@ import { useAuth } from '@/contexts/auth-context';
 import TeacherCard from '@/components/teachers/teacher-card';
 import SignUpFormModal from '@/components/modal/sign-up-form-modal';
 import Loader from '@/components/ui/loader';
-import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export default function FavoritesList() {
+  const t = useTranslations();
   const { user, loading: authLoading } = useAuth();
   const { data: favoritesData, isLoading, error } = useFavorites();
   const router = useRouter();
@@ -21,7 +21,6 @@ export default function FavoritesList() {
     useState<string>('');
   const [visibleCount, setVisibleCount] = useState(4);
 
-  // Redirect to main page if not authorized
   useEffect(() => {
     if (!authLoading && !user) {
       router.push('/teachers');
@@ -74,12 +73,12 @@ export default function FavoritesList() {
       <main className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <div className="text-center">
-            <p className="mb-4 text-red-500">Error loading favorites</p>
+            <p className="mb-4 text-red-500">{t('favorites.error')}</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-yellow hover:bg-yellow/80 rounded px-4 py-2 text-white"
             >
-              Try again
+              {t('favorites.retry')}
             </button>
           </div>
         </div>
@@ -93,12 +92,12 @@ export default function FavoritesList() {
         <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold text-gray-800">
-              Favorite Teachers
+              {t('favorites.title')}
             </h1>
             <p className="text-gray-600">
               {allFavorites.length > 0
-                ? `You have ${allFavorites.length} favorite teacher${allFavorites.length === 1 ? '' : 's'}`
-                : 'No favorite teachers yet'}
+                ? t('favorites.count', { count: allFavorites.length })
+                : t('favorites.empty')}
             </p>
           </div>
 
@@ -120,17 +119,16 @@ export default function FavoritesList() {
                 </svg>
               </div>
               <h3 className="mb-2 text-xl font-medium text-gray-800">
-                No favorites yet
+                {t('favorites.emptyTitle')}
               </h3>
               <p className="mb-6 text-gray-600">
-                Start adding teachers to favorites by clicking the heart icon on
-                their cards.
+                {t('favorites.emptyDescription')}
               </p>
               <a
                 href="/teachers"
                 className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
               >
-                Browse Teachers
+                {t('favorites.browse')}
               </a>
             </div>
           ) : (
@@ -148,13 +146,13 @@ export default function FavoritesList() {
 
               {hasMore && (
                 <div className="mt-8 text-center">
-                  <Button onClick={handleLoadMore}>Load More</Button>
+                  <Button onClick={handleLoadMore}>
+                    {t('common.loadMore')}
+                  </Button>
                 </div>
               )}
             </>
           )}
-
-          <ScrollToTopButton />
         </div>
       </main>
 

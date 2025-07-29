@@ -1,51 +1,81 @@
-// src/app/components/header/burger-menu.tsx
 'use client';
 
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import { Menu as MenuIcon } from 'lucide-react';
 import clsx from 'clsx';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import { useRouter } from 'next/navigation';
+import { useRouter } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export interface BurgerMenuProps {
   className?: string;
 }
 
-interface MenuItemType {
+type NavigationItem = {
+  type: 'link';
   href: string;
   label: string;
-}
+};
+
+type ActionItem = {
+  type: 'action';
+  action: () => Promise<void>;
+  label: string;
+};
+
+type MenuItemType = NavigationItem | ActionItem;
 
 export default function BurgerMenu({ className }: BurgerMenuProps) {
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const t = useTranslations('auth');
+  const tNav = useTranslations('navigation');
+  const tCommon = useTranslations('common');
+  const tMenu = useTranslations('menu');
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/', { scroll: false });
+  };
+
+  const isAuthenticated = user && user.emailVerified;
+
   const items: MenuItemType[] = [
-    user
-      ? { href: '#', label: 'Log out' }
-      : { href: '/login', label: 'Log in' },
-    user
-      ? { href: `/users/${user.uid}/profile`, label: 'Profile' }
-      : { href: '/signup', label: 'Registration' },
-    { href: '/', label: 'Home' },
-    { href: '/teachers', label: 'Teachers' },
+    // Основная навигация - всегда видна
+    { type: 'link', href: '/', label: tNav('home') },
+    { type: 'link', href: '/teachers', label: tNav('teachers') },
   ];
 
-  if (user) {
+  if (isAuthenticated) {
+    // Приватные разделы для аутентифицированных пользователей
     items.push(
-      { href: `/users/${user.uid}/favorites`, label: 'Favorites' },
-      { href: `/users/${user.uid}/bookings`, label: 'Bookings' },
+      {
+        type: 'link',
+        href: `/users/${user.uid}/favorites`,
+        label: tNav('favorites'),
+      },
+      {
+        type: 'link',
+        href: `/users/${user.uid}/bookings`,
+        label: tNav('bookings'),
+      },
+      {
+        type: 'link',
+        href: `/users/${user.uid}/profile`,
+        label: tCommon('profile'),
+      },
+      // Действие logout
+      { type: 'action', action: handleLogout, label: t('logout') },
+    );
+  } else {
+    // Ссылки для неаутентифицированных пользователей
+    items.push(
+      { type: 'link', href: '/login', label: t('login') },
+      { type: 'link', href: '/signup', label: t('registration') },
     );
   }
 
-  const handleItemClick = async (href: string, label: string) => {
-    if (label === 'Log out') {
-      await signOut();
-      router.push('/', { scroll: false });
-    } else {
-      router.push(href);
-    }
-  };
   return (
     <Menu as="nav" className={clsx('relative', className)}>
       {({ open }) => (
@@ -58,9 +88,14 @@ export default function BurgerMenu({ className }: BurgerMenuProps) {
               'focus:outline-none',
               'active:scale-80',
             )}
-            aria-label={open ? 'Open menu' : 'Close menu'}
+            aria-label={open ? tMenu('closeMenu') : tMenu('openMenu')}
           >
-            <MenuIcon className={clsx('h-5 w-5', open && 'rotate-90')} />
+            <MenuIcon
+              className={clsx(
+                'h-5 w-5 transition-transform',
+                open && 'rotate-90',
+              )}
+            />
           </MenuButton>
 
           <MenuItems
@@ -71,21 +106,26 @@ export default function BurgerMenu({ className }: BurgerMenuProps) {
             )}
           >
             <div className="p-2">
-              {items.map((item) => (
-                <MenuItem key={item.href + item.label}>
-                  {({ focus }) => (
-                    <Link
-                      href={item.href}
-                      onClick={() => handleItemClick(item.href, item.label)}
-                      className={clsx(
-                        'grid grid-cols-1 px-4 py-3',
-                        'text-base leading-5 font-bold',
-                        focus ? 'text-yellow' : 'hover:text-yellow',
-                      )}
-                    >
-                      <span>{item.label}</span>
-                    </Link>
-                  )}
+              {items.map((item, index) => (
+                <MenuItem key={index}>
+                  {({ focus }) => {
+                    const baseClasses = clsx(
+                      'block w-full px-4 py-3 text-left',
+                      'text-base leading-5 font-bold',
+                      'transition-colors',
+                      focus ? 'text-yellow' : 'hover:text-yellow',
+                    );
+
+                    return item.type === 'action' ? (
+                      <button onClick={item.action} className={baseClasses}>
+                        {item.label}
+                      </button>
+                    ) : (
+                      <Link href={item.href} className={baseClasses}>
+                        {item.label}
+                      </Link>
+                    );
+                  }}
                 </MenuItem>
               ))}
             </div>

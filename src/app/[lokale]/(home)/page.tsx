@@ -1,11 +1,11 @@
-// src/app/(home)/page.tsx
+// src/app/[lokale]/(home)/page.tsx
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import clsx from 'clsx';
-import Button from '@/components/ui/button';
 import Image from 'next/image';
-import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 
 // Компонент анимированного счетчика
 const AnimatedCounter = ({
@@ -81,21 +81,34 @@ const AnimatedCounter = ({
 };
 
 export default function HomePage() {
+  const t = useTranslations('homepage');
+  const tStats = useTranslations('homepage.stats');
+
   const stats = [
     {
       value: 32000,
       suffix: ' +',
-      label: 'Experienced\ntutors',
+      label: tStats('tutors'),
       duration: 2500,
     },
     {
       value: 300000,
       suffix: ' +',
-      label: '5-star tutor\nreviews',
+      label: tStats('reviews'),
       duration: 3000,
     },
-    { value: 120, suffix: ' +', label: 'Subjects\ntaught', duration: 1500 },
-    { value: 200, suffix: ' +', label: 'Tutor\nnationalities', duration: 2000 },
+    {
+      value: 120,
+      suffix: ' +',
+      label: tStats('subjects'),
+      duration: 1500,
+    },
+    {
+      value: 200,
+      suffix: ' +',
+      label: tStats('nationalities'),
+      duration: 2000,
+    },
   ];
 
   return (
@@ -104,7 +117,7 @@ export default function HomePage() {
         'mx-auto max-w-338 px-5 pb-5',
         'grid gap-6',
         'md:grid-cols-[1.45fr_1fr]',
-        'xl:grid-cols-[1.27fr_1fr]',
+        'xl:grid-cols-[1.19fr_1fr]',
       )}
     >
       <section className="bg-gray-light @container rounded-[30px] md:col-span-2 xl:col-span-1">
@@ -122,16 +135,7 @@ export default function HomePage() {
               'xl:mb-[4.44cqw] xl:text-[clamp(24px,6.66cqw,48px)]',
             )}
           >
-            Unlock your potential with the best{' '}
-            <span
-              className={clsx(
-                'bg-cream italic',
-                'max-h-10 max-w-[195px] rounded-lg',
-              )}
-            >
-              language
-            </span>{' '}
-            tutors
+            {t('title')}
           </h1>
 
           <p
@@ -141,13 +145,15 @@ export default function HomePage() {
               'text-center xl:mb-[8.88cqw] xl:text-start',
             )}
           >
-            Embark on an Exciting Language Journey with Expert Language <br />
-            Tutors: Elevate your language proficiency to new heights by <br />
-            connecting with highly qualified and experienced tutors.
+            {t('subtitle')}
           </p>
 
-          <Link href="/teachers" scroll={false}>
-            <Button className="px-[11.46cqw] md:px-[88px]">Get started</Button>
+          <Link
+            href="/teachers"
+            scroll={false}
+            className="bg-yellow hover:bg-yellow-light inline-block rounded-xl px-[11.46cqw] py-4 text-center leading-[1.56] font-bold transition-colors md:px-[88px]"
+          >
+            {useTranslations('common')('getStarted')}
           </Link>
         </div>
       </section>

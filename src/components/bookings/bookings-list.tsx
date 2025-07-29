@@ -1,15 +1,15 @@
-// src/components/ui/bookings-list.tsx
 'use client';
 
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { getBookings } from '@/lib/api/bookings';
 import BookingCard from '@/components/bookings/booking-card';
 import Loader from '@/components/ui/loader';
-import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 import Button from '@/components/ui/button';
 
 export default function BookingsList() {
+  const t = useTranslations();
   const [visibleCount, setVisibleCount] = useState(4);
 
   // Fetch bookings data
@@ -68,12 +68,12 @@ export default function BookingsList() {
       <main className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <div className="text-center">
-            <p className="mb-4 text-red-500">Error loading bookings</p>
+            <p className="mb-4 text-red-500">{t('bookings.errorLoading')}</p>
             <button
               onClick={() => window.location.reload()}
               className="bg-yellow hover:bg-yellow/80 rounded px-4 py-2 text-white"
             >
-              Try again
+              {t('bookings.tryAgain')}
             </button>
           </div>
         </div>
@@ -85,11 +85,13 @@ export default function BookingsList() {
     <main className="mx-auto max-w-338 px-5 pb-5">
       <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-gray-800">My Bookings</h1>
+          <h1 className="mb-2 text-3xl font-bold text-gray-800">
+            {t('bookings.title')}
+          </h1>
           <p className="text-gray-600">
             {allBookings.length > 0
-              ? `You have ${allBookings.length} booking${allBookings.length === 1 ? '' : 's'}`
-              : 'No bookings yet'}
+              ? t('bookings.countMessage', { count: allBookings.length })
+              : t('bookings.noBookingsYet')}
           </p>
         </div>
 
@@ -111,16 +113,16 @@ export default function BookingsList() {
               </svg>
             </div>
             <h3 className="mb-2 text-xl font-medium text-gray-800">
-              No bookings yet
+              {t('bookings.emptyState.title')}
             </h3>
             <p className="mb-6 text-gray-600">
-              Start booking lessons with teachers to see them here.
+              {t('bookings.emptyState.description')}
             </p>
             <a
               href="/teachers"
               className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
             >
-              Browse Teachers
+              {t('bookings.emptyState.browseTeachers')}
             </a>
           </div>
         ) : (
@@ -133,13 +135,13 @@ export default function BookingsList() {
 
             {hasMore && (
               <div className="mt-8 text-center">
-                <Button onClick={handleLoadMore}>Load More</Button>
+                <Button onClick={handleLoadMore}>
+                  {t('bookings.loadMore')}
+                </Button>
               </div>
             )}
           </>
         )}
-
-        <ScrollToTopButton />
       </div>
     </main>
   );

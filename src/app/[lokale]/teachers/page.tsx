@@ -1,4 +1,4 @@
-// src/app/teachers/page.tsx
+// src/app/[lokale]/teachers/page.tsx
 import {
   dehydrate,
   HydrationBoundary,

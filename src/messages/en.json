@@ -1,0 +1,81 @@
+{
+  "homepage": {
+    "title": "Unlock your potential with the best language tutors",
+    "subtitle": "Embark on an exciting language journey with our experienced tutors who will guide you to success. Choose your language mentor and start your journey to linguistic mastery!",
+    "stats": {
+      "tutors": "Experienced\ntutors",
+      "reviews": "5-star tutor\nreviews",
+      "subjects": "Subjects\ntaught",
+      "nationalities": "Tutor\nnationalities"
+    }
+  },
+  "common": {
+    "getStarted": "Get started",
+    "home": "Home",
+    "teachers": "Teachers",
+    "favorites": "Favorites",
+    "bookings": "Bookings",
+    "profile": "Profile"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "registration": "Registration",
+    "signup": "Sign up"
+  },
+  "navigation": {
+    "home": "Home",
+    "teachers": "Teachers",
+    "favorites": "Favorites",
+    "bookings": "Bookings"
+  },
+  "menu": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "filters": {
+    "title": "Filters Panel",
+    "language": {
+      "label": "Languages",
+      "placeholder": "Choose a language"
+    },
+    "level": {
+      "label": "Level of knowledge",
+      "placeholder": "Choose a level"
+    },
+    "price": {
+      "label": "Price",
+      "placeholder": "Choose a price"
+    },
+    "search": "Search",
+    "reset": "Reset"
+  },
+  "bookings": {
+    "title": "My Bookings",
+    "errorLoading": "Error loading bookings",
+    "tryAgain": "Try again",
+    "countMessage": "You have {count} booking{count, plural, =1 {} other {s}}",
+    "noBookingsYet": "No bookings yet",
+    "loadMore": "Load More",
+    "emptyState": {
+      "title": "No bookings yet",
+      "description": "Start booking lessons with teachers to see them here.",
+      "browseTeachers": "Browse Teachers"
+    }
+  },
+  "favorites": {
+    "title": "Favorite Teachers",
+    "count": "You have {count} favorite teacher{count, plural, one {} other {s}}",
+    "empty": "No favorite teachers yet",
+    "emptyTitle": "No favorites yet",
+    "emptyDescription": "Start adding teachers to favorites by clicking the heart icon on their cards.",
+    "browse": "Browse Teachers",
+    "error": "Error loading favorites",
+    "retry": "Try again"
+  },
+  "teachers": {
+    "listTitle": "List teachers",
+    "noTeachersFound": "No teachers found.",
+    "loadMore": "Load More"
+  }
+}

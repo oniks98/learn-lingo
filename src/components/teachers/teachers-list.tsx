@@ -3,6 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { TeacherPreview } from '@/lib/types/types';
@@ -10,9 +11,10 @@ import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
 import TeacherCard from '@/components/teachers/teacher-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
-import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
 export default function TeachersList() {
+  const t = useTranslations();
+
   const [filters, setFilters] = useState<FiltersForm>({
     language: '',
     level: '',
@@ -69,11 +71,11 @@ export default function TeachersList() {
         <FilterPanel onChange={handleFilterChange} />
 
         <>
-          <h1 className="sr-only">List teachers</h1>
+          <h1 className="sr-only">{t('teachers.listTitle')}</h1>
           {isLoading ? (
             <Loader />
           ) : visibleTeachers.length === 0 ? (
-            <p>No teachers found.</p>
+            <p>{t('teachers.noTeachersFound')}</p>
           ) : (
             <>
               <div className="grid gap-6">
@@ -82,21 +84,20 @@ export default function TeachersList() {
                     key={teacher.id}
                     level={filters.level}
                     teacher={teacher}
-                    // Убираем пропсы для модалки, так как теперь она управляется внутри TeacherCard
                   />
                 ))}
               </div>
 
               {hasMore && (
                 <div className="mt-8 text-center">
-                  <Button onClick={handleLoadMore}>Load More</Button>
+                  <Button onClick={handleLoadMore}>
+                    {t('teachers.loadMore')}
+                  </Button>
                 </div>
               )}
             </>
           )}
         </>
-
-        <ScrollToTopButton />
       </div>
     </main>
   );
