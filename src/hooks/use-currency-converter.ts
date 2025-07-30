@@ -66,7 +66,7 @@ export function useCurrencyConverter() {
       return `${amount}${symbol}`;
     }
 
-    return `${symbol}${amount}`;
+    return `${amount}${symbol}`;
   };
 
   const getCurrentRate = (): number | null => {
