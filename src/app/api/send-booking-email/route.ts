@@ -1,3 +1,4 @@
+// src/app/api/send-booking-email/route.ts
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import type { BookingData } from '@/lib/types/types';

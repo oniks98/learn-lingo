@@ -1,4 +1,3 @@
-// src/components/header/auth-buttons.tsx
 'use client';
 
 import React from 'react';

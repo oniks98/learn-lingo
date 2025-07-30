@@ -147,7 +147,7 @@ export default function FavoritesList() {
               {hasMore && (
                 <div className="mt-8 text-center">
                   <Button onClick={handleLoadMore}>
-                    {t('common.loadMore')}
+                    {t('favorites.loadMore')}
                   </Button>
                 </div>
               )}

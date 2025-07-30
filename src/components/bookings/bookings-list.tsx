@@ -1,3 +1,4 @@
+// src/components/bookings/bookings-list.tsx
 'use client';
 
 import React, { useMemo, useState } from 'react';

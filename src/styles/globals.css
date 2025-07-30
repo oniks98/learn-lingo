@@ -180,9 +180,11 @@
 @keyframes letterJump {
     0%, 90%, 100% {
         transform: translateY(0);
+        color: inherit;
     }
     45% {
         transform: translateY(-4px);
+        color: orange; /* yellow color */
     }
 }
 
@@ -194,4 +196,5 @@
     display: inline-block;
     animation: letterJump 2s infinite;
     animation-delay: 1s;
+    transition: color 0.3s ease;
 }

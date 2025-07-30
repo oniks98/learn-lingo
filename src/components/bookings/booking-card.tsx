@@ -13,7 +13,7 @@ import Image from 'next/image';
 import OnlineIcon from '@/lib/icons/online.svg';
 import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
-import ConfirmDeleteModal from '@/components/modal/confirm-delete-modal';
+import BookingDeleteModal from '@/components/modal/booking-delete-modal';
 import clsx from 'clsx';
 
 type Props = {
@@ -289,7 +289,7 @@ export default function BookingCard({ booking }: Props) {
       </section>
 
       {/* Confirm Delete Modal */}
-      <ConfirmDeleteModal
+      <BookingDeleteModal
         isOpen={isConfirmOpen}
         onCloseAction={() => setIsConfirmOpen(false)}
         onConfirmAction={handleConfirmDelete}

@@ -1,4 +1,4 @@
-// src/components/modal/confirm-delete-modal.tsx
+// src/components/modal/booking-delete-modal.tsx
 'use client';
 
 import { useTranslations } from 'next-intl';
@@ -14,7 +14,7 @@ type Props = {
   message?: string;
 };
 
-export default function ConfirmDeleteModal({
+export default function BookingDeleteModal({
   isOpen,
   onCloseAction,
   onConfirmAction,
@@ -22,7 +22,7 @@ export default function ConfirmDeleteModal({
   title,
   message,
 }: Props) {
-  const t = useTranslations('confirmDeleteModal');
+  const t = useTranslations('bookingDeleteModal');
 
   return (
     <Modal isOpen={isOpen} onCloseAction={onCloseAction}>

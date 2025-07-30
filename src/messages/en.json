@@ -70,6 +70,7 @@
     "emptyTitle": "No favorites yet",
     "emptyDescription": "Start adding teachers to favorites by clicking the heart icon on their cards.",
     "browse": "Browse Teachers",
+    "loadMore": "Load More",
     "error": "Error loading favorites",
     "retry": "Try again"
   },
@@ -163,7 +164,7 @@
       "signingUpWithGoogle": "Signing up with Google…"
     }
   },
-  "confirmDeleteModal": {
+  "bookingDeleteModal": {
     "title": "Confirm Deletion",
     "message": "Are you sure you want to delete this reservation?",
     "buttons": {
@@ -190,5 +191,55 @@
       "passwordTooShort": "Password must be at least 6 characters long",
       "resetFailed": "Password reset failed. Please try again."
     }
+  },
+  "profile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "name": "Name",
+    "email": "Email",
+    "currentEmail": "Current email",
+    "changeEmail": "Change Email",
+    "statistics": "Statistics",
+    "favoriteTeachers": "Favorite teachers",
+    "bookedLessons": "Booked lessons",
+    "registrationDate": "Registration date",
+    "accountSettings": "Account Settings",
+    "deleteAccount": "Delete Account",
+    "buttons": {
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "edit": "Edit"
+    },
+    "changeEmailModal": {
+      "title": "Change Email Address",
+      "description": "We'll send a verification link to your new email address. You'll need to verify it before the change takes effect.",
+      "placeholder": "New email address",
+      "buttons": {
+        "sendVerification": "Send Verification",
+        "sending": "Sending...",
+        "cancel": "Cancel"
+      },
+      "success": "Verification email sent successfully! Please check your inbox.",
+      "error": "Failed to send verification email. Please try again."
+    },
+    "deleteAccountModal": {
+      "title": "Delete Account",
+      "description": "This action cannot be undone. Please enter your email address to confirm account deletion.",
+      "placeholder": "Enter your email to confirm",
+      "buttons": {
+        "delete": "Delete Account",
+        "deleting": "Deleting...",
+        "cancel": "Cancel"
+      },
+      "validation": {
+        "emailMismatch": "Email doesn't match your account email",
+        "emailRequired": "Please enter your email"
+      },
+      "success": "Account deleted successfully",
+      "error": "Failed to delete account. Please try again."
+    },
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile. Please try again."
   }
 }
