@@ -2,6 +2,7 @@
 'use client';
 
 import { useForm, Controller } from 'react-hook-form';
+import { useEffect } from 'react';
 import {
   Listbox,
   ListboxButton,
@@ -20,35 +21,92 @@ export interface FiltersForm {
   price: string;
 }
 
+interface FilterPanelProps {
+  initialFilters?: FiltersForm;
+  onChange: (filters: FiltersForm) => void; // Вызывается при каждом изменении
+  onApply: (filters: FiltersForm) => void; // Вызывается при клике "Поиск"
+  isLoading?: boolean;
+}
+
 const FilterPanel = ({
+  initialFilters,
   onChange,
-}: {
-  onChange: (filters: FiltersForm) => void;
-}) => {
+  onApply,
+  isLoading = false,
+}: FilterPanelProps) => {
   const t = useTranslations('filters');
 
-  const { control, handleSubmit, reset, watch } = useForm<FiltersForm>({
-    defaultValues: {
-      language: '',
-      level: '',
-      price: '',
-    },
-  });
+  const { control, handleSubmit, reset, watch, setValue, getValues } =
+    useForm<FiltersForm>({
+      defaultValues: {
+        language: '',
+        level: '',
+        price: '',
+      },
+    });
 
-  // NOTE: підписка на зміни форми
+  // Устанавливаем начальные значения когда они загружены
+  useEffect(() => {
+    if (initialFilters && !isLoading) {
+      setValue('language', initialFilters.language);
+      setValue('level', initialFilters.level);
+      setValue('price', initialFilters.price);
+    }
+  }, [initialFilters, isLoading, setValue]);
+
+  // Подписка на изменения формы только для кнопок
   const values = watch();
 
-  // NOTE: повертає true, якщо хоча б один елемент не порожній
+  // Проверяем, есть ли выбранные фильтры
   const hasSelectedFilters = Object.values(values).some((v) => v !== '');
 
+  // Функция для получения актуальных значений формы
+  const handleFieldChange = (fieldName: keyof FiltersForm, value: string) => {
+    const currentValues = getValues();
+    const updatedValues = {
+      ...currentValues,
+      [fieldName]: value,
+    };
+    onChange(updatedValues);
+  };
+
   const onSubmit = (data: FiltersForm) => {
-    onChange(data);
+    onApply(data);
   };
 
   const handleReset = () => {
-    reset();
-    onChange({ language: '', level: '', price: '' });
+    const emptyFilters = { language: '', level: '', price: '' };
+    reset(emptyFilters);
+    onApply(emptyFilters);
   };
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(213px,_1fr))] gap-5 px-3 py-8">
+        <h2 className="sr-only">Loading filters...</h2>
+
+        {/* Loading skeletons */}
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="grid gap-2">
+            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
+            <div className="h-14 w-full animate-pulse rounded-[14px] bg-gray-200" />
+          </div>
+        ))}
+
+        {/* Loading buttons */}
+        <div className="grid grid-cols-2 gap-3 self-end">
+          <div className="h-12 animate-pulse rounded-xl bg-gray-200" />
+          <div className="h-12 animate-pulse rounded-xl bg-gray-200" />
+        </div>
+
+        {/* Loading currency switcher */}
+        <div className="flex gap-3 justify-self-center md:self-end md:justify-self-end">
+          <div className="h-12 w-20 animate-pulse rounded-xl bg-gray-200" />
+          <div className="h-12 w-20 animate-pulse rounded-xl bg-gray-200" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -63,6 +121,7 @@ const FilterPanel = ({
         label={t('language.label')}
         options={['', ...LANGUAGES]}
         placeholder={t('language.placeholder')}
+        onFieldChange={handleFieldChange}
       />
 
       <ControlledFilter
@@ -71,6 +130,7 @@ const FilterPanel = ({
         label={t('level.label')}
         options={['', ...LEVELS]}
         placeholder={t('level.placeholder')}
+        onFieldChange={handleFieldChange}
       />
 
       <ControlledFilter
@@ -79,6 +139,7 @@ const FilterPanel = ({
         label={t('price.label')}
         options={['', ...PRICES.map((p) => `${p} $`)]}
         placeholder={t('price.placeholder')}
+        onFieldChange={handleFieldChange}
       />
 
       <div className="grid grid-cols-2 gap-3 self-end">
@@ -114,6 +175,7 @@ interface ControlledFilterProps {
   label: string;
   options: string[];
   placeholder: string;
+  onFieldChange: (fieldName: keyof FiltersForm, value: string) => void;
 }
 
 const ControlledFilter = ({
@@ -122,6 +184,7 @@ const ControlledFilter = ({
   label,
   options,
   placeholder,
+  onFieldChange,
 }: ControlledFilterProps) => {
   return (
     <div className="grid gap-2">
@@ -133,7 +196,13 @@ const ControlledFilter = ({
         control={control}
         name={name}
         render={({ field }) => (
-          <Listbox value={field.value} onChange={field.onChange}>
+          <Listbox
+            value={field.value}
+            onChange={(value) => {
+              field.onChange(value); // Обновляем значение в форме
+              onFieldChange(name, value); // Вызываем onChange родительского компонента
+            }}
+          >
             <div className="relative">
               <ListboxButton className="relative w-full cursor-pointer rounded-[14px] bg-white py-4 pr-10 pl-[18px] text-left shadow-sm focus:outline-none">
                 <span className="text-dark block truncate text-[18px] leading-[1.11] font-medium">

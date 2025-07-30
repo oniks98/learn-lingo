@@ -19,25 +19,26 @@ export default function CurrencySwitcher({ className }: CurrencySwitcherProps) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className={clsx('flex items-center gap-1', className)}>
-        <div className="h-8 w-12 animate-pulse rounded bg-gray-200" />
-        <div className="h-8 w-12 animate-pulse rounded bg-gray-200" />
-      </div>
-    );
-  }
-
+  // Статичная отрисовка кнопок без ожидания контекста
+  // Это предотвращает мерцание при загрузке страницы
   return (
     <div className={clsx('flex items-center gap-3', className)}>
       {Object.entries(CURRENCIES).map(([code, currencyInfo]) => (
         <button
           key={code}
           onClick={() => handleCurrencyChange(code as CurrencyCode)}
+          disabled={isLoading}
           className={clsx(
             'rounded-xl px-5 py-[14px] transition-all duration-200',
-            'hover:bg-yellow',
-            currency === code ? 'bg-yellow' : 'bg-gray-muted',
+            'hover:bg-yellow disabled:cursor-wait disabled:opacity-75',
+            // Используем fallback если контекст еще не загружен
+            !isLoading && currency === code ? 'bg-yellow' : 'bg-gray-muted',
+            // При загрузке показываем USD как активный по умолчанию
+            isLoading && code === 'USD'
+              ? 'bg-yellow'
+              : isLoading
+                ? 'bg-gray-muted'
+                : '',
           )}
           aria-label={`Switch to ${currencyInfo.name}`}
         >

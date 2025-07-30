@@ -1,11 +1,12 @@
-// src/components/ui/teachers-list.tsx
+// src/components/teachers/teachers-list.tsx
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
+import { useUrlFilters } from '@/hooks/use-url-filters';
 import { TeacherPreview } from '@/lib/types/types';
 import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
 import TeacherCard from '@/components/teachers/teacher-card';
@@ -14,16 +15,18 @@ import Button from '@/components/ui/button';
 
 export default function TeachersList() {
   const t = useTranslations();
-
-  const [filters, setFilters] = useState<FiltersForm>({
-    language: '',
-    level: '',
-    price: '',
-  });
+  const {
+    filters,
+    setFilters,
+    applyFilters,
+    isLoading: filtersLoading,
+  } = useUrlFilters();
 
   const [visibleCount, setVisibleCount] = useState(4);
 
-  const { data: allTeachers = [], isLoading } = useQuery<TeacherPreview[]>({
+  const { data: allTeachers = [], isLoading: teachersLoading } = useQuery<
+    TeacherPreview[]
+  >({
     queryKey: ['teachers'],
     queryFn: getAllTeachers,
   });
@@ -43,10 +46,23 @@ export default function TeachersList() {
     [filteredTeachers, visibleCount],
   );
 
-  const handleFilterChange = (newFilters: FiltersForm) => {
-    setFilters(newFilters);
-    setVisibleCount(4);
-  };
+  // Обработчик изменения фильтров (сохраняет в localStorage, НЕ обновляет URL)
+  const handleFilterChange = useCallback(
+    (newFilters: FiltersForm) => {
+      setFilters(newFilters);
+      setVisibleCount(4);
+    },
+    [setFilters],
+  );
+
+  // Обработчик применения фильтров (сохраняет в localStorage И обновляет URL)
+  const handleApplyFilters = useCallback(
+    (newFilters: FiltersForm) => {
+      applyFilters(newFilters);
+      setVisibleCount(4);
+    },
+    [applyFilters],
+  );
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => {
@@ -68,11 +84,16 @@ export default function TeachersList() {
   return (
     <main className="mx-auto max-w-338 px-5 pb-5">
       <div className="bg-gray-light mx-auto rounded-3xl px-5 pb-5">
-        <FilterPanel onChange={handleFilterChange} />
+        <FilterPanel
+          initialFilters={filters}
+          onChange={handleFilterChange}
+          onApply={handleApplyFilters}
+          isLoading={filtersLoading}
+        />
 
         <>
           <h1 className="sr-only">{t('teachers.listTitle')}</h1>
-          {isLoading ? (
+          {teachersLoading ? (
             <Loader />
           ) : visibleTeachers.length === 0 ? (
             <p>{t('teachers.noTeachersFound')}</p>
