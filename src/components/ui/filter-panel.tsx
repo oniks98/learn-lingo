@@ -23,20 +23,19 @@ export interface FiltersForm {
 
 interface FilterPanelProps {
   initialFilters?: FiltersForm;
-  onChange: (filters: FiltersForm) => void; // Вызывается при каждом изменении
+  onChange: (filters: FiltersForm) => void; // Убрали - больше не используется
   onApply: (filters: FiltersForm) => void; // Вызывается при клике "Поиск"
   isLoading?: boolean;
 }
 
 const FilterPanel = ({
   initialFilters,
-  onChange,
   onApply,
   isLoading = false,
 }: FilterPanelProps) => {
   const t = useTranslations('filters');
 
-  const { control, handleSubmit, reset, watch, setValue, getValues } =
+  const { control, handleSubmit, reset, watch, setValue } =
     useForm<FiltersForm>({
       defaultValues: {
         language: '',
@@ -59,16 +58,6 @@ const FilterPanel = ({
 
   // Проверяем, есть ли выбранные фильтры
   const hasSelectedFilters = Object.values(values).some((v) => v !== '');
-
-  // Функция для получения актуальных значений формы
-  const handleFieldChange = (fieldName: keyof FiltersForm, value: string) => {
-    const currentValues = getValues();
-    const updatedValues = {
-      ...currentValues,
-      [fieldName]: value,
-    };
-    onChange(updatedValues);
-  };
 
   const onSubmit = (data: FiltersForm) => {
     onApply(data);
@@ -111,7 +100,7 @@ const FilterPanel = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-[repeat(auto-fit,minmax(213px,_1fr))] gap-5 px-3 py-8"
+      className="@container grid gap-2 px-3 py-8 md:grid-cols-[repeat(3,minmax(200px,1fr))] xl:grid-cols-[repeat(3,minmax(200px,1fr))_auto_1fr_auto]"
     >
       <h2 className="sr-only">{t('title')}</h2>
 
@@ -121,7 +110,6 @@ const FilterPanel = ({
         label={t('language.label')}
         options={['', ...LANGUAGES]}
         placeholder={t('language.placeholder')}
-        onFieldChange={handleFieldChange}
       />
 
       <ControlledFilter
@@ -130,7 +118,6 @@ const FilterPanel = ({
         label={t('level.label')}
         options={['', ...LEVELS]}
         placeholder={t('level.placeholder')}
-        onFieldChange={handleFieldChange}
       />
 
       <ControlledFilter
@@ -139,13 +126,12 @@ const FilterPanel = ({
         label={t('price.label')}
         options={['', ...PRICES.map((p) => `${p} $`)]}
         placeholder={t('price.placeholder')}
-        onFieldChange={handleFieldChange}
       />
 
-      <div className="grid grid-cols-2 gap-3 self-end">
+      <div className="grid grid-cols-2 gap-2 self-end md:col-1 xl:col-4">
         <button
           type="submit"
-          className="bg-yellow text-dark rounded-xl px-5 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-yellow text-dark rounded-xl px-4 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
           {t('search')}
@@ -154,7 +140,7 @@ const FilterPanel = ({
         <button
           type="button"
           onClick={handleReset}
-          className="bg-gray-muted text-dark rounded-xl px-5 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-gray-muted text-dark rounded-xl px-4 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
           {t('reset')}
@@ -162,7 +148,7 @@ const FilterPanel = ({
       </div>
 
       {/* Currency Switcher */}
-      <div className="justify-self-center md:self-end md:justify-self-end">
+      <div className="justify-self-center md:col-2 md:self-end xl:col-6 xl:justify-self-end">
         <CurrencySwitcher />
       </div>
     </form>
@@ -175,7 +161,6 @@ interface ControlledFilterProps {
   label: string;
   options: string[];
   placeholder: string;
-  onFieldChange: (fieldName: keyof FiltersForm, value: string) => void;
 }
 
 const ControlledFilter = ({
@@ -184,7 +169,6 @@ const ControlledFilter = ({
   label,
   options,
   placeholder,
-  onFieldChange,
 }: ControlledFilterProps) => {
   return (
     <div className="grid gap-2">
@@ -199,12 +183,12 @@ const ControlledFilter = ({
           <Listbox
             value={field.value}
             onChange={(value) => {
-              field.onChange(value); // Обновляем значение в форме
-              onFieldChange(name, value); // Вызываем onChange родительского компонента
+              field.onChange(value); // Только обновляем значение в форме
+              // Убрали вызов onFieldChange - больше не вызываем onChange при каждом изменении
             }}
           >
             <div className="relative">
-              <ListboxButton className="relative w-full cursor-pointer rounded-[14px] bg-white py-4 pr-10 pl-[18px] text-left shadow-sm focus:outline-none">
+              <ListboxButton className="relative w-full cursor-pointer rounded-[14px] bg-white py-4 pr-8 pl-3 text-left shadow-sm focus:outline-none">
                 <span className="text-dark block truncate text-[18px] leading-[1.11] font-medium">
                   {field.value || placeholder}
                 </span>
