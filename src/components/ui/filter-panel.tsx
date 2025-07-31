@@ -148,7 +148,7 @@ const FilterPanel = ({
       </div>
 
       {/* Currency Switcher */}
-      <div className="justify-self-center md:col-2 md:self-end xl:col-6 xl:justify-self-end">
+      <div className="justify-self-center md:col-3 md:self-end md:justify-self-end xl:col-6">
         <CurrencySwitcher />
       </div>
     </form>

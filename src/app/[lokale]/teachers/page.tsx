@@ -8,6 +8,7 @@ import { getAllTeachers } from '@/lib/api/teachers';
 import TeachersList from '@/components/teachers/teachers-list';
 import EmailVerificationHandler from '@/components/handlers/email-verification-handler';
 import PasswordResetHandler from '@/components/handlers/password-reset-handler';
+import EmailChangeHandler from '@/components/handlers/email-change-handler';
 
 export default async function TeachersPage() {
   const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ export default async function TeachersPage() {
       <TeachersList />
       <EmailVerificationHandler />
       <PasswordResetHandler />
+      <EmailChangeHandler />
     </HydrationBoundary>
   );
 }

@@ -5,6 +5,7 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import ProfileList from '@/components/profile/profile-list';
+
 import { getUserStats } from '@/lib/api/profile';
 
 interface Props {
