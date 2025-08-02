@@ -6,7 +6,7 @@ import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 import { DateTimePicker } from '@/components/calendar/date-time-picker';
@@ -32,14 +32,15 @@ interface Props {
 
 export default function BookingFormModal({ isOpen, teacher }: Props) {
   const router = useRouter();
+  const locale = useLocale();
   const { user } = useAuth();
   const t = useTranslations('bookingForm');
   const tReasons = useTranslations('learningReasons');
 
-  // Получаем всех учителей из кеша React Query
-  const { data: teachers } = useQuery({
-    queryKey: ['teachers'],
-    queryFn: getAllTeachers,
+  // Получаем всех учителей из кеша React Query с учетом локали
+  const { data: teachers } = useQuery<TeacherPreview[]>({
+    queryKey: ['teachers', locale],
+    queryFn: () => getAllTeachers(locale),
   });
 
   const {

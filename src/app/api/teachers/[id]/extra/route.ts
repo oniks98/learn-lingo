@@ -9,10 +9,20 @@ export async function GET(
 ) {
   try {
     const { id: teacherId } = await params;
+    const { searchParams } = new URL(request.url);
+    const locale = searchParams.get('locale') || 'en';
 
     if (!teacherId) {
       return NextResponse.json(
         { error: 'Teacher ID is required' },
+        { status: 400 },
+      );
+    }
+
+    // Валідація локалі
+    if (!['en', 'uk'].includes(locale)) {
+      return NextResponse.json(
+        { error: 'Invalid locale. Supported: en, uk' },
         { status: 400 },
       );
     }
@@ -27,10 +37,18 @@ export async function GET(
     }
 
     const teacher = snapshot.val();
+    const localizedData = teacher.localized?.[locale];
+
+    if (!localizedData) {
+      return NextResponse.json(
+        { error: `No localized data found for locale: ${locale}` },
+        { status: 404 },
+      );
+    }
 
     const extraInfo: TeacherExtraInfo = {
-      experience: teacher.experience || '',
-      reviews: teacher.reviews || [],
+      experience: localizedData.experience || '',
+      reviews: localizedData.reviews || [],
     };
 
     return NextResponse.json(extraInfo);

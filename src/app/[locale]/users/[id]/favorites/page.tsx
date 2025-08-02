@@ -1,4 +1,4 @@
-// src/app/users/[id]/favorites/page.tsx
+// src/app/[locale]/users/[id]/favorites/page.tsx
 import {
   dehydrate,
   HydrationBoundary,
@@ -7,17 +7,25 @@ import {
 import FavoritesList from '@/components/favorites/favorites-list';
 import { getFavorites } from '@/lib/api/favorites';
 
-export default async function FavoritesPage() {
+type Props = {
+  params: Promise<{ locale: string; id: string }>;
+};
+
+export default async function FavoritesPage({ params }: Props) {
+  // Извлекаем только нужную переменную
+  const { locale } = await params;
+
   const queryClient = new QueryClient();
 
-  // Префетчуємо дані фаворитів
   try {
     await queryClient.prefetchQuery({
-      queryKey: ['favorites'],
-      queryFn: getFavorites,
+      queryKey: ['favorites', locale],
+      queryFn: ({ queryKey }) => {
+        const [, locale] = queryKey;
+        return getFavorites(locale);
+      },
     });
   } catch (error) {
-    // Якщо помилка (не авторизований), просто не префетчуємо
     console.log('Could not prefetch favorites:', error);
   }
 

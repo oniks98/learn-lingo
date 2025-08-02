@@ -4,6 +4,32 @@ import { admin } from '@/lib/db/firebase-admin';
 import { TeacherPreview } from '@/lib/types/types';
 import { requireAuth } from '@/lib/auth/server-auth';
 
+// Helper function to flatten localized teacher data
+function flattenTeacherData(
+  teacher: any,
+  teacherId: string,
+  locale: string = 'en',
+): TeacherPreview {
+  // Get localized data, fallback to English if locale not found
+  const localizedData =
+    teacher.localized?.[locale] || teacher.localized?.en || {};
+
+  return {
+    id: teacherId,
+    name: teacher.name,
+    surname: teacher.surname,
+    languages: teacher.languages || [],
+    levels: teacher.levels || [],
+    rating: teacher.rating || 0,
+    price_per_hour: teacher.price_per_hour || 0,
+    lessons_done: teacher.lessons_done || 0,
+    avatar_url: teacher.avatar_url || '',
+    // Flattened localized fields
+    lesson_info: localizedData.lesson_info || '',
+    conditions: localizedData.conditions || [],
+  };
+}
+
 // GET - отримати всі улюблені вчителі користувача
 export async function GET(request: NextRequest) {
   try {
@@ -16,6 +42,10 @@ export async function GET(request: NextRequest) {
     }
 
     const { user } = authResult;
+
+    // Get locale from query params
+    const { searchParams } = new URL(request.url);
+    const locale = searchParams.get('locale') || 'en';
 
     // Отримуємо список ID улюблених вчителів
     const favoritesSnapshot = await admin
@@ -44,10 +74,9 @@ export async function GET(request: NextRequest) {
       .map((teacherId) => {
         const teacher = allTeachers[teacherId];
         if (!teacher) return null;
-        return {
-          id: teacherId,
-          ...teacher,
-        };
+
+        // Flatten the teacher data with localization
+        return flattenTeacherData(teacher, teacherId, locale);
       })
       .filter((teacher): teacher is TeacherPreview => teacher !== null);
 

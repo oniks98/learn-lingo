@@ -24,7 +24,7 @@ export async function updateProfile(updates: {
 
 // Запросити зміну email
 export async function requestEmailChange(newEmail: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/profile/change-email`, {
+  const response = await fetch(`${API_BASE}/change-email`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

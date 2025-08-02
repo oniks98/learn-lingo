@@ -1,4 +1,5 @@
-// src/app/[lokale]/teachers/page.tsx
+// src/app/[locale]/teachers/page.tsx
+
 import {
   dehydrate,
   HydrationBoundary,
@@ -10,12 +11,20 @@ import EmailVerificationHandler from '@/components/handlers/email-verification-h
 import PasswordResetHandler from '@/components/handlers/password-reset-handler';
 import EmailChangeHandler from '@/components/handlers/email-change-handler';
 
-export default async function TeachersPage() {
+interface Props {
+  params: Promise<{
+    locale: string;
+  }>;
+}
+
+export default async function TeachersPage({ params }: Props) {
+  const { locale } = await params;
   const queryClient = new QueryClient();
 
+  // Prefetch teachers data with the current locale
   await queryClient.prefetchQuery({
-    queryKey: ['teachers'],
-    queryFn: getAllTeachers,
+    queryKey: ['teachers', locale],
+    queryFn: () => getAllTeachers(locale),
   });
 
   return (

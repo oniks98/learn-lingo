@@ -1,3 +1,4 @@
+// src/components/favorites/favorites-list.tsx
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';

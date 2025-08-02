@@ -3,15 +3,34 @@ import { TeacherPreview } from '@/lib/types/types';
 
 const API_BASE = '/api';
 
+// Helper function to get current locale
+function getCurrentLocale(): string {
+  if (typeof window === 'undefined') {
+    return 'en'; // Default for SSR
+  }
+
+  // Extract locale from pathname
+  const pathname = window.location.pathname;
+  const localeMatch = pathname.match(/^\/([a-z]{2})\//);
+  return localeMatch ? localeMatch[1] : 'en';
+}
+
 // Отримати всі улюблені вчителі поточного користувача
-export async function getFavorites(): Promise<{ favorites: TeacherPreview[] }> {
-  const response = await fetch(`${API_BASE}/favorites`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
+export async function getFavorites(
+  locale?: string,
+): Promise<{ favorites: TeacherPreview[] }> {
+  const currentLocale = locale || getCurrentLocale();
+
+  const response = await fetch(
+    `${API_BASE}/favorites?locale=${currentLocale}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
     },
-    cache: 'no-store',
-  });
+  );
 
   if (!response.ok) {
     throw new Error(`Failed to fetch favorites: ${response.statusText}`);

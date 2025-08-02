@@ -1,6 +1,7 @@
 // src/hooks/use-password-reset.ts
 import { useMutation } from '@tanstack/react-query';
 import { sendPasswordResetEmail } from 'firebase/auth';
+import { useTranslations } from 'next-intl';
 import { auth } from '@/lib/db/firebase-client';
 import { toast } from 'sonner';
 
@@ -8,6 +9,8 @@ import { toast } from 'sonner';
  * Hook для відправки листа скидання паролю
  */
 export const useSendPasswordReset = () => {
+  const t = useTranslations('passwordReset');
+
   return useMutation<void, Error, { email: string }>({
     mutationFn: async ({ email }) => {
       console.log('Sending password reset email to:', email);
@@ -17,21 +20,20 @@ export const useSendPasswordReset = () => {
       console.log('Password reset email sent successfully');
     },
     onSuccess: () => {
-      toast.success('Password reset email sent! Please check your inbox.');
+      toast.success(t('emailSentSuccess'));
     },
     onError: (error) => {
       console.error('Failed to send password reset email:', error);
 
-      let errorMessage =
-        'Failed to send password reset email. Please try again.';
+      let errorMessage = t('genericError');
 
       // Обробляємо специфічні помилки Firebase
       if (error.message.includes('auth/user-not-found')) {
-        errorMessage = 'No user found with this email address.';
+        errorMessage = t('userNotFound');
       } else if (error.message.includes('auth/invalid-email')) {
-        errorMessage = 'Invalid email address format.';
+        errorMessage = t('invalidEmail');
       } else if (error.message.includes('auth/too-many-requests')) {
-        errorMessage = 'Too many requests. Please try again later.';
+        errorMessage = t('tooManyRequests');
       }
 
       toast.error(errorMessage);

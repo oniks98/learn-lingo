@@ -1,4 +1,4 @@
-// src/app/users/[id]/bookings/page.tsx
+// src/app/[locale]/users/[id]/bookings/page.tsx
 import {
   dehydrate,
   HydrationBoundary,
@@ -8,7 +8,13 @@ import BookingsList from '@/components/bookings/bookings-list';
 import { getBookings } from '@/lib/api/bookings';
 import { getFavorites } from '@/lib/api/favorites';
 
-export default async function BookingsPage() {
+type Props = {
+  params: Promise<{ locale: string; id: string }>; // Promise в Next.js 15
+};
+
+export default async function BookingsPage({ params }: Props) {
+  const { locale } = await params; // Ждем разрешения
+
   const queryClient = new QueryClient();
 
   // Префетчуємо основні дані
@@ -17,15 +23,16 @@ export default async function BookingsPage() {
     queryFn: getBookings,
   });
 
-  // Префетчуємо фаворити для показу желтых сердечек
-  // teachers уже в кеше из страницы /teachers, поэтому не префетчим
+  // Префетчуємо фаворити
   try {
     await queryClient.prefetchQuery({
-      queryKey: ['favorites'],
-      queryFn: getFavorites,
+      queryKey: ['favorites', locale],
+      queryFn: ({ queryKey }) => {
+        const [, locale] = queryKey;
+        return getFavorites(locale);
+      },
     });
   } catch (error) {
-    // Якщо помилка з фаворитами, просто не префетчуємо
     console.log('Could not prefetch favorites:', error);
   }
 

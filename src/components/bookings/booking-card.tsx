@@ -1,8 +1,9 @@
-// src/app/components/ui/booking-card.tsx
+// src/components/bookings/booking-card.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useLocale, useTranslations } from 'next-intl';
 import { BookingData, TeacherPreview } from '@/lib/types/types';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { deleteBooking } from '@/lib/api/bookings';
@@ -21,6 +22,9 @@ type Props = {
 };
 
 export default function BookingCard({ booking }: Props) {
+  const locale = useLocale();
+  const t = useTranslations('bookingCard');
+  const tReasons = useTranslations('learningReasons');
   const queryClient = useQueryClient();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -30,8 +34,8 @@ export default function BookingCard({ booking }: Props) {
   const { data: teachers, isLoading: isLoadingTeachers } = useQuery<
     TeacherPreview[]
   >({
-    queryKey: ['teachers'],
-    queryFn: getAllTeachers,
+    queryKey: ['teachers', locale],
+    queryFn: () => getAllTeachers(locale),
   });
 
   const teacher = teachers?.find((t) => t.id === booking.teacherId) || null;
@@ -63,7 +67,7 @@ export default function BookingCard({ booking }: Props) {
   };
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
+    return new Date(timestamp).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -77,17 +81,17 @@ export default function BookingCard({ booking }: Props) {
 
     // Проверяем, что дата валидна
     if (isNaN(date.getTime())) {
-      return { date: 'Invalid Date', time: '' };
+      return { date: t('invalidDate'), time: '' };
     }
 
-    const formattedDate = date.toLocaleDateString('en-US', {
+    const formattedDate = date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       weekday: 'long',
     });
 
-    const formattedTime = date.toLocaleTimeString('en-US', {
+    const formattedTime = date.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false, // 24-часовой формат
@@ -147,7 +151,7 @@ export default function BookingCard({ booking }: Props) {
               </>
             ) : (
               <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-200">
-                <span className="text-sm text-gray-500">No Photo</span>
+                <span className="text-sm text-gray-500">{t('noPhoto')}</span>
               </div>
             )}
           </div>
@@ -159,7 +163,7 @@ export default function BookingCard({ booking }: Props) {
               'md:col-2 md:row-1',
             )}
           >
-            <span className="text-gray-muted font-medium">Booking</span>
+            <span className="text-gray-muted font-medium">{t('booking')}</span>
             <button
               onClick={handleFavoriteClick}
               disabled={isFavoriteLoading}
@@ -169,7 +173,7 @@ export default function BookingCard({ booking }: Props) {
                 isFavoriteLoading && 'animate-pulse',
               )}
               aria-label={
-                isFavorite ? 'Remove from favorites' : 'Add to favorites'
+                isFavorite ? t('removeFromFavorites') : t('addToFavorites')
               }
             >
               <HeartIcon
@@ -190,7 +194,7 @@ export default function BookingCard({ booking }: Props) {
               'sm:justify-self-center md:col-2 md:justify-self-start',
             )}
           >
-            {teacher ? `${teacher.name} ${teacher.surname}` : 'Loading...'}
+            {teacher ? `${teacher.name} ${teacher.surname}` : t('loading')}
           </h2>
 
           {/* Main Booking Information */}
@@ -202,13 +206,13 @@ export default function BookingCard({ booking }: Props) {
           >
             <li>
               <p>
-                <span className="text-gray-muted">Reason:</span>{' '}
-                {booking.reason}
+                <span className="text-gray-muted">{t('reason')}:</span>{' '}
+                {tReasons(booking.reason)}
               </p>
             </li>
             <li>
               <p>
-                <span className="text-gray-muted">Lesson Date:</span>{' '}
+                <span className="text-gray-muted">{t('lessonDate')}:</span>{' '}
                 <span className="font-semibold text-blue-600">
                   {bookingDateTime.date}
                 </span>
@@ -216,7 +220,7 @@ export default function BookingCard({ booking }: Props) {
             </li>
             <li>
               <p>
-                <span className="text-gray-muted">Lesson Time:</span>{' '}
+                <span className="text-gray-muted">{t('lessonTime')}:</span>{' '}
                 <span className="font-semibold text-green-600">
                   {bookingDateTime.time}
                 </span>
@@ -225,14 +229,14 @@ export default function BookingCard({ booking }: Props) {
             {booking.comment && (
               <li>
                 <p>
-                  <span className="text-gray-muted">Comment:</span>{' '}
+                  <span className="text-gray-muted">{t('comment')}:</span>{' '}
                   {booking.comment}
                 </p>
               </li>
             )}
             <li>
               <p>
-                <span className="text-gray-muted">Created:</span>{' '}
+                <span className="text-gray-muted">{t('created')}:</span>{' '}
                 {formatDate(booking.createdAt)}
               </p>
             </li>
@@ -240,7 +244,9 @@ export default function BookingCard({ booking }: Props) {
               <>
                 <li>
                   <p>
-                    <span className="text-gray-muted">Price per hour:</span>{' '}
+                    <span className="text-gray-muted">
+                      {t('pricePerHour')}:
+                    </span>{' '}
                     <span className="font-semibold text-green-600">
                       {formatCurrencyPrice(teacher.price_per_hour)}
                     </span>
@@ -248,7 +254,7 @@ export default function BookingCard({ booking }: Props) {
                 </li>
                 <li>
                   <p>
-                    <span className="text-gray-muted">Rating:</span>{' '}
+                    <span className="text-gray-muted">{t('rating')}:</span>{' '}
                     <span className="font-semibold text-yellow-600">
                       ⭐ {formatRating(teacher.rating)}
                     </span>
@@ -256,7 +262,9 @@ export default function BookingCard({ booking }: Props) {
                 </li>
                 <li>
                   <p>
-                    <span className="text-gray-muted">Teacher Languages:</span>{' '}
+                    <span className="text-gray-muted">
+                      {t('teacherLanguages')}:
+                    </span>{' '}
                     <span className="underline">
                       {teacher.languages.join(', ')}
                     </span>
@@ -269,7 +277,7 @@ export default function BookingCard({ booking }: Props) {
           {/* Delete Button */}
           <Button
             className={clsx(
-              'max-w-58 px-[3.55cqw]',
+              'max-w-68 px-[3.55cqw]',
               'sm:justify-self-center',
               'md:col-[1/3] md:row-[7/8] md:justify-self-start',
               'xl:col-2 xl:row-7',
@@ -281,8 +289,8 @@ export default function BookingCard({ booking }: Props) {
           >
             <span className="leading-[1.56]">
               {deleteBookingMutation.isPending
-                ? 'Deleting...'
-                : 'Delete booking'}
+                ? t('deleting')
+                : t('deleteBooking')}
             </span>
           </Button>
         </div>

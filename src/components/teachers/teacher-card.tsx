@@ -1,8 +1,9 @@
 // src/components/teachers/teacher-card.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/api/teachers';
 import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
@@ -20,6 +21,8 @@ import Button from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 
+import { getFunnyAvatarForTeacher } from '@/lib/constants/avatars';
+
 type Props = {
   teacher: TeacherPreview;
   level: string;
@@ -35,6 +38,13 @@ export default function TeacherCard({
   const router = useRouter();
   const { user } = useAuth();
   const { formatPrice } = useCurrencyConverter();
+  const t = useTranslations('teacherCard');
+
+  // Мемоизируем смешной аватар для текущего учителя
+  const funnyAvatar = useMemo(
+    () => getFunnyAvatarForTeacher(teacher.id),
+    [teacher.id],
+  );
 
   const { data: extraInfo, isLoading } = useQuery<TeacherExtraInfo | null>({
     queryKey: ['teacherExtra', teacher.id],
@@ -50,36 +60,33 @@ export default function TeacherCard({
 
   const handleFavoriteClick = () => {
     if (!user || !user.emailVerified) {
-      // Сохраняем намерение добавить в избранное
       savePendingAction({
         type: 'favorite',
         teacherId: teacher.id,
       });
-
-      // Переходим на страницу регистрации
       router.push('/signup');
       return;
     }
-
     toggleFavorite(teacher.id, isFavorite);
   };
 
   const handleBookingClick = () => {
     if (!user || !user.emailVerified) {
-      // Сохраняем намерение забронировать урок
       savePendingAction({
         type: 'booking',
         teacherId: teacher.id,
       });
-
-      // Переходим на страницу регистрации
       router.push('/signup');
       return;
     }
-
-    // Если пользователь авторизован, переходим сразу на страницу учителя
     router.push(`/teachers/${teacher.id}`, { scroll: false });
   };
+
+  // Определяем какой аватар показывать
+  const currentAvatar = expanded ? funnyAvatar : teacher.avatar_url;
+  const avatarAlt = expanded
+    ? `${teacher.name} ${teacher.surname} (funny avatar)`
+    : `${teacher.name} ${teacher.surname}`;
 
   return (
     <section
@@ -104,9 +111,14 @@ export default function TeacherCard({
           <Image
             width={96}
             height={96}
-            src={teacher.avatar_url}
-            alt={`${teacher.name} ${teacher.surname}`}
-            className={clsx('rounded-full')}
+            src={currentAvatar}
+            alt={avatarAlt}
+            className={clsx(
+              'rounded-full transition-all duration-500 ease-in-out',
+              // Добавляем небольшую анимацию при смене аватара
+              expanded && 'scale-105 transform',
+            )}
+            key={expanded ? 'funny' : 'original'} // Ключ для принудительного обновления
           />
           <OnlineIcon
             className={clsx('absolute top-[19px] right-[23px] h-3 w-3')}
@@ -125,12 +137,12 @@ export default function TeacherCard({
               'text-gray-muted w-full font-medium xl:w-min xl:grow-3',
             )}
           >
-            Languages
+            {t('languages')}
           </span>
 
           <span className="grid grid-cols-[repeat(2,auto)] items-center">
             <BookIcon className="mr-1 h-4 w-4" />
-            <span className="font-medium">Lessons online</span>
+            <span className="font-medium">{t('lessonsOnline')}</span>
           </span>
 
           <span className="px-[1.3cqw]">
@@ -138,7 +150,7 @@ export default function TeacherCard({
           </span>
 
           <span className="grid grid-cols-[repeat(2,auto)] items-center">
-            <span className="font-medium">Lessons done:</span>
+            <span className="font-medium">{t('lessonsDone')}</span>
             <span>{teacher.lessons_done}</span>
           </span>
 
@@ -148,7 +160,7 @@ export default function TeacherCard({
 
           <span className="grid grid-cols-[repeat(3,auto)] items-center">
             <StarIcon className="mr-1 h-4 w-4" />
-            <span className="font-medium">Rating:</span>
+            <span className="font-medium">{t('rating')}</span>
             <span>{teacher.rating.toFixed(1)}</span>
           </span>
 
@@ -157,7 +169,7 @@ export default function TeacherCard({
           </span>
 
           <span className="mr-4 grid grid-cols-[repeat(2,auto)] items-center">
-            <span className="font-medium">Price / 1 hour:</span>
+            <span className="font-medium">{t('pricePerHour')}</span>
             <span className="text-green ml-1 font-medium">
               {formatPrice(teacher.price_per_hour)}
             </span>
@@ -172,7 +184,7 @@ export default function TeacherCard({
               isFavoriteLoading && 'animate-pulse',
             )}
             aria-label={
-              displayAsFavorite ? 'Remove from favorites' : 'Add to favorites'
+              displayAsFavorite ? t('removeFromFavorites') : t('addToFavorites')
             }
           >
             <HeartIcon
@@ -203,19 +215,19 @@ export default function TeacherCard({
         >
           <li>
             <p>
-              <span className="text-gray-muted">Speaks:</span>{' '}
+              <span className="text-gray-muted">{t('speaks')}</span>{' '}
               <span className="underline">{teacher.languages.join(', ')}</span>
             </p>
           </li>
           <li>
             <p>
-              <span className="text-gray-muted">Lesson Info:</span>{' '}
+              <span className="text-gray-muted">{t('lessonInfo')}</span>{' '}
               {teacher.lesson_info}
             </p>
           </li>
           <li>
             <p>
-              <span className="text-gray-muted">Conditions:</span>{' '}
+              <span className="text-gray-muted">{t('conditions')}</span>{' '}
               {teacher.conditions.join(', ')}
             </p>
           </li>
@@ -224,13 +236,13 @@ export default function TeacherCard({
         <Button
           onClick={() => setExpanded((v) => !v)}
           className={clsx(
-            'hover:text-yellow mb-[1.96cqw] w-[78px]',
+            'hover:text-yellow mb-[1.96cqw] w-23',
             'py-2font-medium bg-white px-0 underline hover:bg-white',
             'md:col-[1/3] md:row-[4/5] xl:col-2 xl:row-4',
           )}
         >
           <span className="animated-text">
-            {(expanded ? 'Show less' : 'Read more')
+            {(expanded ? t('showLess') : t('readMore'))
               .split('')
               .map((char, index) => (
                 <span
@@ -269,7 +281,7 @@ export default function TeacherCard({
               </ul>
             </div>
           ) : (
-            <p className="text-yellow">Error loading details.</p>
+            <p className="text-yellow">{t('errorLoadingDetails')}</p>
           ))}
 
         <ul
@@ -295,14 +307,14 @@ export default function TeacherCard({
         {expanded && (
           <Button
             className={clsx(
-              'max-w-58 px-[4.55cqw]',
+              'max-w-88 px-[4.55cqw]',
               'sm:justify-self-center',
               'md:col-[1/3] md:row-[7/8] md:justify-self-start',
               'xl:col-2 xl:row-7',
             )}
             onClick={handleBookingClick}
           >
-            <span className="leading-[1.56]">Book trial lesson</span>
+            <span className="leading-[1.56]">{t('bookTrialLesson')}</span>
           </Button>
         )}
       </div>

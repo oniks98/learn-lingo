@@ -13,7 +13,7 @@ interface SendEmailChangeRequest {
  * Hook для отправки запроса на смену email
  */
 export const useSendEmailChange = () => {
-  const t = useTranslations('profile.changeEmailModal.validation');
+  const t = useTranslations('profile.changeEmailModal');
   return useMutation<void, Error, SendEmailChangeRequest>({
     mutationFn: async ({ newEmail }) => {
       if (!auth.currentUser) {
@@ -28,20 +28,20 @@ export const useSendEmailChange = () => {
       console.log('Email change verification sent successfully');
     },
     onSuccess: () => {
-      toast.success(
-        'Verification email sent to your new email address! Please check your inbox.',
-      );
+      toast.success(t('success'));
     },
     onError: (error) => {
       console.error('Failed to send email change request:', error);
 
       // Обработка специфических ошибок Firebase
       if (error.message.includes('email-already-in-use')) {
-        toast.error(t('emailAlreadyInUse'));
+        toast.error(t('validation.emailAlreadyInUse'));
       } else if (error.message.includes('invalid-email')) {
-        toast.error(t('emailInvalid'));
+        toast.error(t('validation.emailInvalid'));
       } else if (error.message.includes('requires-recent-login')) {
-        toast.error(t('recentLoginRequired'));
+        toast.error(t('validation.recentLoginRequired'));
+      } else {
+        toast.error(t('error'));
       }
     },
   });

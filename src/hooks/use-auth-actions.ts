@@ -13,6 +13,7 @@ import { auth } from '@/lib/db/firebase-client';
 import { UserData } from '@/lib/types/types';
 import { useSendVerificationEmail } from '@/hooks/use-send-verification-email';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 // Додаємо новий тип для результату логіна
 export interface SignInResult extends UserData {
@@ -74,6 +75,7 @@ const syncUserWithServer = async (
 export const useSignUp = () => {
   const queryClient = useQueryClient();
   const sendVerification = useSendVerificationEmail();
+  const t = useTranslations('authActions.registration');
 
   return useMutation<
     UserData,
@@ -99,24 +101,20 @@ export const useSignUp = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      // toast.success(
-      //   `Вітаємо, ${userData.username}! Перевірте пошту для підтвердження акаунту.`,
-      // );
+      // toast.success(t('successMessage', { username: userData.username }));
     },
     onError: (error) => {
       console.error('Sign up error:', error);
-      // Деталізовані повідомлення
-      let msg = 'Помилка реєстрації. Спробуйте ще раз.';
+
       if (error.code === 'auth/email-already-in-use') {
-        msg = 'This email is already in use.';
+        toast.error(t('emailExists'));
       } else if (error.code === 'auth/weak-password') {
-        msg = 'Пароль занадто слабкий. Мінімум 6 символів.';
+        toast.error(t('passwordWeak'));
       } else if (error.code === 'auth/invalid-email') {
-        msg = 'Неправильний формат електронної пошти.';
-      } else if (error.message) {
-        msg = error.message;
+        toast.error(t('emailInvalidFormat'));
+      } else {
+        toast.error(t('generalError'));
       }
-      toast.error(msg);
     },
   });
 };
@@ -126,6 +124,7 @@ export const useSignUp = () => {
  */
 export const useSignIn = () => {
   const queryClient = useQueryClient();
+  const t = useTranslations('authActions.login');
 
   return useMutation<SignInResult, any, { email: string; password: string }>({
     mutationFn: async ({ email, password }) => {
@@ -152,29 +151,26 @@ export const useSignIn = () => {
 
       // Оновлюємо кеш React Query тільки для повністю верифікованих користувачів
       queryClient.setQueryData(['user'], result);
-      // toast.success(`Вітаємо знову, ${result.username}!`);
+      // toast.success(t('welcomeBack', { username: result.username }));
     },
     onError: (error) => {
       console.error('Sign in error:', error);
-      // Деталізовані повідомлення
-      let msg = 'Помилка входу. Спробуйте ще раз.';
+
       if (error.code === 'auth/invalid-credential') {
-        msg =
-          'Неправильна пошта або пароль. Перевірте дані та спробуйте ще раз.';
+        toast.error(t('wrongCredentials'));
       } else if (error.code === 'auth/user-not-found') {
-        msg = 'Користувача з такою поштою не знайдено.';
+        toast.error(t('userNotExists'));
       } else if (error.code === 'auth/wrong-password') {
-        msg = 'Неправильний пароль.';
+        toast.error(t('incorrectPassword'));
       } else if (error.code === 'auth/invalid-email') {
-        msg = 'Неправильний формат електронної пошти.';
+        toast.error(t('emailInvalidFormat'));
       } else if (error.code === 'auth/user-disabled') {
-        msg = 'Цей акаунт заблоковано.';
+        toast.error(t('accountDisabled'));
       } else if (error.code === 'auth/too-many-requests') {
-        msg = 'Забагато спроб входу. Спробуйте пізніше.';
-      } else if (error.message) {
-        msg = error.message;
+        toast.error(t('tooManyAttempts'));
+      } else {
+        toast.error(t('generalError'));
       }
-      toast.error(msg);
     },
   });
 };
@@ -184,6 +180,7 @@ export const useSignIn = () => {
  */
 export const useSignInWithGoogle = () => {
   const queryClient = useQueryClient();
+  const t = useTranslations('authActions.googleAuth');
 
   return useMutation<UserData, any, { redirectPath?: string }>({
     mutationFn: async ({ redirectPath }) => {
@@ -200,24 +197,22 @@ export const useSignInWithGoogle = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      // toast.success('Успішний вхід через Google!');
+      toast.success(t('loginSuccess'));
     },
     onError: (error) => {
       console.error('Google sign in error:', error);
-      // Деталізовані повідомлення
-      let msg = 'Помилка входу через Google. Спробуйте ще раз.';
+
       if (error.code === 'auth/popup-closed-by-user') {
-        msg = 'Вхід через Google було скасовано.';
+        toast.error(t('popupCancelled'));
       } else if (error.code === 'auth/popup-blocked') {
-        msg = 'Спливаюче вікно заблоковано браузером.';
+        toast.error(t('popupBlocked'));
       } else if (
         error.code === 'auth/account-exists-with-different-credential'
       ) {
-        msg = 'Акаунт з цією поштою існує з іншим способом входу.';
-      } else if (error.message) {
-        msg = error.message;
+        toast.error(t('accountConflict'));
+      } else {
+        toast.error(t('generalError'));
       }
-      toast.error(msg);
     },
   });
 };

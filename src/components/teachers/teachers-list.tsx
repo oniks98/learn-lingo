@@ -1,9 +1,8 @@
-// src/components/teachers/teachers-list.tsx
 'use client';
 
 import React, { useMemo, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { useUrlFilters } from '@/hooks/use-url-filters';
@@ -15,6 +14,7 @@ import Button from '@/components/ui/button';
 
 export default function TeachersList() {
   const t = useTranslations();
+  const locale = useLocale();
   const {
     filters,
     setFilters,
@@ -27,8 +27,8 @@ export default function TeachersList() {
   const { data: allTeachers = [], isLoading: teachersLoading } = useQuery<
     TeacherPreview[]
   >({
-    queryKey: ['teachers'],
-    queryFn: getAllTeachers,
+    queryKey: ['teachers', locale],
+    queryFn: () => getAllTeachers(locale),
   });
 
   const filteredTeachers = useMemo(() => {

@@ -79,6 +79,22 @@
     "noTeachersFound": "No teachers found.",
     "loadMore": "Load More"
   },
+  "teacherCard": {
+    "languages": "Languages",
+    "lessonsOnline": "Lessons online",
+    "lessonsDone": "Lessons done:",
+    "rating": "Rating:",
+    "pricePerHour": "Price / 1 hour:",
+    "bookTrialLesson": "Book trial lesson",
+    "showLess": "Show less",
+    "readMore": "Read more",
+    "speaks": "Speaks:",
+    "lessonInfo": "Lesson Info:",
+    "conditions": "Conditions:",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "errorLoadingDetails": "Error loading details."
+  },
   "dateTimePicker": {
     "bookingDate": "Booking date"
   },
@@ -130,6 +146,12 @@
       "signingInWithGoogle": "Signing in with Google…",
       "backToLogin": "Back to Login",
       "signIn": "Sign in"
+    },
+    "messages": {
+      "sessionExpired": "Session expired for security reasons",
+      "emailChangeReauth": "Recent authentication required for email change",
+      "securityReauth": "Recent authentication required for security reasons",
+      "reauthRequired": "Authentication required"
     },
     "passwordReset": {
       "title": "Reset Password",
@@ -192,12 +214,21 @@
       "resetFailed": "Password reset failed. Please try again."
     }
   },
+  "emailChangeHandler": {
+    "title": "Email Change Confirmation",
+    "processing": "Processing email change...",
+    "success": "Your email has been successfully changed!",
+    "error": "Email change failed. Please try again.",
+    "linkExpired": "This email change link has expired. Please request a new one.",
+    "linkUsed": "This email change link has already been used.",
+    "invalidLink": "Invalid email change link. Please request a new one."
+  },
   "profile": {
     "title": "My Profile",
     "personalInfo": "Personal Information",
     "name": "Name",
     "email": "Email",
-    "currentEmail": "Current email",
+    "currentEmail": "Email",
     "changeEmail": "Change Email",
     "statistics": "Statistics",
     "favoriteTeachers": "Favorite teachers",
@@ -221,7 +252,13 @@
         "cancel": "Cancel"
       },
       "success": "Verification email sent successfully! Please check your inbox.",
-      "error": "Failed to send verification email. Please try again."
+      "error": "Failed to send verification email. Please try again.",
+      "validation": {
+        "emailRequired": "Please enter a valid email address",
+        "emailInvalid": "Please enter a valid email address",
+        "emailAlreadyInUse": "This email is already in use by another account",
+        "recentLoginRequired": "For security reasons, please log in again before changing your email"
+      }
     },
     "deleteAccountModal": {
       "title": "Delete Account",
@@ -241,5 +278,56 @@
     },
     "updateSuccess": "Profile updated successfully",
     "updateError": "Failed to update profile. Please try again."
+  },
+  "bookingCard": {
+    "booking": "Booking",
+    "removeFromFavorites": "Remove from favorites",
+    "addToFavorites": "Add to favorites",
+    "loading": "Loading...",
+    "noPhoto": "No photo",
+    "reason": "Reason",
+    "lessonDate": "Lesson date",
+    "lessonTime": "Lesson time",
+    "comment": "Comment",
+    "created": "Created",
+    "pricePerHour": "Price per hour",
+    "rating": "Rating",
+    "teacherLanguages": "Teacher languages",
+    "deleteBooking": "Delete booking",
+    "deleting": "Deleting...",
+    "invalidDate": "Invalid date"
+  },
+  "passwordReset": {
+    "emailSentSuccess": "Password reset email sent! Please check your inbox.",
+    "genericError": "Failed to send password reset email. Please try again.",
+    "userNotFound": "No user found with this email address.",
+    "invalidEmail": "Invalid email address format.",
+    "tooManyRequests": "Too many requests. Please try again later."
+  },
+  "authActions": {
+    "registration": {
+      "successMessage": "Welcome, {username}! Please check your email to verify your account.",
+      "generalError": "Registration failed. Please try again.",
+      "emailExists": "This email address is already registered.",
+      "passwordWeak": "Password is too weak. Minimum 6 characters required.",
+      "emailInvalidFormat": "Please enter a valid email address."
+    },
+    "login": {
+      "welcomeBack": "Welcome back, {username}!",
+      "generalError": "Login failed. Please try again.",
+      "wrongCredentials": "Invalid email or password. Please check your credentials and try again.",
+      "userNotExists": "No account found with this email address.",
+      "incorrectPassword": "Incorrect password entered.",
+      "emailInvalidFormat": "Please enter a valid email address.",
+      "accountDisabled": "This account has been temporarily disabled.",
+      "tooManyAttempts": "Too many failed login attempts. Please try again later."
+    },
+    "googleAuth": {
+      "loginSuccess": "Successfully signed in with Google!",
+      "generalError": "Google authentication failed. Please try again.",
+      "popupCancelled": "Google sign-in was cancelled by user.",
+      "popupBlocked": "Popup window was blocked by your browser.",
+      "accountConflict": "An account with this email already exists using a different sign-in method."
+    }
   }
-}
+  }

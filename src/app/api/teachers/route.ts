@@ -1,33 +1,57 @@
 // src/app/api/teachers/route.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { TeacherPreview } from '@/lib/types/types';
 
-// GET - Get all teachers (preview data only)
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const snapshot = await admin.database().ref('teachers').once('value');
-    const teachersData = snapshot.val();
+    const { searchParams } = new URL(request.url);
+    const locale = searchParams.get('locale') || 'en';
 
-    if (!teachersData) {
+    // Валідація локалі
+    if (!['en', 'uk'].includes(locale)) {
+      return NextResponse.json(
+        { error: 'Invalid locale. Supported: en, uk' },
+        { status: 400 },
+      );
+    }
+
+    const snapshot = await admin.database().ref('teachers').once('value');
+
+    if (!snapshot.exists()) {
       return NextResponse.json({ teachers: [] });
     }
 
-    const teachers: TeacherPreview[] = Object.entries(teachersData).map(
-      ([id, teacher]: [string, any]) => ({
+    const teachersData = snapshot.val();
+    const teachers: TeacherPreview[] = [];
+
+    Object.entries(teachersData).forEach(([id, data]: [string, any]) => {
+      // Перевіряємо чи є локалізовані дані
+      const localizedData = data.localized?.[locale];
+
+      if (!localizedData) {
+        console.warn(
+          `No localized data found for teacher ${id} in locale ${locale}`,
+        );
+        return;
+      }
+
+      const teacher: TeacherPreview = {
         id,
-        name: teacher.name,
-        surname: teacher.surname,
-        languages: teacher.languages || [],
-        levels: teacher.levels || [],
-        rating: teacher.rating || 0,
-        price_per_hour: teacher.price_per_hour || 0,
-        lessons_done: teacher.lessons_done || 0,
-        avatar_url: teacher.avatar_url || '',
-        lesson_info: teacher.lesson_info || '',
-        conditions: teacher.conditions || [],
-      }),
-    );
+        name: data.name || '',
+        surname: data.surname || '',
+        languages: data.languages || [],
+        levels: data.levels || [],
+        rating: data.rating || 0,
+        price_per_hour: data.price_per_hour || 0,
+        lessons_done: data.lessons_done || 0,
+        avatar_url: data.avatar_url || '',
+        lesson_info: localizedData.lesson_info || '',
+        conditions: localizedData.conditions || [],
+      };
+
+      teachers.push(teacher);
+    });
 
     return NextResponse.json({ teachers });
   } catch (error) {

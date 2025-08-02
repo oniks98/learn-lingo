@@ -3,16 +3,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
 import { useAuth } from '@/contexts/auth-context';
-import {
-  updateProfile,
-  requestEmailChange,
-  deleteAccount,
-  getUserStats,
-} from '@/lib/api/profile';
+import { updateProfile, deleteAccount, getUserStats } from '@/lib/api/profile';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
 import EmailChangeModal from '@/components/modal/email-change-modal';
@@ -20,6 +15,7 @@ import ProfileDeleteModal from '@/components/modal/profile-delete-modal';
 
 export default function ProfileList({ userId }: { userId: string }) {
   const t = useTranslations('profile');
+  const locale = useLocale();
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
   const queryClient = useQueryClient();
@@ -58,19 +54,6 @@ export default function ProfileList({ userId }: { userId: string }) {
     },
   });
 
-  // Мутація для зміни email
-  const changeEmailMutation = useMutation({
-    mutationFn: requestEmailChange,
-    onSuccess: () => {
-      setIsChangeEmailModalOpen(false);
-      // Можна додати toast повідомлення про успішне надсилання
-    },
-    onError: (error) => {
-      console.error('Email change error:', error);
-      // Можна додати toast повідомлення про помилку
-    },
-  });
-
   // Мутація для видалення акаунта
   const deleteAccountMutation = useMutation({
     mutationFn: deleteAccount,
@@ -97,7 +80,15 @@ export default function ProfileList({ userId }: { userId: string }) {
 
   // Форматування дати реєстрації
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('uk-UA', {
+    // Создаем mapping локалей для правильного форматирования
+    const localeMap: Record<string, string> = {
+      en: 'en-US',
+      uk: 'uk-UA',
+    };
+
+    const dateLocale = localeMap[locale] || 'en-US';
+
+    return new Date(timestamp).toLocaleDateString(dateLocale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -116,10 +107,6 @@ export default function ProfileList({ userId }: { userId: string }) {
   const handleCancelEdit = () => {
     setNewName(user?.username || '');
     setIsEditingName(false);
-  };
-
-  const handleChangeEmail = (newEmail: string) => {
-    changeEmailMutation.mutate(newEmail);
   };
 
   const handleDeleteAccount = () => {
@@ -168,7 +155,7 @@ export default function ProfileList({ userId }: { userId: string }) {
 
             {/* Ім'я */}
             <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block font-medium text-gray-700">
                 {t('name')}
               </label>
               {isEditingName ? (
@@ -183,7 +170,7 @@ export default function ProfileList({ userId }: { userId: string }) {
                   <Button
                     onClick={handleSaveName}
                     disabled={updateProfileMutation.isPending}
-                    className="bg-yellow hover:bg-yellow/80 px-4 py-2 text-black"
+                    className="bg-yellow hover:bg-yellow/80 px-9 py-[14px] text-black"
                   >
                     {updateProfileMutation.isPending
                       ? t('buttons.saving')
@@ -191,7 +178,7 @@ export default function ProfileList({ userId }: { userId: string }) {
                   </Button>
                   <Button
                     onClick={handleCancelEdit}
-                    className="bg-gray-200 px-4 py-2 text-black hover:bg-gray-300"
+                    className="bg-gray-200 px-9 py-[14px] text-black hover:bg-gray-300"
                   >
                     {t('buttons.cancel')}
                   </Button>
@@ -201,7 +188,7 @@ export default function ProfileList({ userId }: { userId: string }) {
                   <span className="text-gray-900">{user.username}</span>
                   <Button
                     onClick={() => setIsEditingName(true)}
-                    className="bg-gray-100 px-3 py-1 text-sm text-black hover:bg-gray-200"
+                    className="bg-yellow hover:bg-yellow-light px-9 py-[14px] text-black"
                   >
                     {t('buttons.edit')}
                   </Button>
@@ -209,26 +196,16 @@ export default function ProfileList({ userId }: { userId: string }) {
               )}
             </div>
 
-            {/* Email */}
-            <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                {t('email')}
-              </label>
-              <div className="flex items-center justify-between">
-                <span className="text-gray-900">{user.email}</span>
-              </div>
-            </div>
-
             {/* Зміна email */}
             <div className="mb-6">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block font-medium text-gray-700">
                 {t('currentEmail')}
               </label>
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">{user.email}</span>
                 <Button
                   onClick={() => setIsChangeEmailModalOpen(true)}
-                  className="bg-yellow hover:bg-yellow/80 px-4 py-2 text-black"
+                  className="bg-yellow hover:bg-yellow-light px-9 py-[14px] text-black"
                 >
                   {t('changeEmail')}
                 </Button>
@@ -300,7 +277,7 @@ export default function ProfileList({ userId }: { userId: string }) {
             <div className="flex justify-center">
               <Button
                 onClick={() => setIsDeleteAccountModalOpen(true)}
-                className="bg-red-500 px-6 py-3 text-white hover:bg-red-600"
+                className="bg-red-500 px-9 py-[14px] text-white hover:bg-red-600"
               >
                 {t('deleteAccount')}
               </Button>
@@ -312,8 +289,6 @@ export default function ProfileList({ userId }: { userId: string }) {
         <EmailChangeModal
           isOpen={isChangeEmailModalOpen}
           onCloseAction={() => setIsChangeEmailModalOpen(false)}
-          onConfirmAction={handleChangeEmail}
-          isLoading={changeEmailMutation.isPending}
         />
 
         {/* Модалка видалення акаунта */}

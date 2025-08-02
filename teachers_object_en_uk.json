@@ -1,0 +1,1769 @@
+{
+  "teacher_1": {
+    "localized": {
+      "en": {
+        "lesson_info": "The lessons focus on improving speaking and listening skills through interactive activities and discussions.",
+        "conditions": [
+          "Teaches only adult learners (18 years and above).",
+          "Flexible scheduling options available."
+        ],
+        "experience": "John has been teaching languages for 7 years and has extensive experience in helping students improve their language skills. He has successfully taught numerous students from different backgrounds and proficiency levels.",
+        "reviews": [
+          {
+            "reviewer_name": "Alice",
+            "reviewer_rating": 5,
+            "comment": "John is an excellent teacher! I highly recommend him."
+          },
+          {
+            "reviewer_name": "Bob",
+            "reviewer_rating": 4,
+            "comment": "John is very knowledgeable and patient. I enjoyed his classes."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні навичок говоріння та слухання через інтерактивні заходи та дискусії.",
+        "conditions": [
+          "Викладає тільки дорослим учням (18 років і старше).",
+          "Доступні гнучкі варіанти планування."
+        ],
+        "experience": "Джон викладає мови протягом 7 років і має великий досвід у допомозі студентам покращити свої мовні навички. Він успішно навчав багатьох студентів різного походження та рівня володіння мовою.",
+        "reviews": [
+          {
+            "reviewer_name": "Alice",
+            "reviewer_rating": 5,
+            "comment": "Джон - відмінний вчитель! Я дуже рекомендую його."
+          },
+          {
+            "reviewer_name": "Bob",
+            "reviewer_rating": 4,
+            "comment": "Джон дуже знаючий та терплячий. Мені сподобалися його уроки."
+          }
+        ]
+      }
+    },
+    "name": "John",
+    "surname": "Doe",
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate",
+      "C1 Advanced",
+      "C2 Proficient"
+    ],
+    "rating": 4.5,
+    "price_per_hour": 25,
+    "lessons_done": 1375,
+    "avatar_url": "https://ftp.goit.study/img/avatars/1.jpg"
+  },
+  "teacher_2": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons are structured to cover grammar, vocabulary, and practical usage of the language.",
+        "conditions": [
+          "Welcomes both adult learners and teenagers (13 years and above).",
+          "Provides personalized study plans."
+        ],
+        "experience": "Jane is an experienced and dedicated language teacher specializing in German and French. She holds a Bachelor's degree in German Studies and a Master's degree in French Literature. Her passion for languages and teaching has driven her to become a highly proficient and knowledgeable instructor. With over 10 years of teaching experience, Jane has helped numerous students of various backgrounds and proficiency levels achieve their language learning goals. She is skilled at adapting her teaching methods to suit the needs and learning styles of her students, ensuring that they feel supported and motivated throughout their language journey.",
+        "reviews": [
+          {
+            "reviewer_name": "Eve",
+            "reviewer_rating": 5,
+            "comment": "Jane is an amazing teacher! She is patient and supportive."
+          },
+          {
+            "reviewer_name": "Frank",
+            "reviewer_rating": 4,
+            "comment": "Jane's lessons were very helpful. I made good progress."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки структуровані для вивчення граматики, словникового запасу та практичного використання мови.",
+        "conditions": [
+          "Приймає як дорослих учнів, так і підлітків (від 13 років).",
+          "Надає індивідуальні навчальні плани."
+        ],
+        "experience": "Джейн - досвідчений та відданий викладач мови, яка спеціалізується на німецькій та французькій мовах. Вона має ступінь бакалавра з німецької філології та ступінь магістра з французької літератури. Її пристрасть до мов та викладання зробила її висококваліфікованим та знаючим інструктором. Маючи понад 10 років досвіду викладання, Джейн допомогла численним студентам різного походження та рівня володіння мовою досягти своїх цілей у вивченні мови. Вона вміє адаптувати свої методи викладання до потреб та стилів навчання своїх студентів, забезпечуючи їм підтримку та мотивацію протягом усього процесу вивчення мови.",
+        "reviews": [
+          {
+            "reviewer_name": "Eve",
+            "reviewer_rating": 5,
+            "comment": "Джейн - чудова вчителька! Вона терпляча та підтримує."
+          },
+          {
+            "reviewer_name": "Frank",
+            "reviewer_rating": 4,
+            "comment": "Уроки Джейн були дуже корисними. Я досяг хорошого прогресу."
+          }
+        ]
+      }
+    },
+    "name": "Jane",
+    "surname": "Smith",
+    "languages": [
+      "French",
+      "German"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 30,
+    "lessons_done": 1098,
+    "avatar_url": "https://ftp.goit.study/img/avatars/2.jpg"
+  },
+  "teacher_3": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on developing all four language skills: speaking, listening, reading, and writing.",
+        "conditions": [
+          "Teaches all age groups, including children, teenagers, and adults.",
+          "Offers group lessons at discounted rates."
+        ],
+        "experience": "David has been teaching Mandarin Chinese for 4 years. He has a passion for language teaching and is dedicated to helping his students succeed. With a solid understanding of the language and culture, David ensures that his lessons are both informative and enjoyable.",
+        "reviews": [
+          {
+            "reviewer_name": "Grace",
+            "reviewer_rating": 4,
+            "comment": "David explains things clearly and is knowledgeable in the subject."
+          },
+          {
+            "reviewer_name": "Henry",
+            "reviewer_rating": 3,
+            "comment": "David's teaching style didn't suit me, but he is still a good teacher."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку всіх чотирьох мовних навичок: говоріння, слухання, читання та письма.",
+        "conditions": [
+          "Викладає для всіх вікових груп, включаючи дітей, підлітків та дорослих.",
+          "Пропонує групові заняття за зниженими цінами."
+        ],
+        "experience": "Девід викладає китайську мандарин протягом 4 років. Він має пристрасть до викладання мови та присвячений тому, щоб допомогти своїм студентам досягти успіху. Маючи глибоке розуміння мови та культури, Девід забезпечує, що його уроки є інформативними та цікавими.",
+        "reviews": [
+          {
+            "reviewer_name": "Grace",
+            "reviewer_rating": 4,
+            "comment": "Девід пояснює речі чітко та добре обізнаний у предметі."
+          },
+          {
+            "reviewer_name": "Henry",
+            "reviewer_rating": 3,
+            "comment": "Стиль викладання Девіда мені не підійшов, але він все ще хороший вчитель."
+          }
+        ]
+      }
+    },
+    "name": "David",
+    "surname": "Johnson",
+    "languages": [
+      "Mandarin Chinese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.2,
+    "price_per_hour": 35,
+    "lessons_done": 1203,
+    "avatar_url": "https://ftp.goit.study/img/avatars/3.jpg"
+  },
+  "teacher_4": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building conversational skills and grammar knowledge.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Sarah has been teaching English for 6 years. She has worked with students from diverse backgrounds and understands the challenges they face while learning a new language. Her teaching approach emphasizes practical communication skills and ensures a supportive and engaging learning environment.",
+        "reviews": [
+          {
+            "reviewer_name": "Emily",
+            "reviewer_rating": 4,
+            "comment": "Sarah is a patient and helpful teacher. I enjoyed her lessons."
+          },
+          {
+            "reviewer_name": "Alex",
+            "reviewer_rating": 5,
+            "comment": "Sarah's teaching style is engaging and effective. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку навичок спілкування та знань з граматики.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Сара викладає англійську мову протягом 6 років. Вона працювала зі студентами різного походження та розуміє виклики, з якими вони стикаються під час вивчення нової мови. Її підхід до викладання акцентує на практичних навичках спілкування та забезпечує підтримуюче та захоплююче навчальне середовище.",
+        "reviews": [
+          {
+            "reviewer_name": "Emily",
+            "reviewer_rating": 4,
+            "comment": "Сара - терпляча та корисна вчителька. Мені сподобалися її уроки."
+          },
+          {
+            "reviewer_name": "Alex",
+            "reviewer_rating": 5,
+            "comment": "Стиль викладання Сари є захоплюючим та ефективним. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Sarah",
+    "surname": "Johnson",
+    "languages": [
+      "English"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.6,
+    "price_per_hour": 28,
+    "lessons_done": 1120,
+    "avatar_url": "https://ftp.goit.study/img/avatars/4.jpg"
+  },
+  "teacher_5": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on developing speaking fluency and listening comprehension.",
+        "conditions": [
+          "Teaches adults, teenagers, and children (10 years and above).",
+          "Customized study materials provided."
+        ],
+        "experience": "Michael has been teaching Spanish for 5 years. He has a deep understanding of the language and culture, which he incorporates into his lessons. Michael's teaching style is interactive and dynamic, fostering an enjoyable learning experience while helping students achieve their language goals.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophia",
+            "reviewer_rating": 5,
+            "comment": "Michael is an excellent teacher. He makes learning Spanish fun and engaging."
+          },
+          {
+            "reviewer_name": "Oliver",
+            "reviewer_rating": 4,
+            "comment": "I have made great progress with Michael's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку плавності мовлення та розуміння на слух.",
+        "conditions": [
+          "Викладає для дорослих, підлітків та дітей (від 10 років).",
+          "Надаються індивідуальні навчальні матеріали."
+        ],
+        "experience": "Майкл викладає іспанську мову протягом 5 років. Він має глибоке розуміння мови та культури, яке він включає у свої уроки. Стиль викладання Майкла є інтерактивним та динамічним, що сприяє приємному навчальному досвіду та допомагає студентам досягати своїх мовних цілей.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophia",
+            "reviewer_rating": 5,
+            "comment": "Майкл - чудовий вчитель. Він робить вивчення іспанської цікавим та захоплюючим."
+          },
+          {
+            "reviewer_name": "Oliver",
+            "reviewer_rating": 4,
+            "comment": "Я досяг значних успіхів завдяки урокам Майкла. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Michael",
+    "surname": "Brown",
+    "languages": [
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.4,
+    "price_per_hour": 32,
+    "lessons_done": 1355,
+    "avatar_url": "https://ftp.goit.study/img/avatars/5.jpg"
+  },
+  "teacher_6": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Emma has been teaching French and Italian for 8 years. She has a strong background in language education and a passion for helping students succeed. Emma's teaching approach is student-centered, incorporating interactive activities and authentic materials to create a dynamic and immersive learning environment.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Emma is an amazing teacher. Her lessons are interactive and engaging."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Emma's lessons. Highly recommended for French and Italian."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Емма викладає французьку та італійську мови протягом 8 років. Вона має міцну основу в мовній освіті та пристрасть допомагати студентам досягати успіху. Підхід Емми до викладання орієнтований на студента, включаючи інтерактивні заходи та автентичні матеріали для створення динамічного та занурювального навчального середовища.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Емма - дивовижна вчителька. Її уроки інтерактивні та захоплюючі."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчилася на уроках Емми. Дуже рекомендую для французької та італійської мов."
+          }
+        ]
+      }
+    },
+    "name": "Emma",
+    "surname": "Wilson",
+    "languages": [
+      "French",
+      "Italian"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 27,
+    "lessons_done": 1425,
+    "avatar_url": "https://ftp.goit.study/img/avatars/6.jpg"
+  },
+  "teacher_7": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and cultural discussions.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Alexander has been teaching English and Korean for 5 years. He has a strong background in language education and has successfully helped numerous students improve their language proficiency. Alexander's teaching style is student-centered, and he creates a supportive and engaging learning environment to maximize his students' language learning potential.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophie",
+            "reviewer_rating": 5,
+            "comment": "Alexander is a patient and knowledgeable teacher. I have learned a lot from his lessons."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "I highly recommend Alexander. His lessons are engaging and well-structured."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та культурні дискусії.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Олександр викладає англійську та корейську мови протягом 5 років. Він має міцну основу в мовній освіті та успішно допоміг численним студентам покращити їхнє володіння мовою. Стиль викладання Олександра орієнтований на студента, і він створює підтримуюче та захоплююче навчальне середовище, щоб максимально розкрити мовний потенціал своїх студентів.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophie",
+            "reviewer_rating": 5,
+            "comment": "Олександр - терплячий та знаючий вчитель. Я багато чому навчився на його уроках."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "Я дуже рекомендую Олександра. Його уроки захоплюючі та добре структуровані."
+          }
+        ]
+      }
+    },
+    "name": "Alexander",
+    "surname": "Lee",
+    "languages": [
+      "English",
+      "Korean"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 30,
+    "lessons_done": 1230,
+    "avatar_url": "https://ftp.goit.study/img/avatars/7.jpg"
+  },
+  "teacher_8": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on speaking fluency, grammar, and cultural understanding.",
+        "conditions": [
+          "Teaches adults, teenagers, and children (10 years and above).",
+          "Customized study materials provided."
+        ],
+        "experience": "Sophia has been teaching Spanish and French for 7 years. She has extensive experience in language instruction and is dedicated to helping her students achieve their language goals. Sophia's lessons are designed to be interactive and enjoyable, fostering a love for languages while developing strong language skills.",
+        "reviews": [
+          {
+            "reviewer_name": "Ethan",
+            "reviewer_rating": 5,
+            "comment": "Sophia is an excellent teacher. Her lessons are fun and interactive."
+          },
+          {
+            "reviewer_name": "Ava",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Spanish and French skills significantly with Sophia's lessons."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на плавності мовлення, граматиці та культурному розумінні.",
+        "conditions": [
+          "Викладає для дорослих, підлітків та дітей (від 10 років).",
+          "Надаються індивідуальні навчальні матеріали."
+        ],
+        "experience": "Софія викладає іспанську та французьку мови протягом 7 років. Вона має великий досвід у мовній освіті та присвячена допомозі своїм студентам досягати їхніх мовних цілей. Уроки Софії розроблені так, щоб бути інтерактивними та приємними, виховуючи любов до мов та розвиваючи міцні мовні навички.",
+        "reviews": [
+          {
+            "reviewer_name": "Ethan",
+            "reviewer_rating": 5,
+            "comment": "Софія - чудова вчителька. Її уроки веселі та інтерактивні."
+          },
+          {
+            "reviewer_name": "Ava",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращила свої навички іспанської та французької завдяки урокам Софії."
+          }
+        ]
+      }
+    },
+    "name": "Sophia",
+    "surname": "Garcia",
+    "languages": [
+      "Spanish",
+      "French"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 35,
+    "lessons_done": 1450,
+    "avatar_url": "https://ftp.goit.study/img/avatars/8.jpg"
+  },
+  "teacher_9": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building a strong foundation in German language skills.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Max has been teaching German for 6 years and has a deep understanding of the language. He has helped numerous students gain proficiency in German through his structured and comprehensive lessons. Max's teaching approach is tailored to each student's needs, ensuring a personalized and effective learning experience.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 4,
+            "comment": "Max is a dedicated and knowledgeable teacher. I enjoyed his German lessons."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 5,
+            "comment": "I highly recommend Max for German lessons. He explains concepts clearly and provides useful tips."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на побудові міцної основи німецької мови.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Макс викладає німецьку мову протягом 6 років і має глибоке розуміння мови. Він допоміг численним студентам опанувати німецьку мову завдяки своїм структурованим та всебічним урокам. Підхід Макса до викладання адаптований до потреб кожного студента, забезпечуючи персоналізований та ефективний навчальний досвід.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 4,
+            "comment": "Макс - відданий та знаючий вчитель. Мені сподобалися його уроки німецької."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 5,
+            "comment": "Я дуже рекомендую Макса для уроків німецької. Він чітко пояснює концепції та надає корисні поради."
+          }
+        ]
+      }
+    },
+    "name": "Max",
+    "surname": "Andersen",
+    "languages": [
+      "German"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.6,
+    "price_per_hour": 28,
+    "lessons_done": 1305,
+    "avatar_url": "https://ftp.goit.study/img/avatars/9.jpg"
+  },
+  "teacher_10": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Isabella has been teaching English and Spanish for 5 years. She has a passion for language teaching and strives to create a supportive and interactive learning environment for her students. Isabella's lessons are tailored to each student's needs, helping them develop their language skills and gain confidence in their language abilities.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Isabella is a fantastic teacher. Her lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have made significant progress with Isabella's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Ізабелла викладає англійську та іспанську мови протягом 5 років. Вона має пристрасть до викладання мов і прагне створити підтримуюче та інтерактивне навчальне середовище для своїх студентів. Уроки Ізабелли адаптовані до потреб кожного студента, допомагаючи їм розвивати свої мовні навички та набувати впевненості у своїх мовних здібностях.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Ізабелла - фантастична вчителька. Її уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я досягла значних успіхів завдяки урокам Ізабелли. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Isabella",
+    "surname": "Lopez",
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 25,
+    "lessons_done": 1125,
+    "avatar_url": "https://ftp.goit.study/img/avatars/10.jpg"
+  },
+  "teacher_11": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through interactive activities and cultural discussions.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Daniel has been teaching French for 7 years and has extensive experience in language instruction. He is dedicated to helping his students develop their language skills in an engaging and effective manner. Daniel's lessons incorporate a variety of activities and materials to provide a comprehensive learning experience.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophie",
+            "reviewer_rating": 5,
+            "comment": "Daniel is an excellent teacher. His lessons are well-structured and enjoyable."
+          },
+          {
+            "reviewer_name": "Benjamin",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Daniel's lessons. Highly recommended for French learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через інтерактивні заходи та культурні дискусії.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Даніель викладає французьку мову протягом 7 років і має великий досвід у мовній освіті. Він присвячений допомозі своїм студентам розвивати свої мовні навички у захоплюючий та ефективний спосіб. Уроки Даніеля включають різноманітні заходи та матеріали для забезпечення всебічного навчального досвіду.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophie",
+            "reviewer_rating": 5,
+            "comment": "Даніель - чудовий вчитель. Його уроки добре структуровані та приємні."
+          },
+          {
+            "reviewer_name": "Benjamin",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчився на уроках Даніеля. Дуже рекомендую для тих, хто вивчає французьку."
+          }
+        ]
+      }
+    },
+    "name": "Daniel",
+    "surname": "Martinez",
+    "languages": [
+      "French"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 30,
+    "lessons_done": 1260,
+    "avatar_url": "https://ftp.goit.study/img/avatars/11.jpg"
+  },
+  "teacher_12": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on speaking fluency, grammar, and cultural understanding.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Customized study materials provided."
+        ],
+        "experience": "Olivia has been teaching Italian for 6 years and has a passion for sharing the Italian language and culture with her students. She creates engaging and interactive lessons that foster language proficiency and cultural understanding. Olivia's teaching approach is student-centered and aims to inspire a love for the Italian language and its rich cultural heritage.",
+        "reviews": [
+          {
+            "reviewer_name": "Jacob",
+            "reviewer_rating": 5,
+            "comment": "Olivia is an amazing Italian teacher. Her lessons are engaging and informative."
+          },
+          {
+            "reviewer_name": "Emily",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Italian skills significantly with Olivia's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на плавності мовлення, граматиці та культурному розумінні.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Надаються індивідуальні навчальні матеріали."
+        ],
+        "experience": "Олівія викладає італійську мову протягом 6 років і має пристрасть ділитися італійською мовою та культурою зі своїми студентами. Вона створює захоплюючі та інтерактивні уроки, які сприяють мовній майстерності та культурному розумінню. Підхід Олівії до викладання орієнтований на студента та має на меті надихнути любов до італійської мови та її багатої культурної спадщини.",
+        "reviews": [
+          {
+            "reviewer_name": "Jacob",
+            "reviewer_rating": 5,
+            "comment": "Олівія - дивовижна вчителька італійської. Її уроки захоплюючі та інформативні."
+          },
+          {
+            "reviewer_name": "Emily",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращила свої навички італійської завдяки урокам Олівії. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Olivia",
+    "surname": "Taylor",
+    "languages": [
+      "Italian"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 27,
+    "lessons_done": 1325,
+    "avatar_url": "https://ftp.goit.study/img/avatars/12.jpg"
+  },
+  "teacher_13": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and practical exercises.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Ethan has been teaching English and Spanish for 6 years. He has a wealth of experience in language instruction and is skilled at adapting his teaching methods to meet the unique needs of each student. Ethan's lessons are dynamic and interactive, incorporating a variety of engaging activities to ensure effective language learning.",
+        "reviews": [
+          {
+            "reviewer_name": "Ava",
+            "reviewer_rating": 5,
+            "comment": "Ethan is an excellent teacher. His lessons are engaging and tailored to individual needs."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 4,
+            "comment": "I highly recommend Ethan. He makes learning languages enjoyable and productive."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та практичні вправи.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Ітан викладає англійську та іспанську мови протягом 6 років. Він має багатий досвід у мовній освіті та вміє адаптувати свої методи викладання до унікальних потреб кожного студента. Уроки Ітана є динамічними та інтерактивними, включаючи різноманітні захоплюючі заходи для забезпечення ефективного вивчення мови.",
+        "reviews": [
+          {
+            "reviewer_name": "Ava",
+            "reviewer_rating": 5,
+            "comment": "Ітан - чудовий вчитель. Його уроки захоплюючі та адаптовані до індивідуальних потреб."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 4,
+            "comment": "Я дуже рекомендую Ітана. Він робить вивчення мов приємним та продуктивним."
+          }
+        ]
+      }
+    },
+    "name": "Ethan",
+    "surname": "Gonzalez",
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.6,
+    "price_per_hour": 28,
+    "lessons_done": 1285,
+    "avatar_url": "https://ftp.goit.study/img/avatars/13.jpg"
+  },
+  "teacher_14": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Emily has been teaching French and German for 7 years. She has a deep understanding of the languages and cultures and uses her expertise to create engaging and informative lessons. Emily's teaching approach is student-centered, fostering a supportive and interactive learning environment to help her students achieve their language goals.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Emily is an excellent teacher. Her lessons are well-structured and informative."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Emily's lessons. Highly recommended for French and German learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Емілі викладає французьку та німецьку мови протягом 7 років. Вона має глибоке розуміння мов та культур і використовує свої знання для створення захоплюючих та інформативних уроків. Підхід Емілі до викладання орієнтований на студента, створюючи підтримуюче та інтерактивне навчальне середовище, щоб допомогти її студентам досягти своїх мовних цілей.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Емілі - чудова вчителька. Її уроки добре структуровані та інформативні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчилася на уроках Емілі. Дуже рекомендую для тих, хто вивчає французьку та німецьку."
+          }
+        ]
+      }
+    },
+    "name": "Emily",
+    "surname": "Clark",
+    "languages": [
+      "French",
+      "German"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 30,
+    "lessons_done": 1350,
+    "avatar_url": "https://ftp.goit.study/img/avatars/14.jpg"
+  },
+  "teacher_15": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building a strong foundation in Mandarin language skills.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Jacob has been teaching Mandarin Chinese for 8 years. He has extensive experience in language instruction and a deep knowledge of Mandarin and Chinese culture. Jacob's lessons are carefully structured to ensure systematic learning and provide a solid foundation in Mandarin language skills. He creates a supportive and engaging learning environment where students can develop their language proficiency with confidence.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Jacob is an excellent Mandarin teacher. His lessons are clear, structured, and enjoyable."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Mandarin skills significantly with Jacob's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на побудові міцної основи китайської мови мандарин.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Джейкоб викладає китайську мову мандарин протягом 8 років. Він має великий досвід у мовній освіті та глибокі знання китайської мови та культури. Уроки Джейкоба ретельно структуровані для забезпечення систематичного навчання та створення міцної основи китайської мови. Він створює підтримуюче та захоплююче навчальне середовище, де студенти можуть розвивати свої мовні навички з упевненістю.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Джейкоб - чудовий викладач китайської. Його уроки зрозумілі, структуровані та приємні."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращив свої навички китайської завдяки урокам Джейкоба. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Jacob",
+    "surname": "Wang",
+    "languages": [
+      "Mandarin Chinese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 32,
+    "lessons_done": 1420,
+    "avatar_url": "https://ftp.goit.study/img/avatars/15.jpg"
+  },
+  "teacher_16": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and practical exercises.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Ava has been teaching English for 6 years and has extensive experience in language instruction. She is dedicated to helping her students achieve their language goals through engaging and effective lessons. Ava's teaching approach emphasizes interactive activities, practical exercises, and personalized instruction to ensure optimal language learning outcomes.",
+        "reviews": [
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 5,
+            "comment": "Ava is a fantastic teacher. Her lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Sophia",
+            "reviewer_rating": 4,
+            "comment": "I have made significant progress with Ava's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та практичні вправи.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Ава викладає англійську мову протягом 6 років і має великий досвід у мовній освіті. Вона присвячена допомозі своїм студентам досягти їхніх мовних цілей через захоплюючі та ефективні уроки. Підхід Ави до викладання акцентує на інтерактивних заходах, практичних вправах та індивідуальному навчанні для забезпечення оптимальних результатів у вивченні мови.",
+        "reviews": [
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 5,
+            "comment": "Ава - фантастична вчителька. Її уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Sophia",
+            "reviewer_rating": 4,
+            "comment": "Я досягла значних успіхів завдяки урокам Ави. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Ava",
+    "surname": "Cooper",
+    "languages": [
+      "English"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 27,
+    "lessons_done": 1250,
+    "avatar_url": "https://ftp.goit.study/img/avatars/16.jpg"
+  },
+  "teacher_17": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Benjamin has been teaching Spanish for 8 years and has a passion for sharing the Spanish language and culture with his students. He has extensive experience in language instruction and is skilled at creating engaging and personalized lessons. Benjamin's teaching style emphasizes practical application and cultural insights to ensure a well-rounded language learning experience.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Benjamin is an excellent teacher. His lessons are engaging and tailored to individual needs."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "I highly recommend Benjamin. He makes learning Spanish enjoyable and productive."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Бенджамін викладає іспанську мову протягом 8 років і має пристрасть ділитися іспанською мовою та культурою зі своїми студентами. Він має великий досвід у мовній освіті та вміє створювати захоплюючі та персоналізовані уроки. Стиль викладання Бенджаміна акцентує на практичному застосуванні та культурних аспектах для забезпечення всебічного досвіду вивчення мови.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Бенджамін - чудовий вчитель. Його уроки захоплюючі та адаптовані до індивідуальних потреб."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "Я дуже рекомендую Бенджаміна. Він робить вивчення іспанської приємним та продуктивним."
+          }
+        ]
+      }
+    },
+    "name": "Benjamin",
+    "surname": "Rivera",
+    "languages": [
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 30,
+    "lessons_done": 1355,
+    "avatar_url": "https://ftp.goit.study/img/avatars/17.jpg"
+  },
+  "teacher_18": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Chloe has been teaching Vietnamese for 7 years and has a deep understanding of the language and culture. She is dedicated to helping her students develop their language skills through well-structured and informative lessons. Chloe's teaching approach emphasizes practical conversation practice and cultural insights to provide a comprehensive and engaging learning experience.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Chloe is an amazing Vietnamese teacher. Her lessons are well-structured and informative."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Chloe's lessons. Highly recommended for Vietnamese learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Хлоя викладає в'єтнамську мову протягом 7 років і має глибоке розуміння мови та культури. Вона присвячена допомозі своїм студентам розвивати свої мовні навички через добре структуровані та інформативні уроки. Підхід Хлої до викладання акцентує на практиці спілкування та культурних аспектах для забезпечення всебічного та захоплюючого навчального досвіду.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Хлоя - дивовижна вчителька в'єтнамської. Її уроки добре структуровані та інформативні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчилася на уроках Хлої. Дуже рекомендую для тих, хто вивчає в'єтнамську."
+          }
+        ]
+      }
+    },
+    "name": "Chloe",
+    "surname": "Nguyen",
+    "languages": [
+      "Vietnamese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 28,
+    "lessons_done": 1300,
+    "avatar_url": "https://ftp.goit.study/img/avatars/18.jpg"
+  },
+  "teacher_19": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and practical exercises.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Henry has been teaching English and German for 9 years. He has extensive experience in language instruction and is skilled at creating engaging and effective lessons. Henry's teaching approach combines interactive activities, practical exercises, and personalized instruction to ensure optimal language learning outcomes. With his patient and supportive teaching style, Henry helps his students develop confidence and proficiency in English and German.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Henry is an excellent teacher. His lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Benjamin",
+            "reviewer_rating": 4,
+            "comment": "I have made significant progress with Henry's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та практичні вправи.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Генрі викладає англійську та німецьку мови протягом 9 років. Він має великий досвід у мовній освіті та вміє створювати захоплюючі та ефективні уроки. Підхід Генрі до викладання поєднує інтерактивні заходи, практичні вправи та індивідуальне навчання для забезпечення оптимальних результатів у вивченні мови. Завдяки своєму терплячому та підтримуючому стилю викладання, Генрі допомагає своїм студентам розвинути впевненість та майстерність у англійській та німецькій мовах.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Генрі - чудовий вчитель. Його уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Benjamin",
+            "reviewer_rating": 4,
+            "comment": "Я досяг значних успіхів завдяки урокам Генрі. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Henry",
+    "surname": "Lewis",
+    "languages": [
+      "English",
+      "German"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 32,
+    "lessons_done": 1425,
+    "avatar_url": "https://ftp.goit.study/img/avatars/19.jpg"
+  },
+  "teacher_20": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Emily has been teaching French for 7 years and has a passion for sharing the language and culture with her students. She has extensive experience in language instruction and is dedicated to creating well-structured and informative lessons. Emily's teaching style emphasizes practical conversation practice, cultural insights, and personalized instruction to help her students develop their French language skills with confidence.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophie",
+            "reviewer_rating": 5,
+            "comment": "Emily is an excellent French teacher. Her lessons are well-structured and informative."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Emily's lessons. Highly recommended for French learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Емілі викладає французьку мову протягом 7 років і має пристрасть ділитися мовою та культурою зі своїми студентами. Вона має великий досвід у мовній освіті та присвячена створенню добре структурованих та інформативних уроків. Стиль викладання Емілі акцентує на практиці спілкування, культурних аспектах та індивідуальному навчанні, щоб допомогти її студентам розвинути навички французької мови з упевненістю.",
+        "reviews": [
+          {
+            "reviewer_name": "Sophie",
+            "reviewer_rating": 5,
+            "comment": "Емілі - чудова вчителька французької. Її уроки добре структуровані та інформативні."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчився на уроках Емілі. Дуже рекомендую для тих, хто вивчає французьку."
+          }
+        ]
+      }
+    },
+    "name": "Emily",
+    "surname": "Baker",
+    "languages": [
+      "French"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 30,
+    "lessons_done": 1310,
+    "avatar_url": "https://ftp.goit.study/img/avatars/20.jpg"
+  },
+  "teacher_21": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building a strong foundation in Mandarin language skills.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Isabella has been teaching Mandarin Chinese for 8 years and has a wealth of experience in language instruction. She is dedicated to helping her students develop a strong foundation in Mandarin language skills. Isabella's teaching approach emphasizes interactive and engaging lessons, combining practical exercises, cultural insights, and personalized instruction to ensure her students' success in learning Mandarin Chinese.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Isabella is an amazing Mandarin teacher. Her lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Mandarin skills significantly with Isabella's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на побудові міцної основи китайської мови мандарин.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Ізабелла викладає китайську мову мандарин протягом 8 років і має багатий досвід у мовній освіті. Вона присвячена допомозі своїм студентам розвинути міцну основу китайської мови. Підхід Ізабелли до викладання акцентує на інтерактивних та захоплюючих уроках, поєднуючи практичні вправи, культурні аспекти та індивідуальне навчання, щоб забезпечити успіх своїх студентів у вивченні китайської мови мандарин.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Ізабелла - дивовижна вчителька китайської. Її уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращила свої навички китайської завдяки урокам Ізабелли. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Isabella",
+    "surname": "Chen",
+    "languages": [
+      "Mandarin Chinese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 28,
+    "lessons_done": 1355,
+    "avatar_url": "https://ftp.goit.study/img/avatars/21.jpg"
+  },
+  "teacher_22": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and practical exercises.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Oliver has been teaching English and Spanish for 5 years. He has a deep understanding of both languages and is skilled at delivering engaging and effective lessons to his students. Oliver's teaching approach emphasizes interactive activities and practical exercises to enhance language skills. With his patient and supportive teaching style, Oliver creates a positive learning environment that promotes rapid progress and confidence in English and Spanish.",
+        "reviews": [
+          {
+            "reviewer_name": "Ava",
+            "reviewer_rating": 5,
+            "comment": "Oliver is a fantastic teacher. His lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 4,
+            "comment": "I have made significant progress with Oliver's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та практичні вправи.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Олівер викладає англійську та іспанську мови протягом 5 років. Він має глибоке розуміння обох мов і вміє проводити захоплюючі та ефективні уроки для своїх студентів. Підхід Олівера до викладання акцентує на інтерактивних заходах та практичних вправах для покращення мовних навичок. Завдяки своєму терплячому та підтримуючому стилю викладання, Олівер створює позитивне навчальне середовище, яке сприяє швидкому прогресу та впевненості в англійській та іспанській мовах.",
+        "reviews": [
+          {
+            "reviewer_name": "Ava",
+            "reviewer_rating": 5,
+            "comment": "Олівер - фантастичний вчитель. Його уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Noah",
+            "reviewer_rating": 4,
+            "comment": "Я досяг значних успіхів завдяки урокам Олівера. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Oliver",
+    "surname": "Wright",
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.6,
+    "price_per_hour": 25,
+    "lessons_done": 1225,
+    "avatar_url": "https://ftp.goit.study/img/avatars/22.jpg"
+  },
+  "teacher_23": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Sophia has been teaching French for 6 years and is passionate about sharing the beauty of the language with her students. She has extensive experience in language instruction and is known for her well-structured and informative lessons. Sophia's teaching approach combines conversational practice, cultural insights, and personalized instruction to help her students develop their French language skills with confidence and fluency.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Sophia is an excellent French teacher. Her lessons are well-structured and informative."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Sophia's lessons. Highly recommended for French learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Софія викладає французьку мову протягом 6 років і має пристрасть ділитися красою мови зі своїми студентами. Вона має великий досвід у мовній освіті та відома своїми добре структурованими та інформативними уроками. Підхід Софії до викладання поєднує практику спілкування, культурні аспекти та індивідуальне навчання, щоб допомогти її студентам розвинути навички французької мови з упевненістю та плавністю.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Софія - чудова вчителька французької. Її уроки добре структуровані та інформативні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчилася на уроках Софії. Дуже рекомендую для тих, хто вивчає французьку."
+          }
+        ]
+      }
+    },
+    "name": "Sophia",
+    "surname": "Turner",
+    "languages": [
+      "French"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 30,
+    "lessons_done": 1285,
+    "avatar_url": "https://ftp.goit.study/img/avatars/23.jpg"
+  },
+  "teacher_24": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building a strong foundation in Mandarin language skills.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Lucas has been teaching Mandarin Chinese for 7 years and has a wealth of experience in language instruction. He is dedicated to helping his students develop a solid foundation in Mandarin language skills. Lucas's teaching approach emphasizes engaging and effective lessons, combining interactive activities, practical exercises, and cultural insights to facilitate language learning. With his patient and supportive teaching style, Lucas creates a positive learning environment that fosters rapid progress and confidence in Mandarin Chinese.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Lucas is an excellent Mandarin teacher. His lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Mandarin skills significantly with Lucas's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на побудові міцної основи китайської мови мандарин.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Лукас викладає китайську мову мандарин протягом 7 років і має багатий досвід у мовній освіті. Він присвячений допомозі своїм студентам розвинути міцну основу китайської мови. Підхід Лукаса до викладання акцентує на захоплюючих та ефективних уроках, поєднуючи інтерактивні заходи, практичні вправи та культурні аспекти для полегшення вивчення мови. Завдяки своєму терплячому та підтримуючому стилю викладання, Лукас створює позитивне навчальне середовище, яке сприяє швидкому прогресу та впевненості в китайській мові мандарин.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Лукас - чудовий викладач китайської. Його уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращив свої навички китайської завдяки урокам Лукаса. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Lucas",
+    "surname": "Liu",
+    "languages": [
+      "Mandarin Chinese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 28,
+    "lessons_done": 1240,
+    "avatar_url": "https://ftp.goit.study/img/avatars/24.jpg"
+  },
+  "teacher_25": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and practical exercises.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Sophie has been teaching English and Spanish for 6 years. She has a strong command of both languages and is dedicated to helping her students achieve their language learning goals. Sophie's teaching approach emphasizes engaging and effective lessons that incorporate interactive activities and practical exercises. Her lessons are designed to build language skills, improve fluency, and enhance communication abilities. With her patient and supportive teaching style, Sophie creates a positive and productive learning environment for her students.",
+        "reviews": [
+          {
+            "reviewer_name": "Oliver",
+            "reviewer_rating": 5,
+            "comment": "Sophie is an excellent teacher. Her lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have made significant progress with Sophie's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та практичні вправи.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Софі викладає англійську та іспанську мови протягом 6 років. Вона добре володіє обома мовами та присвячена допомозі своїм студентам досягати їхніх цілей у вивченні мови. Підхід Софі до викладання акцентує на захоплюючих та ефективних уроках, які включають інтерактивні заходи та практичні вправи. Її уроки розроблені для розвитку мовних навичок, покращення плавності мовлення та розвитку комунікативних здібностей. Завдяки своєму терплячому та підтримуючому стилю викладання, Софі створює позитивне та продуктивне навчальне середовище для своїх студентів.",
+        "reviews": [
+          {
+            "reviewer_name": "Oliver",
+            "reviewer_rating": 5,
+            "comment": "Софі - чудова вчителька. Її уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я досягла значних успіхів завдяки урокам Софі. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Sophie",
+    "surname": "Davis",
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 27,
+    "lessons_done": 1265,
+    "avatar_url": "https://ftp.goit.study/img/avatars/25.jpg"
+  },
+  "teacher_26": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Emma has been teaching French for 5 years and has a passion for sharing the French language and culture with her students. She has extensive experience in language instruction and is known for her well-structured and informative lessons. Emma's teaching approach combines conversational practice, cultural insights, and personalized instruction to help her students develop their French language skills with confidence and fluency. With her patient and supportive teaching style, Emma creates a positive learning environment that fosters rapid progress and enjoyment in French language learning.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Emma is an excellent French teacher. Her lessons are well-structured and informative."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Emma's lessons. Highly recommended for French learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Емма викладає французьку мову протягом 5 років і має пристрасть ділитися французькою мовою та культурою зі своїми студентами. Вона має великий досвід у мовній освіті та відома своїми добре структурованими та інформативними уроками. Підхід Емми до викладання поєднує практику спілкування, культурні аспекти та індивідуальне навчання, щоб допомогти її студентам розвинути навички французької мови з упевненістю та плавністю. Завдяки своєму терплячому та підтримуючому стилю викладання, Емма створює позитивне навчальне середовище, яке сприяє швидкому прогресу та задоволенню від вивчення французької мови.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Емма - чудова вчителька французької. Її уроки добре структуровані та інформативні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчилася на уроках Емми. Дуже рекомендую для тих, хто вивчає французьку."
+          }
+        ]
+      }
+    },
+    "name": "Emma",
+    "surname": "Bennett",
+    "languages": [
+      "French"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 30,
+    "lessons_done": 1320,
+    "avatar_url": "https://ftp.goit.study/img/avatars/26.jpg"
+  },
+  "teacher_27": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building a strong foundation in Mandarin language skills.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "Daniel has been teaching Mandarin Chinese for 7 years and is dedicated to helping his students develop a solid foundation in the language. He has a deep understanding of Mandarin and is skilled at delivering engaging and effective lessons. Daniel's teaching approach emphasizes interactive activities and practical exercises to enhance language skills and fluency. With his patient and supportive teaching style, Daniel creates a positive learning environment that promotes rapid progress and confidence in Mandarin Chinese.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Daniel is an excellent Mandarin teacher. His lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Mandarin skills significantly with Daniel's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на побудові міцної основи китайської мови мандарин.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Даніель викладає китайську мову мандарин протягом 7 років і присвячений допомозі своїм студентам розвинути міцну основу мови. Він має глибоке розуміння китайської мови та вміє проводити захоплюючі та ефективні уроки. Підхід Даніеля до викладання акцентує на інтерактивних заходах та практичних вправах для покращення мовних навичок та плавності мовлення. Завдяки своєму терплячому та підтримуючому стилю викладання, Даніель створює позитивне навчальне середовище, яке сприяє швидкому прогресу та впевненості в китайській мові мандарин.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Даніель - чудовий викладач китайської. Його уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращив свої навички китайської завдяки урокам Даніеля. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "Daniel",
+    "surname": "Li",
+    "languages": [
+      "Mandarin Chinese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 28,
+    "lessons_done": 1375,
+    "avatar_url": "https://ftp.goit.study/img/avatars/27.jpg"
+  },
+  "teacher_28": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building language skills through interactive activities and practical exercises.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "James has been teaching English and Spanish for 5 years. He has a passion for language instruction and a strong command of both English and Spanish. James is known for his engaging and effective teaching style, creating lessons that are interactive and focused on practical application. His approach combines a variety of activities to build language skills and enhance communication abilities. With his patient and supportive teaching style, James fosters a positive learning environment that empowers students to achieve their language goals.",
+        "reviews": [
+          {
+            "reviewer_name": "Oliver",
+            "reviewer_rating": 5,
+            "comment": "James is an excellent teacher. His lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have made significant progress with James's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на розвитку мовних навичок через інтерактивні заходи та практичні вправи.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Джеймс викладає англійську та іспанську мови протягом 5 років. Він має пристрасть до мовної освіти та добре володіє як англійською, так і іспанською мовами. Джеймс відомий своїм захоплюючим та ефективним стилем викладання, створюючи уроки, які є інтерактивними та орієнтованими на практичне застосування. Його підхід поєднує різноманітні заходи для розвитку мовних навичок та покращення комунікативних здібностей. Завдяки своєму терплячому та підтримуючому стилю викладання, Джеймс створює позитивне навчальне середовище, яке надихає студентів досягати своїх мовних цілей.",
+        "reviews": [
+          {
+            "reviewer_name": "Oliver",
+            "reviewer_rating": 5,
+            "comment": "Джеймс - чудовий вчитель. Його уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я досягла значних успіхів завдяки урокам Джеймса. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "James",
+    "surname": "Robinson",
+    "languages": [
+      "English",
+      "Spanish"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate",
+      "B2 Upper-Intermediate"
+    ],
+    "rating": 4.9,
+    "price_per_hour": 27,
+    "lessons_done": 1285,
+    "avatar_url": "https://ftp.goit.study/img/avatars/28.jpg"
+  },
+  "teacher_29": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on improving language skills through conversation practice and cultural insights.",
+        "conditions": [
+          "Teaches adults and teenagers (16 years and above).",
+          "Flexible lesson packages available."
+        ],
+        "experience": "Natalie has been teaching French for 4 years and has extensive experience in language instruction. She is dedicated to helping students develop their French language skills through well-structured and informative lessons. Natalie's teaching approach emphasizes conversation practice and cultural insights to enhance language fluency and comprehension. She provides personalized instruction tailored to each student's needs and goals. With her patient and encouraging teaching style, Natalie creates a positive and engaging learning environment that supports rapid progress and enjoyment in French language learning.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Natalie is an excellent French teacher. Her lessons are well-structured and informative."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "I have learned a lot from Natalie's lessons. Highly recommended for French learners."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на покращенні мовних навичок через практику спілкування та культурні аспекти.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 16 років).",
+          "Доступні гнучкі пакети занять."
+        ],
+        "experience": "Наталі викладає французьку мову протягом 4 років і має великий досвід у мовній освіті. Вона присвячена допомозі студентам розвивати свої навички французької мови через добре структуровані та інформативні уроки. Підхід Наталі до викладання акцентує на практиці спілкування та культурних аспектах для покращення плавності мовлення та розуміння. Вона надає індивідуальне навчання, адаптоване до потреб та цілей кожного студента. Завдяки своєму терплячому та підбадьорливому стилю викладання, Наталі створює позитивне та захоплююче навчальне середовище, яке підтримує швидкий прогрес та задоволення від вивчення французької мови.",
+        "reviews": [
+          {
+            "reviewer_name": "Liam",
+            "reviewer_rating": 5,
+            "comment": "Наталі - чудова вчителька французької. Її уроки добре структуровані та інформативні."
+          },
+          {
+            "reviewer_name": "Mia",
+            "reviewer_rating": 4,
+            "comment": "Я багато чому навчилася на уроках Наталі. Дуже рекомендую для тих, хто вивчає французьку."
+          }
+        ]
+      }
+    },
+    "name": "Natalie",
+    "surname": "Turner",
+    "languages": [
+      "French"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.7,
+    "price_per_hour": 30,
+    "lessons_done": 1330,
+    "avatar_url": "https://ftp.goit.study/img/avatars/30.jpg"
+  },
+  "teacher_30": {
+    "localized": {
+      "en": {
+        "lesson_info": "Lessons focus on building a strong foundation in Mandarin language skills.",
+        "conditions": [
+          "Teaches adults and teenagers (15 years and above).",
+          "Flexible lesson timings available."
+        ],
+        "experience": "William has been teaching Mandarin Chinese for 6 years. He has extensive experience in language instruction and is dedicated to helping students develop a strong foundation in Mandarin. William's lessons are engaging and effective, combining interactive activities and effective teaching methods. His teaching approach focuses on building language skills, improving fluency, and enhancing comprehension. With his patient and supportive teaching style, William creates a positive learning environment that fosters rapid progress and confidence in Mandarin Chinese.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "William is an excellent Mandarin teacher. His lessons are engaging and effective."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "I have improved my Mandarin skills significantly with William's lessons. Highly recommended."
+          }
+        ]
+      },
+      "uk": {
+        "lesson_info": "Уроки зосереджені на побудові міцної основи китайської мови мандарин.",
+        "conditions": [
+          "Викладає для дорослих та підлітків (від 15 років).",
+          "Доступний гнучкий графік занять."
+        ],
+        "experience": "Вільям викладає китайську мову мандарин протягом 6 років. Він має великий досвід у мовній освіті та присвячений допомозі студентам розвинути міцну основу китайської мови. Уроки Вільяма є захоплюючими та ефективними, поєднуючи інтерактивні заходи та ефективні методи викладання. Його підхід до викладання зосереджений на розвитку мовних навичок, покращенні плавності мовлення та розумінні. Завдяки своєму терплячому та підтримуючому стилю викладання, Вільям створює позитивне навчальне середовище, яке сприяє швидкому прогресу та впевненості в китайській мові мандарин.",
+        "reviews": [
+          {
+            "reviewer_name": "Olivia",
+            "reviewer_rating": 5,
+            "comment": "Вільям - чудовий викладач китайської. Його уроки захоплюючі та ефективні."
+          },
+          {
+            "reviewer_name": "Daniel",
+            "reviewer_rating": 4,
+            "comment": "Я значно покращив свої навички китайської завдяки урокам Вільяма. Дуже рекомендую."
+          }
+        ]
+      }
+    },
+    "name": "William",
+    "surname": "Chen",
+    "languages": [
+      "Mandarin Chinese"
+    ],
+    "levels": [
+      "A1 Beginner",
+      "A2 Elementary",
+      "B1 Intermediate"
+    ],
+    "rating": 4.8,
+    "price_per_hour": 28,
+    "lessons_done": 1380,
+    "avatar_url": "https://ftp.goit.study/img/avatars/29.jpg"
+  }
+}

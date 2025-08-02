@@ -5,13 +5,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
+import EmailVerificationModal from '@/components/modal/email-verification-modal';
+import PasswordResetModal from '@/components/modal/password-reset-modal';
 import { LoginFormValues, loginSchema } from '@/lib/validation/login';
 import { useSignIn, useSignInWithGoogle } from '@/hooks/use-auth-actions';
-import { useSendVerificationEmail } from '@/hooks/use-send-verification-email';
-import { useSendPasswordReset } from '@/hooks/use-password-reset';
 import GoogleIcon from '@/lib/icons/google-icon.svg';
 
 interface Props {
@@ -20,17 +22,22 @@ interface Props {
 }
 
 export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const message = searchParams.get('message');
+
   const signIn = useSignIn();
   const signInWithGoogle = useSignInWithGoogle();
-  const sendVerification = useSendVerificationEmail();
-  const sendPasswordReset = useSendPasswordReset();
   const t = useTranslations('loginForm');
 
+  // Состояния для управления UI
   const [showEmailVerificationUI, setShowEmailVerificationUI] = useState(false);
   const [showForgotPasswordUI, setShowForgotPasswordUI] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [contextMessage, setContextMessage] = useState<string | null>(null);
 
+  // Форма логина
   const {
     register,
     handleSubmit,
@@ -40,10 +47,42 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     watch,
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
-  // Наблюдаем за изменениями в полях формы
   const watchedEmail = watch('email');
 
-  // Загружаем сохраненные данные при открытии модалки
+  /**
+   * Обработка контекстных сообщений на основе URL параметров
+   */
+  useEffect(() => {
+    if (isOpen && message) {
+      let modalMessage = '';
+
+      switch (message) {
+        case 'session_expired':
+          modalMessage = t('messages.sessionExpired');
+          break;
+        case 'email_change_reauth':
+          modalMessage = t('messages.emailChangeReauth');
+          break;
+        case 'security_reauth':
+          modalMessage = t('messages.securityReauth');
+          break;
+        case 'reauth_required':
+          modalMessage = t('messages.reauthRequired');
+          break;
+      }
+
+      setContextMessage(modalMessage);
+
+      // Очищаем параметр message чтобы избежать повторного показа toast при обновлении
+      const url = new URL(window.location.href);
+      url.searchParams.delete('message');
+      router.replace(url.pathname + url.search, { scroll: false });
+    }
+  }, [isOpen, message, router]);
+
+  /**
+   * Загрузка сохраненных данных при открытии модалки
+   */
   useEffect(() => {
     if (isOpen) {
       try {
@@ -52,22 +91,27 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           setValue('email', savedEmail);
         }
       } catch (error) {
-        console.warn('Could not load saved form data:', error);
+        console.warn('Не удалось загрузить сохраненные данные формы:', error);
       }
     }
   }, [isOpen, setValue]);
 
-  // Сохраняем email при его изменении
+  /**
+   * Сохранение email при его изменении
+   */
   useEffect(() => {
     if (watchedEmail) {
       try {
         localStorage.setItem('loginForm_email', watchedEmail);
       } catch (error) {
-        console.warn('Could not save form data:', error);
+        console.warn('Не удалось сохранить данные формы:', error);
       }
     }
   }, [watchedEmail]);
 
+  /**
+   * Обработчик отправки формы логина
+   */
   const onSubmit = async (data: LoginFormValues) => {
     try {
       const result = await signIn.mutateAsync({
@@ -75,248 +119,145 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         password: data.password,
       });
 
-      // Перевіряємо, чи потрібна верифікація email
+      // Проверяем, нужна ли верификация email
       if (result.needsEmailVerification) {
         setUserEmail(data.email);
         setShowEmailVerificationUI(true);
-        return; // НЕ закриваємо модалку
+        return; // НЕ закрываем модалку
       }
 
-      // Якщо все ок, очищаем сохраненные данные и закриваємо модалку
-      try {
-        localStorage.removeItem('loginForm_email');
-      } catch (error) {
-        console.warn('Could not clear saved form data:', error);
-      }
+      // При успешном логине очищаем сохраненные данные и закрываем модалку
+      clearSavedFormData();
+      setContextMessage(null);
       reset();
       onCloseAction();
+
+      // Показываем сообщение об успехе для повторной аутентификации
+      if (message) {
+        toast.success('Authentication successful!');
+      }
     } catch (err) {
-      console.error('Login error in component:', err);
-      // toast removed — хуки вже показують повідомлення
+      console.error('Ошибка логина в компоненте:', err);
     }
   };
 
+  /**
+   * Обработчик входа через Google
+   */
   const handleGoogle = async () => {
     try {
       await signInWithGoogle.mutateAsync({ redirectPath: '/' });
+
       // Очищаем сохраненные данные при успешном входе через Google
-      try {
-        localStorage.removeItem('loginForm_email');
-      } catch (error) {
-        console.warn('Could not clear saved form data:', error);
-      }
+      clearSavedFormData();
+      setContextMessage(null);
       onCloseAction();
+
+      // Показываем сообщение об успехе для повторной аутентификации
+      if (message) {
+        toast.success('Authentication successful!');
+      }
     } catch (err) {
-      console.error('Google auth error in component:', err);
-      // toast removed — хуки вже показують повідомлення
+      console.error('Ошибка Google аутентификации в компоненте:', err);
     }
   };
 
-  const handleResendVerification = async () => {
+  /**
+   * Очистка сохраненных данных формы
+   */
+  const clearSavedFormData = () => {
     try {
-      await sendVerification.mutateAsync();
-    } catch (err) {
-      console.error('Resend verification error:', err);
+      localStorage.removeItem('loginForm_email');
+    } catch (error) {
+      console.warn('Не удалось очистить сохраненные данные формы:', error);
     }
   };
 
+  /**
+   * Возврат к основной форме логина
+   */
   const handleBackToLogin = () => {
     setShowEmailVerificationUI(false);
     setShowForgotPasswordUI(false);
     setUserEmail('');
   };
 
+  /**
+   * Показ формы восстановления пароля
+   */
   const handleForgotPassword = () => {
     setShowForgotPasswordUI(true);
   };
 
-  const handleSendPasswordReset = async (email: string) => {
-    try {
-      await sendPasswordReset.mutateAsync({ email });
-    } catch (err) {
-      console.error('Send password reset error:', err);
-    }
-  };
-
+  /**
+   * Переключение видимости пароля
+   */
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // Состояния загрузки
   const isSignInLoading = signIn.isPending;
   const isGoogleLoading = signInWithGoogle.isPending;
-  const isResendLoading = sendVerification.isPending;
-  const isPasswordResetLoading = sendPasswordReset.isPending;
-  const isAnyLoading =
-    isSignInLoading ||
-    isGoogleLoading ||
-    isResendLoading ||
-    isPasswordResetLoading;
+  const isAnyLoading = isSignInLoading || isGoogleLoading;
 
-  // UI для відновлення паролю
+  // Показываем модалку восстановления пароля
   if (showForgotPasswordUI) {
     return (
-      <Modal
+      <PasswordResetModal
         isOpen={isOpen}
         onCloseAction={onCloseAction}
-        title={t('passwordReset.title')}
-      >
-        <div className="space-y-4">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-            <svg
-              className="h-8 w-8 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-              />
-            </svg>
-          </div>
-
-          <div className="text-center">
-            <h3 className="mb-2 text-lg font-medium text-gray-900">
-              {t('passwordReset.heading')}
-            </h3>
-            <p className="text-shadow-gray-muted mb-4 leading-snug">
-              {t('passwordReset.description')}
-            </p>
-          </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.currentTarget);
-              const email = formData.get('email') as string;
-              handleSendPasswordReset(email);
-            }}
-            className="space-y-4"
-          >
-            <div>
-              <input
-                type="email"
-                name="email"
-                placeholder={t('placeholders.email')}
-                required
-                className="border-gray-muted w-full rounded-xl border p-4"
-                disabled={isPasswordResetLoading}
-              />
-            </div>
-
-            <div className="space-y-3">
-              <Button
-                type="submit"
-                disabled={isPasswordResetLoading}
-                className="w-full"
-              >
-                {isPasswordResetLoading
-                  ? t('passwordReset.sending')
-                  : t('passwordReset.sendLink')}
-              </Button>
-
-              <Button
-                type="button"
-                onClick={handleBackToLogin}
-                disabled={isAnyLoading}
-                className="w-full bg-gray-500 hover:bg-gray-600"
-              >
-                {t('buttons.backToLogin')}
-              </Button>
-            </div>
-          </form>
-
-          <div className="mt-4 text-center text-xs text-gray-500">
-            <p>
-              {t('passwordReset.rememberPassword')}{' '}
-              <button
-                type="button"
-                onClick={handleBackToLogin}
-                className="text-blue-600 hover:underline"
-              >
-                {t('buttons.signIn')}
-              </button>
-            </p>
-          </div>
-        </div>
-      </Modal>
+        onBackToLoginAction={handleBackToLogin}
+      />
     );
   }
 
-  // UI для повторної відправки верифікації
+  // Показываем модалку верификации email
   if (showEmailVerificationUI) {
     return (
-      <Modal
+      <EmailVerificationModal
         isOpen={isOpen}
         onCloseAction={onCloseAction}
-        title={t('emailVerification.title')}
-      >
-        <div className="space-y-4">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
-            <svg
-              className="h-8 w-8 text-yellow-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-              />
-            </svg>
-          </div>
-
-          <div className="text-center">
-            <h3 className="mb-2 text-lg font-medium text-gray-900">
-              {t('emailVerification.heading')}
-            </h3>
-            <p className="text-shadow-gray-muted mb-4 leading-snug">
-              {t('emailVerification.description', { email: userEmail })}
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <Button
-              type="button"
-              onClick={handleResendVerification}
-              disabled={isResendLoading}
-              className="w-full"
-            >
-              {isResendLoading
-                ? t('emailVerification.sending')
-                : t('emailVerification.resendEmail')}
-            </Button>
-
-            <Button
-              type="button"
-              onClick={handleBackToLogin}
-              disabled={isAnyLoading}
-              className="w-full bg-gray-500 hover:bg-gray-600"
-            >
-              {t('buttons.backToLogin')}
-            </Button>
-          </div>
-
-          <div className="mt-4 text-center text-xs text-gray-500">
-            <p>{t('emailVerification.helpText')}</p>
-          </div>
-        </div>
-      </Modal>
+        onBackToLoginAction={handleBackToLogin}
+        userEmail={userEmail}
+      />
     );
   }
 
-  // Звичайний UI логіна
+  // Основной UI логина
   return (
     <Modal isOpen={isOpen} onCloseAction={onCloseAction} title={t('title')}>
+      {/* Показываем контекстное сообщение если есть */}
+      {contextMessage && (
+        <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-yellow-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-yellow-800">{contextMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <p className="text-shadow-gray-muted mb-5 leading-snug">
         {t('description')}
       </p>
 
+      {/* Форма логина */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-[18px]">
+        {/* Поле email */}
         <div>
           <input
             type="email"
@@ -330,6 +271,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           )}
         </div>
 
+        {/* Поле пароля */}
         <div>
           <div className="relative">
             <input
@@ -339,6 +281,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               className="border-gray-muted w-full rounded-xl border p-4 pr-12"
               disabled={isAnyLoading}
             />
+            {/* Кнопка показа/скрытия пароля */}
             <button
               type="button"
               onClick={togglePasswordVisibility}
@@ -346,22 +289,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               disabled={isAnyLoading}
             >
               {showPassword ? (
-                // Закрытый глаз (скрыть пароль)
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
-                  />
-                </svg>
-              ) : (
-                // Открытый глаз (показать пароль)
+                // Иконка скрытия пароля
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -381,6 +309,21 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
+              ) : (
+                // Иконка показа пароля
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"
+                  />
+                </svg>
               )}
             </button>
           </div>
@@ -389,6 +332,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               {errors.password.message}
             </p>
           )}
+          {/* Ссылка "Забыли пароль?" */}
           <div className="mt-2 text-right">
             <button
               type="button"
@@ -401,6 +345,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           </div>
         </div>
 
+        {/* Кнопка входа */}
         <Button
           type="submit"
           disabled={isAnyLoading}
@@ -409,12 +354,14 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           {isSignInLoading ? t('buttons.loggingIn') : t('buttons.logIn')}
         </Button>
 
+        {/* Разделитель */}
         <div className="my-4 flex items-center">
           <hr className="flex-grow border-gray-300" />
           <span className="px-2 text-gray-500">{t('or')}</span>
           <hr className="flex-grow border-gray-300" />
         </div>
 
+        {/* Кнопка входа через Google */}
         <Button
           type="button"
           onClick={handleGoogle}
