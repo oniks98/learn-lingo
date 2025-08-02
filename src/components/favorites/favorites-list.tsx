@@ -61,17 +61,17 @@ export default function FavoritesList() {
 
   if (authLoading || isLoading) {
     return (
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <Loader />
         </div>
-      </main>
+      </section>
     );
   }
 
   if (error) {
     return (
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <div className="text-center">
             <p className="mb-4 text-red-500">{t('favorites.error')}</p>
@@ -83,13 +83,13 @@ export default function FavoritesList() {
             </button>
           </div>
         </div>
-      </main>
+      </section>
     );
   }
 
   return (
     <>
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
           <div className="mb-8 text-center">
             <h1 className="mb-2 text-3xl font-bold text-gray-800">
@@ -155,7 +155,7 @@ export default function FavoritesList() {
             </>
           )}
         </div>
-      </main>
+      </section>
 
       <SignUpFormModal
         isOpen={isRegisterModalOpen}

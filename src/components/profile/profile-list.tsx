@@ -115,30 +115,30 @@ export default function ProfileList({ userId }: { userId: string }) {
 
   if (loading || !user) {
     return (
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <Loader />
         </div>
-      </main>
+      </section>
     );
   }
 
   // If user is trying to view someone else's profile, show access denied
   if (!isOwnProfile) {
     return (
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16 text-center">
           <h1 className="mb-4 text-2xl font-bold text-gray-800">
             {t('accessDenied')}
           </h1>
           <p className="text-gray-600">{t('canOnlyViewOwnProfile')}</p>
         </div>
-      </main>
+      </section>
     );
   }
 
   return (
-    <main className="mx-auto max-w-338 px-5 pb-5">
+    <section className="mx-auto max-w-338 px-5 pb-5">
       <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold text-gray-800">
@@ -159,7 +159,7 @@ export default function ProfileList({ userId }: { userId: string }) {
                 {t('name')}
               </label>
               {isEditingName ? (
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
                   <input
                     type="text"
                     value={newName}
@@ -184,7 +184,7 @@ export default function ProfileList({ userId }: { userId: string }) {
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between">
                   <span className="text-gray-900">{user.username}</span>
                   <Button
                     onClick={() => setIsEditingName(true)}
@@ -201,7 +201,7 @@ export default function ProfileList({ userId }: { userId: string }) {
               <label className="mb-2 block font-medium text-gray-700">
                 {t('currentEmail')}
               </label>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between">
                 <span className="text-gray-600">{user.email}</span>
                 <Button
                   onClick={() => setIsChangeEmailModalOpen(true)}
@@ -300,6 +300,6 @@ export default function ProfileList({ userId }: { userId: string }) {
           userEmail={user.email}
         />
       </div>
-    </main>
+    </section>
   );
 }

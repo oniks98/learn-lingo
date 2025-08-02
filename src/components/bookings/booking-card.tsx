@@ -11,7 +11,7 @@ import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
 import { useCurrencyConverter } from '@/hooks/use-currency-converter';
 import Loader from '@/components/ui/loader';
 import Image from 'next/image';
-import OnlineIcon from '@/lib/icons/online.svg';
+import OnlineIcon from '@/lib/public/icons/online.svg';
 import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
 import BookingDeleteModal from '@/components/modal/booking-delete-modal';

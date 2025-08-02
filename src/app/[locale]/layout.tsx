@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import Header from '@/components/header/header';
+import Footer from '@/components/footer/footer';
 import Providers from '@/providers/providers'; // Импортируем ваш существующий компонент
 
 export const dynamic = 'force-dynamic';
@@ -29,12 +30,13 @@ export default async function LocaleLayout({
 
   return (
     <Providers>
-      {' '}
-      {/* Используем ваш существующий Providers */}
       <NextIntlClientProvider locale={locale} messages={messages}>
-        <Header />
-        {children}
-        {modal}
+        <div className="grid min-h-full w-full grid-rows-[auto_1fr_auto]">
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          {modal}
+        </div>
       </NextIntlClientProvider>
     </Providers>
   );

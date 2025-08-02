@@ -329,5 +329,28 @@
       "popupBlocked": "Popup window was blocked by your browser.",
       "accountConflict": "An account with this email already exists using a different sign-in method."
     }
+  },
+  "footer": {
+    "copyright": "LearnLingo. Unlock your potential with the best tutors.",
+    "location": {
+      "country": "Scotland",
+      "coordinates": "57°N, 5°W"
+    },
+    "language": {
+      "current": "EN"
+    },
+    "development": "2025 Development by Yurii Shpuryk"
+  },
+  "errors": {
+    "global": {
+      "title": "Something went wrong!",
+      "tryAgain": "Try again",
+      "errorCode": "Error code"
+    },
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "Sorry, we couldn't find what you're looking for.",
+      "goHome": "🏠 Go home"
+    }
   }
   }

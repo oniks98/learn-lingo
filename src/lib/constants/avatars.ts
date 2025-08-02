@@ -12,6 +12,9 @@ export const FUNNY_AVATARS = [
   '/images/funny-avatars/avatar-6.png',
   '/images/funny-avatars/avatar-7.png',
   '/images/funny-avatars/avatar-8.png',
+  '/images/funny-avatars/avatar-9.png',
+  '/images/funny-avatars/avatar-10.png',
+  '/images/funny-avatars/avatar-11.png',
 ] as const;
 
 /**

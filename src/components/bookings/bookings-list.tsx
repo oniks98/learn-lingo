@@ -56,17 +56,17 @@ export default function BookingsList() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <Loader />
         </div>
-      </main>
+      </section>
     );
   }
 
   if (bookingsError) {
     return (
-      <main className="mx-auto max-w-338 px-5 pb-5">
+      <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
           <div className="text-center">
             <p className="mb-4 text-red-500">{t('bookings.errorLoading')}</p>
@@ -78,12 +78,12 @@ export default function BookingsList() {
             </button>
           </div>
         </div>
-      </main>
+      </section>
     );
   }
 
   return (
-    <main className="mx-auto max-w-338 px-5 pb-5">
+    <section className="mx-auto max-w-338 px-5 pb-5">
       <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold text-gray-800">
@@ -144,6 +144,6 @@ export default function BookingsList() {
           </>
         )}
       </div>
-    </main>
+    </section>
   );
 }

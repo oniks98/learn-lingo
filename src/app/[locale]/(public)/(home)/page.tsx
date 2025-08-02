@@ -147,7 +147,7 @@ export default function HomePage() {
   };
 
   return (
-    <main
+    <section
       className={clsx(
         'mx-auto max-w-338 px-5 pb-5',
         'grid gap-6',
@@ -249,6 +249,6 @@ export default function HomePage() {
           ))}
         </ul>
       </section>
-    </main>
+    </section>
   );
 }

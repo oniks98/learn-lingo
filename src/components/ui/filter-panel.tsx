@@ -69,38 +69,10 @@ const FilterPanel = ({
     onApply(emptyFilters);
   };
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(213px,_1fr))] gap-5 px-3 py-8">
-        <h2 className="sr-only">Loading filters...</h2>
-
-        {/* Loading skeletons */}
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="grid gap-2">
-            <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
-            <div className="h-14 w-full animate-pulse rounded-[14px] bg-gray-200" />
-          </div>
-        ))}
-
-        {/* Loading buttons */}
-        <div className="grid grid-cols-2 gap-3 self-end">
-          <div className="h-12 animate-pulse rounded-xl bg-gray-200" />
-          <div className="h-12 animate-pulse rounded-xl bg-gray-200" />
-        </div>
-
-        {/* Loading currency switcher */}
-        <div className="flex gap-3 justify-self-center md:self-end md:justify-self-end">
-          <div className="h-12 w-20 animate-pulse rounded-xl bg-gray-200" />
-          <div className="h-12 w-20 animate-pulse rounded-xl bg-gray-200" />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="@container grid gap-2 px-3 py-8 md:grid-cols-[repeat(3,minmax(200px,1fr))] xl:grid-cols-[repeat(3,minmax(200px,1fr))_auto_1fr_auto]"
+      className="@container grid gap-2 px-3 py-8 md:grid-cols-[repeat(3,minmax(200px,1fr))] xl:grid-cols-[repeat(3,minmax(200px,min-content))_auto_1fr_auto]"
     >
       <h2 className="sr-only">{t('title')}</h2>
 
@@ -131,7 +103,7 @@ const FilterPanel = ({
       <div className="grid grid-cols-2 gap-2 self-end md:col-1 xl:col-4">
         <button
           type="submit"
-          className="bg-yellow text-dark rounded-xl px-4 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-yellow text-dark rounded-xl px-[1cqw] py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
           {t('search')}
@@ -140,7 +112,7 @@ const FilterPanel = ({
         <button
           type="button"
           onClick={handleReset}
-          className="bg-gray-muted text-dark rounded-xl px-4 py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-gray-muted text-dark rounded-xl px-[1cqw] py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!hasSelectedFilters}
         >
           {t('reset')}

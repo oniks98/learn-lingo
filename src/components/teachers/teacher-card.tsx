@@ -104,26 +104,22 @@ export default function TeacherCard({
         <div
           className={clsx(
             'border-yellow relative mb-[2.61cqw]',
-            'grid h-30 w-30 place-items-center justify-self-center',
-            'rounded-full border-3 sm:row-1 md:row-[1/3]',
+            'grid h-30 w-30 place-items-center',
+            'justify-self-center rounded-full border-3',
+            'sm:row-1 md:row-[1/3]',
           )}
         >
-          <Image
-            width={96}
-            height={96}
-            src={currentAvatar}
-            alt={avatarAlt}
-            className={clsx(
-              'rounded-full transition-all duration-500 ease-in-out',
-              // Добавляем небольшую анимацию при смене аватара
-              expanded && 'scale-105 transform',
-            )}
-            key={expanded ? 'funny' : 'original'} // Ключ для принудительного обновления
-          />
-          <OnlineIcon
-            className={clsx('absolute top-[19px] right-[23px] h-3 w-3')}
-            aria-hidden="true"
-          />
+          <div className="relative h-24 w-24 overflow-hidden rounded-full">
+            <Image
+              fill
+              sizes="96px"
+              src={currentAvatar}
+              alt={avatarAlt}
+              className="object-cover transition-all duration-500 ease-in-out"
+              key={expanded ? 'funny' : 'original'}
+            />
+          </div>
+          <OnlineIcon className="absolute top-[19px] right-[23px] h-3 w-3" />
         </div>
 
         <div

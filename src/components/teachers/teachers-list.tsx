@@ -82,7 +82,7 @@ export default function TeachersList() {
   const hasMore = visibleCount < filteredTeachers.length;
 
   return (
-    <main className="mx-auto max-w-338 px-5 pb-5">
+    <section className="mx-auto max-w-338 px-5 pb-5">
       <div className="bg-gray-light mx-auto rounded-3xl px-5 pb-5">
         <FilterPanel
           initialFilters={filters}
@@ -120,6 +120,6 @@ export default function TeachersList() {
           )}
         </>
       </div>
-    </main>
+    </section>
   );
 }

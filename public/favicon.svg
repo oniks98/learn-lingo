@@ -1,0 +1,25 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background circle -->
+    <circle cx="16" cy="16" r="16" fill="#4F46E5"/>
+
+    <!-- Book base -->
+    <rect x="8" y="10" width="16" height="12" rx="1" fill="#FFFFFF"/>
+
+    <!-- Book spine -->
+    <rect x="8" y="10" width="2" height="12" fill="#E5E7EB"/>
+
+    <!-- Book pages -->
+    <line x1="12" y1="13" x2="20" y2="13" stroke="#9CA3AF" stroke-width="0.5"/>
+    <line x1="12" y1="15" x2="20" y2="15" stroke="#9CA3AF" stroke-width="0.5"/>
+    <line x1="12" y1="17" x2="18" y2="17" stroke="#9CA3AF" stroke-width="0.5"/>
+
+    <!-- Speech bubble -->
+    <circle cx="22" cy="12" r="4" fill="#10B981"/>
+    <path d="M20 14 L21 15 L20.5 14.5 Z" fill="#10B981"/>
+
+    <!-- Letter in speech bubble -->
+    <text x="22" y="14" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="3" font-weight="bold">L</text>
+
+    <!-- Small highlight on book -->
+    <rect x="10" y="11" width="1" height="2" fill="#F3F4F6" opacity="0.8"/>
+</svg>
