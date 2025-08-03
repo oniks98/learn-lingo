@@ -31,7 +31,7 @@ export const useSendEmailChange = () => {
       // Проверяем доступность email через серверный API
       console.log('Checking email availability via server API:', newEmail);
 
-      const checkResponse = await fetch('/api/change-email', {
+      const checkResponse = await fetch('/api/auth/change-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

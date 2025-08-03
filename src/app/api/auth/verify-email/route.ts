@@ -1,4 +1,4 @@
-// src/app/api/verify-email/route.ts
+// src/app/api/auth/verify-email/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 

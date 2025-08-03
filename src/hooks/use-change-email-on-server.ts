@@ -22,7 +22,7 @@ export const useChangeEmailOnServer = () => {
   return useMutation<ChangeEmailResponse, any, ChangeEmailRequest>({
     mutationFn: async ({ oobCode }) => {
       console.log('Changing email on server...');
-      const res = await fetch('/api/change-email', {
+      const res = await fetch('/api/auth/change-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oobCode }),

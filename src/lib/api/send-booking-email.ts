@@ -9,7 +9,7 @@ interface BookingEmailData extends BookingData {
 export async function sendBookingEmail(
   booking: BookingEmailData,
 ): Promise<void> {
-  const response = await fetch('/api/send-booking-email', {
+  const response = await fetch('/api/bookings/send-email', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

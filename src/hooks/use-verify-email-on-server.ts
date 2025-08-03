@@ -23,7 +23,7 @@ export const useVerifyEmailOnServer = () => {
   return useMutation<VerifyEmailResponse, any, VerifyEmailRequest>({
     mutationFn: async ({ oobCode }) => {
       console.log('Verifying email with server...');
-      const res = await fetch('/api/verify-email', {
+      const res = await fetch('/api/auth/verify-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ oobCode }),

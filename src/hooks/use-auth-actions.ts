@@ -197,7 +197,6 @@ export const useSignInWithGoogle = () => {
     onSuccess: (userData) => {
       // Оновлюємо кеш React Query
       queryClient.setQueryData(['user'], userData);
-      toast.success(t('loginSuccess'));
     },
     onError: (error) => {
       console.error('Google sign in error:', error);
