@@ -1,6 +1,6 @@
 // src/hooks/use-favorites.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocale } from 'next-intl'; // ✅ Добавить импорт
+import { useLocale, useTranslations } from 'next-intl';
 import {
   getFavorites,
   addToFavorites,
@@ -19,11 +19,11 @@ const fetchFavorites = ({ queryKey }: { queryKey: [string, string] }) => {
 // Хук для отримання списку улюблених вчителів
 export const useFavorites = () => {
   const { user } = useAuth();
-  const locale = useLocale(); // ✅ Используем локаль из Next.js контекста
+  const locale = useLocale();
 
   return useQuery({
-    queryKey: ['favorites', locale], // ✅ Передаем правильную локаль
-    queryFn: fetchFavorites, // ✅ queryFn теперь получает queryKey
+    queryKey: ['favorites', locale],
+    queryFn: fetchFavorites,
     enabled: !!user,
     staleTime: 30 * 1000,
   });
@@ -33,7 +33,8 @@ export const useFavorites = () => {
 export const useToggleFavorite = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const locale = useLocale(); // ✅ Добавить локаль
+  const locale = useLocale();
+  const t = useTranslations('notifications.favorites_management');
 
   const addMutation = useMutation({
     mutationFn: addToFavorites,
@@ -44,7 +45,7 @@ export const useToggleFavorite = () => {
     },
     onError: (error) => {
       console.error('Error adding to favorites:', error);
-      toast.error('Помилка додавання в улюблене');
+      toast.error(t('add_error'));
     },
   });
 
@@ -57,13 +58,13 @@ export const useToggleFavorite = () => {
     },
     onError: (error) => {
       console.error('Error removing from favorites:', error);
-      toast.error('Помилка видалення з улюбленого');
+      toast.error(t('remove_error'));
     },
   });
 
   const toggleFavorite = (teacherId: string, isFavorite: boolean) => {
     if (!user) {
-      toast.error('Потрібно увійти в систему');
+      toast.error(t('login_required'));
       return;
     }
 

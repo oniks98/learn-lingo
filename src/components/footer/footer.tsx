@@ -78,7 +78,12 @@ export default function Footer() {
               <img
                 src="/images/school.png"
                 alt="Castle"
-                className="h-20 w-30 object-cover transition-transform duration-500 group-hover:scale-105"
+                className="relative z-10 h-20 w-30 object-cover transition-all duration-500 group-hover:scale-105"
+              />
+              <img
+                src="/images/azcaban.png"
+                alt="Azkaban"
+                className="pointer-events-none absolute top-0 left-0 z-20 h-20 w-30 object-cover opacity-0 blur-sm brightness-50 transition-all duration-700 ease-out group-hover:scale-130 group-hover:opacity-100 group-hover:blur-none group-hover:brightness-100"
               />
             </div>
           </div>

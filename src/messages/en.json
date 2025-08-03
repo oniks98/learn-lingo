@@ -257,7 +257,8 @@
         "emailRequired": "Please enter a valid email address",
         "emailInvalid": "Please enter a valid email address",
         "emailAlreadyInUse": "This email is already in use by another account",
-        "recentLoginRequired": "For security reasons, please log in again before changing your email"
+        "recentLoginRequired": "For security reasons, please log in again before changing your email",
+        "sameEmail": "You entered the same email as your current one"
       }
     },
     "deleteAccountModal": {
@@ -351,6 +352,35 @@
       "title": "Page Not Found",
       "description": "Sorry, we couldn't find what you're looking for.",
       "goHome": "🏠 Go home"
+    }
+  },
+  "notifications": {
+    "email_verification": {
+      "resend_success": "Verification email sent! Please check your inbox.",
+      "already_verified_info": "Your email is already verified!",
+      "resend_failed": "Failed to send verification email. Please try again.",
+      "server_verify_success": "Your email has been verified successfully!",
+      "link_already_used": "Your email is already verified.",
+      "link_expired": "This verification link has expired. Please request a new one.",
+      "server_verify_failed": "Email verification failed. Please try again."
+    },
+    "password_reset": {
+      "success_message": "Password has been reset successfully! You can now log in with your new password.",
+      "general_error": "Password reset failed. Please try again.",
+      "invalid_link": "Invalid or expired password reset link. Please request a new one.",
+      "expired_link": "Password reset link has expired. Please request a new one.",
+      "weak_password": "Password is too weak. Minimum 6 characters required."
+    },
+    "favorites_management": {
+      "add_error": "Error adding to favorites",
+      "remove_error": "Error removing from favorites",
+      "login_required": "You need to log in"
+    },
+    "email_change": {
+      "success_template": "Your email has been successfully changed to {newEmail}!",
+      "link_already_used": "This email change link has already been used.",
+      "link_expired": "This email change link has expired. Please request a new one.",
+      "change_failed": "Email change failed. Please try again."
     }
   }
   }

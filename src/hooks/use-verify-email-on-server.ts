@@ -1,5 +1,6 @@
 // src/hooks/use-verify-email-on-server.ts
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 interface VerifyEmailRequest {
@@ -17,6 +18,8 @@ interface VerifyEmailResponse {
  * Hook для верифікації email через сервер
  */
 export const useVerifyEmailOnServer = () => {
+  const t = useTranslations('notifications.email_verification');
+
   return useMutation<VerifyEmailResponse, any, VerifyEmailRequest>({
     mutationFn: async ({ oobCode }) => {
       console.log('Verifying email with server...');
@@ -34,29 +37,25 @@ export const useVerifyEmailOnServer = () => {
       return data;
     },
     onSuccess: (data) => {
-      toast.success(
-        data.message || 'Your email has been verified successfully!',
-      );
+      toast.success(data.message || t('server_verify_success'));
     },
     onError: (error: Error) => {
       console.error('Email verification failed:', error);
 
       // Если код уже использован — показываем success и выходим
       if (error.message.includes('already been used')) {
-        toast.success('Your email is already verified.');
+        toast.success(t('link_already_used'));
         return;
       }
 
       // Если ссылка истекла
       if (error.message.includes('expired')) {
-        toast.error(
-          'This verification link has expired. Please request a new one.',
-        );
+        toast.error(t('link_expired'));
         return;
       }
 
       // Для всех остальных ошибок
-      toast.error('Email verification failed. Please try again.');
+      toast.error(t('server_verify_failed'));
     },
   });
 };

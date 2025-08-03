@@ -1,5 +1,6 @@
 // src/hooks/use-change-email-on-server.ts
 import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
 interface ChangeEmailRequest {
@@ -16,6 +17,8 @@ interface ChangeEmailResponse {
  * Hook для подтверждения смены email через сервер
  */
 export const useChangeEmailOnServer = () => {
+  const t = useTranslations('notifications.email_change');
+
   return useMutation<ChangeEmailResponse, any, ChangeEmailRequest>({
     mutationFn: async ({ oobCode }) => {
       console.log('Changing email on server...');
@@ -33,29 +36,25 @@ export const useChangeEmailOnServer = () => {
       return data;
     },
     onSuccess: (data) => {
-      toast.success(
-        `Your email has been successfully changed to ${data.newEmail}!`,
-      );
+      toast.success(t('success_template', { newEmail: data.newEmail }));
     },
     onError: (error: Error) => {
       console.error('Email change failed:', error);
 
       // Если код уже использован
       if (error.message.includes('already been used')) {
-        toast.error('This email change link has already been used.');
+        toast.error(t('link_already_used'));
         return;
       }
 
       // Если ссылка истекла
       if (error.message.includes('expired')) {
-        toast.error(
-          'This email change link has expired. Please request a new one.',
-        );
+        toast.error(t('link_expired'));
         return;
       }
 
       // Для всех остальных ошибок
-      toast.error('Email change failed. Please try again.');
+      toast.error(t('change_failed'));
     },
   });
 };

@@ -5,8 +5,46 @@ import { admin } from '@/lib/db/firebase-admin';
 export async function POST(request: NextRequest) {
   try {
     console.log('--- API Email Change Request Started ---');
-    const { oobCode } = await request.json();
+    const { oobCode, checkEmail } = await request.json();
 
+    // Если это запрос на проверку email (без oobCode)
+    if (checkEmail && !oobCode) {
+      console.log('Checking email availability:', checkEmail);
+
+      try {
+        // Пытаемся найти пользователя с таким email через Admin SDK
+        const userRecord = await admin.auth().getUserByEmail(checkEmail);
+
+        // Если пользователь найден, email занят
+        console.log('Email is already in use by user:', userRecord.uid);
+        return NextResponse.json(
+          {
+            available: false,
+            exists: true,
+            error: 'Email is already in use by another account',
+          },
+          { status: 409 },
+        );
+      } catch (error: any) {
+        // Если ошибка auth/user-not-found, то email свободен
+        if (error.code === 'auth/user-not-found') {
+          console.log('Email is available');
+          return NextResponse.json({
+            available: true,
+            exists: false,
+          });
+        }
+
+        // Для любой другой ошибки
+        console.error('Error checking email:', error);
+        return NextResponse.json(
+          { error: 'Error checking email availability' },
+          { status: 500 },
+        );
+      }
+    }
+
+    // Обычная логика смены email (с oobCode)
     if (!oobCode) {
       console.error('OOB code is missing from request body.');
       return NextResponse.json(
@@ -56,6 +94,11 @@ export async function POST(request: NextRequest) {
           case 'USER_DISABLED':
             errorMessage = 'User account is disabled';
             statusCode = 403;
+            break;
+          case 'EMAIL_EXISTS':
+            errorMessage =
+              'This email address is already in use by another account';
+            statusCode = 409;
             break;
           default:
             errorMessage = responseData.error.message;
