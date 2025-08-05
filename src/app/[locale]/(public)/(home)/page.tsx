@@ -1,4 +1,4 @@
-// src/app/[locale]/(home)/page.tsx
+// src/app/[locale]/(public)/(home)/page.tsx
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';

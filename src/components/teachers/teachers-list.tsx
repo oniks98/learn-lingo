@@ -1,3 +1,4 @@
+// src/components/teachers/teachers-list.tsx
 'use client';
 
 import React, { useMemo, useState, useCallback } from 'react';

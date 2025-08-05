@@ -1,28 +1,24 @@
 // src/app/layout.tsx
 import React from 'react';
-import { Roboto } from 'next/font/google';
 import '@/styles/globals.css';
 import { Toaster } from 'sonner';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
-import type { Metadata } from 'next';
 
-const font = Roboto({ subsets: ['latin'], weight: ['400', '500', '700'] });
+// Конфигурация
+import { fontClassName } from '@/config/fonts';
+import { viewport } from '@/config/viewport';
+import { metadata } from '@/config/metadata';
 
-export const metadata: Metadata = {
-  title: 'LearnLingo',
-  description: 'Learn languages with professional teachers',
-  icons: {
-    icon: '/favicon.svg',
-  },
-};
+// Экспорт метаданных для Next.js
+export { viewport, metadata };
 
-export default function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={`${font.className} h-full`}>
+    <html lang="en" className={`${fontClassName} h-full`}>
       <body className="h-full">
         {children}
         <Toaster

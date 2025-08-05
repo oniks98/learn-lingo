@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -23,6 +24,14 @@
     },
     "typeRoots": ["./src/lib/types", "./node_modules/@types"]
   },
-  "include": ["svgr.d.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "svgr.d.ts",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": ["node_modules"]
 }
