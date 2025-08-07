@@ -4,7 +4,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/api/teachers';
 import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
@@ -21,6 +21,10 @@ import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
+import {
+  expandedContentVariants,
+  heartVariants,
+} from '@/lib/constants/animations';
 
 import { getFunnyAvatarForTeacher } from '@/lib/constants/avatars';
 
@@ -28,37 +32,6 @@ type Props = {
   teacher: TeacherPreview;
   level: string;
   pendingFavoriteTeacherId?: string;
-};
-
-// Animation variants
-const expandedContentVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    height: 0,
-    scale: 0.95,
-  },
-  visible: {
-    opacity: 1,
-    height: 'auto',
-    scale: 1,
-    transition: {
-      duration: 0.4,
-      height: { duration: 0.3 },
-      opacity: { delay: 0.1, duration: 0.3 },
-    },
-  },
-};
-
-const heartVariants: Variants = {
-  idle: { scale: 1 },
-  hover: {
-    scale: 1.1,
-    transition: { duration: 0.2 },
-  },
-  tap: {
-    scale: 0.9,
-    transition: { duration: 0.1 },
-  },
 };
 
 export default function TeacherCard({

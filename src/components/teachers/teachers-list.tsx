@@ -4,7 +4,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { useUrlFilters } from '@/hooks/use-url-filters';
@@ -13,63 +13,12 @@ import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
 import TeacherCard from '@/components/teachers/teacher-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
-
-// Animation variants
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.3,
-    },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.3,
-    y: 50,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      duration: 1.2,
-      bounce: 0.3,
-    },
-  },
-};
-
-const loadMoreVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-    },
-  },
-};
-
-const noResultsVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.8,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
+import {
+  containerVariants,
+  cardVariants,
+  loadMoreVariants,
+  noResultsVariants,
+} from '@/lib/constants/animations';
 
 export default function TeachersList() {
   const t = useTranslations();

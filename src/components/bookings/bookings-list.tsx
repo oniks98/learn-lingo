@@ -5,68 +5,17 @@ import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { getBookings } from '@/lib/api/bookings';
 import BookingCard from '@/components/bookings/booking-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
-
-// Animation variants
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.3,
-    },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.3,
-    y: 50,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      duration: 1.2,
-      bounce: 0.3,
-    },
-  },
-};
-
-const loadMoreVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-    },
-  },
-};
-
-const noResultsVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.8,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
+import {
+  containerVariants,
+  loadMoreVariants,
+  noResultsVariants,
+  cardVariants,
+} from '@/lib/constants/animations';
 
 export default function BookingsList() {
   const t = useTranslations();
@@ -200,7 +149,7 @@ export default function BookingsList() {
                   <motion.div
                     key={booking.id}
                     variants={cardVariants}
-                    viewport={{ once: true, margin: '15%' }}
+                    viewport={{ once: true, margin: '10%' }}
                     whileInView="visible"
                     initial="hidden"
                   >

@@ -3,85 +3,20 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useFavorites } from '@/hooks/use-favorites';
 import TeacherCard from '@/components/teachers/teacher-card';
 import SignUpFormModal from '@/components/modal/sign-up-form-modal';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
-
-// Animation variants
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      duration: 0.3,
-    },
-  },
-};
-
-const cardVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.3,
-    y: 50,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      duration: 1.2,
-      bounce: 0.3,
-    },
-  },
-};
-
-const headerVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: -20,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.5,
-    },
-  },
-};
-
-const emptyStateVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    scale: 0.8,
-  },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    transition: {
-      duration: 0.6,
-      type: 'spring',
-    },
-  },
-};
-
-const loadMoreVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 20,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.4,
-    },
-  },
-};
+import {
+  containerVariants,
+  cardVariants,
+  headerVariants,
+  emptyStateVariants,
+  loadMoreVariants,
+} from '@/lib/constants/animations';
 
 export default function FavoritesList() {
   const t = useTranslations();
@@ -218,7 +153,7 @@ export default function FavoritesList() {
                   <motion.div
                     key={teacher.id}
                     variants={cardVariants}
-                    viewport={{ once: true, margin: '0%' }}
+                    viewport={{ once: true, margin: '1%' }}
                     whileInView="visible"
                     initial="hidden"
                   >
@@ -235,7 +170,7 @@ export default function FavoritesList() {
                 <motion.div
                   className="mt-8 text-center"
                   variants={loadMoreVariants}
-                  viewport={{ once: true, margin: '0%' }}
+                  viewport={{ once: true, margin: '1%' }}
                   whileInView="visible"
                   initial="hidden"
                 >

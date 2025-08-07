@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BookingData, TeacherPreview } from '@/lib/types/types';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { deleteBooking } from '@/lib/api/bookings';
@@ -17,22 +17,10 @@ import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
 import BookingDeleteModal from '@/components/modal/booking-delete-modal';
 import clsx from 'clsx';
+import { heartVariants } from '@/lib/constants/animations';
 
 type Props = {
   booking: BookingData;
-};
-
-// Animation variants
-const heartVariants: Variants = {
-  idle: { scale: 1 },
-  hover: {
-    scale: 1.1,
-    transition: { duration: 0.2 },
-  },
-  tap: {
-    scale: 0.9,
-    transition: { duration: 0.1 },
-  },
 };
 
 export default function BookingCard({ booking }: Props) {
@@ -214,7 +202,7 @@ export default function BookingCard({ booking }: Props) {
               'sm:justify-self-center md:col-2 md:justify-self-start',
             )}
           >
-            {teacher ? `${teacher.name} ${teacher.surname}` : t('loading')}
+            {teacher ? `${teacher.name} ${teacher.surname}` : <Loader />}
           </h2>
 
           {/* Main Booking Information */}
