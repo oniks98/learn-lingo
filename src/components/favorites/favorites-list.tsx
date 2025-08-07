@@ -1,32 +1,96 @@
 // src/components/favorites/favorites-list.tsx
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+import { motion, Variants } from 'framer-motion';
 import { useFavorites } from '@/hooks/use-favorites';
-import { useAuth } from '@/contexts/auth-context';
 import TeacherCard from '@/components/teachers/teacher-card';
 import SignUpFormModal from '@/components/modal/sign-up-form-modal';
 import Loader from '@/components/ui/loader';
-import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/button';
 import { useTranslations } from 'next-intl';
 
+// Animation variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.3,
+    y: 50,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      duration: 1.2,
+      bounce: 0.3,
+    },
+  },
+};
+
+const headerVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: -20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
+
+const emptyStateVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.8,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      type: 'spring',
+    },
+  },
+};
+
+const loadMoreVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
+
 export default function FavoritesList() {
   const t = useTranslations();
-  const { user, loading: authLoading } = useAuth();
   const { data: favoritesData, isLoading, error } = useFavorites();
-  const router = useRouter();
 
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [pendingFavoriteTeacherId, setPendingFavoriteTeacherId] =
     useState<string>('');
   const [visibleCount, setVisibleCount] = useState(4);
-
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/teachers');
-    }
-  }, [user, authLoading, router]);
 
   const allFavorites = useMemo(() => {
     return favoritesData?.favorites || [];
@@ -59,7 +123,8 @@ export default function FavoritesList() {
     setPendingFavoriteTeacherId('');
   };
 
-  if (authLoading || isLoading) {
+  // ПЕРЕМЕСТИЛИ ПРОВЕРКУ isLoading ПЕРЕД ПРОВЕРКОЙ EMPTY STATE
+  if (isLoading || (!favoritesData && !error)) {
     return (
       <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
@@ -91,7 +156,12 @@ export default function FavoritesList() {
     <>
       <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
-          <div className="mb-8 text-center">
+          <motion.div
+            className="mb-8 text-center"
+            variants={headerVariants}
+            initial="hidden"
+            animate="visible"
+          >
             <h1 className="mb-2 text-3xl font-bold text-gray-800">
               {t('favorites.title')}
             </h1>
@@ -100,10 +170,15 @@ export default function FavoritesList() {
                 ? t('favorites.count', { count: allFavorites.length })
                 : t('favorites.empty')}
             </p>
-          </div>
+          </motion.div>
 
           {allFavorites.length === 0 ? (
-            <div className="py-16 text-center">
+            <motion.div
+              className="py-16 text-center"
+              variants={emptyStateVariants}
+              initial="hidden"
+              animate="visible"
+            >
               <div className="mb-6">
                 <svg
                   className="mx-auto h-24 w-24 text-gray-400"
@@ -125,34 +200,51 @@ export default function FavoritesList() {
               <p className="mb-6 text-gray-600">
                 {t('favorites.emptyDescription')}
               </p>
-              <a
+              <Link
                 href="/teachers"
                 className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
               >
                 {t('favorites.browse')}
-              </a>
-            </div>
+              </Link>
+            </motion.div>
           ) : (
-            <>
-              <div className="grid gap-6">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              <motion.div className="grid gap-6" variants={containerVariants}>
                 {visibleFavorites.map((teacher) => (
-                  <TeacherCard
+                  <motion.div
                     key={teacher.id}
-                    level=""
-                    teacher={teacher}
-                    pendingFavoriteTeacherId={pendingFavoriteTeacherId}
-                  />
+                    variants={cardVariants}
+                    viewport={{ once: true, margin: '0%' }}
+                    whileInView="visible"
+                    initial="hidden"
+                  >
+                    <TeacherCard
+                      level=""
+                      teacher={teacher}
+                      pendingFavoriteTeacherId={pendingFavoriteTeacherId}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
 
               {hasMore && (
-                <div className="mt-8 text-center">
+                <motion.div
+                  className="mt-8 text-center"
+                  variants={loadMoreVariants}
+                  viewport={{ once: true, margin: '0%' }}
+                  whileInView="visible"
+                  initial="hidden"
+                >
                   <Button onClick={handleLoadMore}>
                     {t('favorites.loadMore')}
                   </Button>
-                </div>
+                </motion.div>
               )}
-            </>
+            </motion.div>
           )}
         </div>
       </section>

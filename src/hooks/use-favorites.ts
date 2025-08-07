@@ -40,8 +40,8 @@ export const useToggleFavorite = () => {
     mutationFn: addToFavorites,
     onSuccess: (_, teacherId) => {
       queryClient.setQueryData(['favoriteStatus', teacherId], true);
-      // ✅ Инвалидируем с правильной локалью
-      queryClient.invalidateQueries({ queryKey: ['favorites', locale] });
+      // ✅ Возвращаем Promise из invalidateQueries
+      return queryClient.invalidateQueries({ queryKey: ['favorites', locale] });
     },
     onError: (error) => {
       console.error('Error adding to favorites:', error);
@@ -53,8 +53,8 @@ export const useToggleFavorite = () => {
     mutationFn: removeFromFavorites,
     onSuccess: (_, teacherId) => {
       queryClient.setQueryData(['favoriteStatus', teacherId], false);
-      // ✅ Инвалидируем с правильной локалью
-      queryClient.invalidateQueries({ queryKey: ['favorites', locale] });
+      // ✅ Возвращаем Promise из invalidateQueries
+      return queryClient.invalidateQueries({ queryKey: ['favorites', locale] });
     },
     onError: (error) => {
       console.error('Error removing from favorites:', error);

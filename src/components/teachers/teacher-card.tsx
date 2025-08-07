@@ -4,6 +4,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { motion, Variants } from 'framer-motion';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/api/teachers';
 import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
@@ -27,6 +28,37 @@ type Props = {
   teacher: TeacherPreview;
   level: string;
   pendingFavoriteTeacherId?: string;
+};
+
+// Animation variants
+const expandedContentVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    height: 0,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    height: 'auto',
+    scale: 1,
+    transition: {
+      duration: 0.4,
+      height: { duration: 0.3 },
+      opacity: { delay: 0.1, duration: 0.3 },
+    },
+  },
+};
+
+const heartVariants: Variants = {
+  idle: { scale: 1 },
+  hover: {
+    scale: 1.1,
+    transition: { duration: 0.2 },
+  },
+  tap: {
+    scale: 0.9,
+    transition: { duration: 0.1 },
+  },
 };
 
 export default function TeacherCard({
@@ -89,10 +121,12 @@ export default function TeacherCard({
     : `${teacher.name} ${teacher.surname}`;
 
   return (
-    <section
+    <motion.section
       className={clsx(
         'rounded-xl bg-white p-6 shadow transition-all duration-300',
       )}
+      layout
+      transition={{ duration: 0.3 }}
     >
       <div
         className={clsx(
@@ -171,17 +205,21 @@ export default function TeacherCard({
             </span>
           </span>
 
-          <button
+          <motion.button
             onClick={handleFavoriteClick}
             disabled={isFavoriteLoading}
             className={clsx(
               'text-right transition-all duration-200 xl:grow-1',
-              'hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50',
+              'disabled:cursor-not-allowed disabled:opacity-50',
               isFavoriteLoading && 'animate-pulse',
             )}
             aria-label={
               displayAsFavorite ? t('removeFromFavorites') : t('addToFavorites')
             }
+            variants={heartVariants}
+            initial="idle"
+            whileHover="hover"
+            whileTap="tap"
           >
             <HeartIcon
               className={clsx(
@@ -191,7 +229,7 @@ export default function TeacherCard({
                   : 'hover:text-yellow fill-none text-black',
               )}
             />
-          </button>
+          </motion.button>
         </div>
 
         <h2
@@ -252,33 +290,39 @@ export default function TeacherCard({
           </span>
         </Button>
 
-        {expanded &&
-          (isLoading ? (
-            <Loader />
-          ) : extraInfo ? (
-            <div
-              className={clsx(
-                'font-medium',
-                'md:col-[1/3] md:row-[5/6] xl:col-2 xl:row-5',
-              )}
-            >
-              <p className="mb-[2.61cqw]">{extraInfo.experience}</p>
-              <ul className="mb-[2.61cqw] space-y-2">
-                {extraInfo.reviews.map((rev: Review, idx: number) => (
-                  <li key={idx}>
-                    <span className="text-gray-muted mr-2">
-                      {rev.reviewer_name}
-                    </span>
-                    <StarIcon className="mr-2 inline h-4 w-4" />
-                    <span>{rev.reviewer_rating}</span>
-                    <p>{rev.comment}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="text-yellow">{t('errorLoadingDetails')}</p>
-          ))}
+        <motion.div
+          variants={expandedContentVariants}
+          initial="hidden"
+          animate={expanded ? 'visible' : 'hidden'}
+          className={clsx(
+            'overflow-hidden',
+            'font-medium',
+            'md:col-[1/3] md:row-[5/6] xl:col-2 xl:row-5',
+          )}
+        >
+          {expanded &&
+            (isLoading ? (
+              <Loader />
+            ) : extraInfo ? (
+              <div>
+                <p className="mb-[2.61cqw]">{extraInfo.experience}</p>
+                <ul className="mb-[2.61cqw] space-y-2">
+                  {extraInfo.reviews.map((rev: Review, idx: number) => (
+                    <li key={idx}>
+                      <span className="text-gray-muted mr-2">
+                        {rev.reviewer_name}
+                      </span>
+                      <StarIcon className="mr-2 inline h-4 w-4" />
+                      <span>{rev.reviewer_rating}</span>
+                      <p>{rev.comment}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p className="text-yellow">{t('errorLoadingDetails')}</p>
+            ))}
+        </motion.div>
 
         <ul
           className={clsx(
@@ -314,6 +358,6 @@ export default function TeacherCard({
           </Button>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }

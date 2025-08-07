@@ -1,3 +1,4 @@
+/*src/styles/globals.css*/
 @import 'tailwindcss';
 @import "tw-animate-css";
 
@@ -19,7 +20,6 @@
     --breakpoint-xl: 1024px;
 
     --font-sans: Roboto, Helvetica, Arial, sans-serif;
-
 }
 
 @layer base {
@@ -31,10 +31,10 @@
     [role="button"]:not(:disabled) {
         @apply cursor-pointer;
     }
-
 }
 
 @layer utilities {
+    /* Floating scale animation for hero elements */
     @keyframes float-scale {
         0%, 100% {
             transform: translateY(-0.5%) scale(1);
@@ -53,8 +53,82 @@
     .animate-float-scale {
         animation: float-scale 6s ease-in-out infinite;
     }
-}
 
+    /* Smooth card entrance animation */
+    @keyframes card-entrance {
+        0% {
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .animate-card-entrance {
+        animation: card-entrance 0.6s ease-out forwards;
+    }
+
+    /* Staggered animation delays for multiple cards */
+    .animate-delay-100 {
+        animation-delay: 0.1s;
+    }
+    .animate-delay-200 {
+        animation-delay: 0.2s;
+    }
+    .animate-delay-300 {
+        animation-delay: 0.3s;
+    }
+    .animate-delay-400 {
+        animation-delay: 0.4s;
+    }
+
+    /* Smooth scale on hover */
+    @keyframes gentle-scale {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.02);
+        }
+    }
+
+    .animate-gentle-scale {
+        animation: gentle-scale 0.2s ease-out forwards;
+    }
+
+    /* Fade slide up animation */
+    @keyframes fade-slide-up {
+        0% {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-slide-up {
+        animation: fade-slide-up 0.5s ease-out forwards;
+    }
+
+    /* Smooth heart beat animation */
+    @keyframes heart-beat {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    .animate-heart-beat {
+        animation: heart-beat 0.6s ease-in-out;
+    }
+}
+/* календар,врем'я*/
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
     --radius-md: calc(var(--radius) - 2px);
@@ -91,7 +165,6 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
-
 }
 
 :root {
@@ -127,7 +200,6 @@
     --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
     --sidebar-border: oklch(0.929 0.013 255.508);
     --sidebar-ring: oklch(0.704 0.04 256.788);
-
 }
 
 .dark {
@@ -162,21 +234,18 @@
     --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.551 0.027 264.364);
-
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
-
+    body {
+        @apply bg-background text-foreground;
     }
-
 }
 
+/* Enhanced letter animation for buttons */
 @keyframes letterJump {
     0%, 90%, 100% {
         transform: translateY(0);
@@ -184,7 +253,7 @@
     }
     45% {
         transform: translateY(-4px);
-        color: orange; /* yellow color */
+        color: #f4c550; /* yellow color */
     }
 }
 
@@ -199,7 +268,7 @@
     transition: color 0.3s ease;
 }
 
-
+/* Enhanced spin settle animation */
 @keyframes spin-settle {
     0% {
         opacity: 0;
@@ -216,4 +285,26 @@
 
 .animate-spin-settle {
     animation: spin-settle 0.8s ease-out forwards;
+}
+
+/* Additional smooth transitions for framer-motion components */
+.motion-safe {
+    transition-property: transform, opacity, scale;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .animated-text,
+    .animated-letter,
+    .animate-float-scale,
+    .animate-card-entrance,
+    .animate-gentle-scale,
+    .animate-fade-slide-up,
+    .animate-heart-beat,
+    .animate-spin-settle {
+        animation: none !important;
+        transition: none !important;
+    }
 }

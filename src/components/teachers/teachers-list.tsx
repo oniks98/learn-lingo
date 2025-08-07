@@ -4,6 +4,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
+import { motion, Variants } from 'framer-motion';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { filterTeachers } from '@/lib/utils/filter-teachers';
 import { useUrlFilters } from '@/hooks/use-url-filters';
@@ -12,6 +13,63 @@ import FilterPanel, { FiltersForm } from '@/components/ui/filter-panel';
 import TeacherCard from '@/components/teachers/teacher-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
+
+// Animation variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.3,
+    y: 50,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      duration: 1.2,
+      bounce: 0.3,
+    },
+  },
+};
+
+const loadMoreVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
+
+const noResultsVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.8,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
 
 export default function TeachersList() {
   const t = useTranslations();
@@ -92,34 +150,50 @@ export default function TeachersList() {
           isLoading={filtersLoading}
         />
 
-        <>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
           <h1 className="sr-only">{t('teachers.listTitle')}</h1>
           {teachersLoading ? (
             <Loader />
           ) : visibleTeachers.length === 0 ? (
-            <p>{t('teachers.noTeachersFound')}</p>
+            <motion.div variants={noResultsVariants}>
+              <p>{t('teachers.noTeachersFound')}</p>
+            </motion.div>
           ) : (
             <>
-              <div className="grid gap-6">
+              <motion.div className="grid gap-6" variants={containerVariants}>
                 {visibleTeachers.map((teacher) => (
-                  <TeacherCard
+                  <motion.div
                     key={teacher.id}
-                    level={filters.level}
-                    teacher={teacher}
-                  />
+                    variants={cardVariants}
+                    viewport={{ once: true, margin: '1%' }}
+                    whileInView="visible"
+                    initial="hidden"
+                  >
+                    <TeacherCard level={filters.level} teacher={teacher} />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
 
               {hasMore && (
-                <div className="mt-8 text-center">
+                <motion.div
+                  className="mt-8 text-center"
+                  variants={loadMoreVariants}
+                  viewport={{ once: true, margin: '1%' }}
+                  whileInView="visible"
+                  initial="hidden"
+                >
                   <Button onClick={handleLoadMore}>
                     {t('teachers.loadMore')}
                   </Button>
-                </div>
+                </motion.div>
               )}
             </>
           )}
-        </>
+        </motion.div>
       </div>
     </section>
   );

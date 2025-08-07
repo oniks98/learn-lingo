@@ -2,12 +2,71 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { motion, Variants } from 'framer-motion';
 import { getBookings } from '@/lib/api/bookings';
 import BookingCard from '@/components/bookings/booking-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
+
+// Animation variants
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+    },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.3,
+    y: 50,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      duration: 1.2,
+      bounce: 0.3,
+    },
+  },
+};
+
+const loadMoreVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+    },
+  },
+};
+
+const noResultsVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.8,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
 
 export default function BookingsList() {
   const t = useTranslations();
@@ -85,64 +144,87 @@ export default function BookingsList() {
   return (
     <section className="mx-auto max-w-338 px-5 pb-5">
       <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-gray-800">
-            {t('bookings.title')}
-          </h1>
-          <p className="text-gray-600">
-            {allBookings.length > 0
-              ? t('bookings.countMessage', { count: allBookings.length })
-              : t('bookings.noBookingsYet')}
-          </p>
-        </div>
-
-        {allBookings.length === 0 ? (
-          <div className="py-16 text-center">
-            <div className="mb-6">
-              <svg
-                className="mx-auto h-24 w-24 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                />
-              </svg>
-            </div>
-            <h3 className="mb-2 text-xl font-medium text-gray-800">
-              {t('bookings.emptyState.title')}
-            </h3>
-            <p className="mb-6 text-gray-600">
-              {t('bookings.emptyState.description')}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+        >
+          <div className="mb-8 text-center">
+            <h1 className="mb-2 text-3xl font-bold text-gray-800">
+              {t('bookings.title')}
+            </h1>
+            <p className="text-gray-600">
+              {allBookings.length > 0
+                ? t('bookings.countMessage', { count: allBookings.length })
+                : t('bookings.noBookingsYet')}
             </p>
-            <a
-              href="/teachers"
-              className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
-            >
-              {t('bookings.emptyState.browseTeachers')}
-            </a>
           </div>
-        ) : (
-          <>
-            <div className="grid gap-6">
-              {visibleBookings.map((booking) => (
-                <BookingCard key={booking.id} booking={booking} />
-              ))}
-            </div>
 
-            {hasMore && (
-              <div className="mt-8 text-center">
-                <Button onClick={handleLoadMore}>
-                  {t('bookings.loadMore')}
-                </Button>
+          {allBookings.length === 0 ? (
+            <motion.div
+              className="py-16 text-center"
+              variants={noResultsVariants}
+            >
+              <div className="mb-6">
+                <svg
+                  className="mx-auto h-24 w-24 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  />
+                </svg>
               </div>
-            )}
-          </>
-        )}
+              <h3 className="mb-2 text-xl font-medium text-gray-800">
+                {t('bookings.emptyState.title')}
+              </h3>
+              <p className="mb-6 text-gray-600">
+                {t('bookings.emptyState.description')}
+              </p>
+              <Link
+                href="/teachers"
+                className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
+              >
+                {t('bookings.emptyState.browseTeachers')}
+              </Link>
+            </motion.div>
+          ) : (
+            <>
+              <motion.div className="grid gap-6" variants={containerVariants}>
+                {visibleBookings.map((booking) => (
+                  <motion.div
+                    key={booking.id}
+                    variants={cardVariants}
+                    viewport={{ once: true, margin: '15%' }}
+                    whileInView="visible"
+                    initial="hidden"
+                  >
+                    <BookingCard booking={booking} />
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              {hasMore && (
+                <motion.div
+                  className="mt-8 text-center"
+                  variants={loadMoreVariants}
+                  viewport={{ once: true, margin: '15%' }}
+                  whileInView="visible"
+                  initial="hidden"
+                >
+                  <Button onClick={handleLoadMore}>
+                    {t('bookings.loadMore')}
+                  </Button>
+                </motion.div>
+              )}
+            </>
+          )}
+        </motion.div>
       </div>
     </section>
   );

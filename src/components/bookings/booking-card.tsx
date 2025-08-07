@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
+import { motion, Variants } from 'framer-motion';
 import { BookingData, TeacherPreview } from '@/lib/types/types';
 import { getAllTeachers } from '@/lib/api/teachers';
 import { deleteBooking } from '@/lib/api/bookings';
@@ -19,6 +20,19 @@ import clsx from 'clsx';
 
 type Props = {
   booking: BookingData;
+};
+
+// Animation variants
+const heartVariants: Variants = {
+  idle: { scale: 1 },
+  hover: {
+    scale: 1.1,
+    transition: { duration: 0.2 },
+  },
+  tap: {
+    scale: 0.9,
+    transition: { duration: 0.1 },
+  },
 };
 
 export default function BookingCard({ booking }: Props) {
@@ -111,10 +125,12 @@ export default function BookingCard({ booking }: Props) {
 
   return (
     <>
-      <section
+      <motion.section
         className={clsx(
           'rounded-xl bg-white p-6 shadow transition-all duration-300',
         )}
+        layout
+        transition={{ duration: 0.3 }}
       >
         <div
           className={clsx(
@@ -164,17 +180,21 @@ export default function BookingCard({ booking }: Props) {
             )}
           >
             <span className="text-gray-muted font-medium">{t('booking')}</span>
-            <button
+            <motion.button
               onClick={handleFavoriteClick}
               disabled={isFavoriteLoading}
               className={clsx(
                 'text-right transition-all duration-200',
-                'hover:scale-110 disabled:cursor-not-allowed disabled:opacity-50',
+                'disabled:cursor-not-allowed disabled:opacity-50',
                 isFavoriteLoading && 'animate-pulse',
               )}
               aria-label={
                 isFavorite ? t('removeFromFavorites') : t('addToFavorites')
               }
+              variants={heartVariants}
+              initial="idle"
+              whileHover="hover"
+              whileTap="tap"
             >
               <HeartIcon
                 className={clsx(
@@ -184,7 +204,7 @@ export default function BookingCard({ booking }: Props) {
                     : 'hover:text-yellow fill-none text-black',
                 )}
               />
-            </button>
+            </motion.button>
           </div>
 
           {/* Teacher Name */}
@@ -294,7 +314,7 @@ export default function BookingCard({ booking }: Props) {
             </span>
           </Button>
         </div>
-      </section>
+      </motion.section>
 
       {/* Confirm Delete Modal */}
       <BookingDeleteModal
