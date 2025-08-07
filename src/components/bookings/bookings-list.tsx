@@ -149,7 +149,7 @@ export default function BookingsList() {
                   <motion.div
                     key={booking.id}
                     variants={cardVariants}
-                    viewport={{ once: true, margin: '10%' }}
+                    viewport={{ once: true, margin: '15%' }}
                     whileInView="visible"
                     initial="hidden"
                   >
