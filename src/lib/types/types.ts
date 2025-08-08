@@ -48,26 +48,6 @@ export interface UserData {
   photoURL?: string;
 }
 
-// Контекст аутентифікації на клієнті
-export interface AuthContextType {
-  user: UserData | null;
-  loading: boolean;
-  signOut: () => Promise<void>;
-  refetchUser: () => Promise<any>;
-}
-
-// Типи для auth actions
-export interface AuthActionsType {
-  signUp: (email: string, password: string, name: string) => Promise<UserData>;
-  signIn: (email: string, password: string) => Promise<UserData>;
-  signInWithGoogle: (redirectPath?: string) => Promise<void>;
-}
-
-// Тип для результата входа/регистрации
-export interface SignInResult extends UserData {
-  needsEmailVerification?: boolean;
-}
-
 // Тип избранных учителей
 export type Favorites = Record<string, boolean>;
 

@@ -3,13 +3,14 @@ import { notFound } from 'next/navigation';
 import BookingFormModal from '@/components/modal/booking-form-modal';
 import { getTeacherById } from '@/lib/api/teachers';
 
-export default async function BookingPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+interface Props {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+export default async function BookingPage({ params }: Props) {
   const { id: teacherId } = await params;
-  if (!teacherId) return notFound();
 
   const teacher = await getTeacherById(teacherId);
   if (!teacher) return notFound();

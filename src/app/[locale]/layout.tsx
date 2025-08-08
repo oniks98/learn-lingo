@@ -16,21 +16,17 @@ import {
   generateStaticLocaleParams,
 } from '@/lib/utils/locale';
 
-export const dynamic = 'force-dynamic';
-
-// Правильные типы
 interface LocaleLayoutProps {
   children: React.ReactNode;
   modal: React.ReactNode;
   params: Promise<{ locale: string }>;
 }
 
-// generateStaticParams должна возвращать массив объектов с locale
 export function generateStaticParams(): { locale: string }[] {
   return generateStaticLocaleParams();
 }
 
-// Используем any для избежания TypeScript конфликтов
+//  any для  TypeScript  без конфліктів з children і  modal
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { locale } = await params;
 

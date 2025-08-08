@@ -7,6 +7,8 @@ import {
   useEffect,
   useMemo,
   ReactNode,
+  useState,
+  useRef,
 } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -26,7 +28,7 @@ interface AuthContextType {
 }
 
 /**
- * Контекст аутентификации для управления состоянием пользователя
+ * Контекст автентифікації для управління станом користувача в додатку
  */
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -35,7 +37,9 @@ interface AuthProviderProps {
 }
 
 /**
- * Функция для получения данных пользователя с сервера
+ * Функція для отримання даних користувача з сервера через API
+ * Перевіряє валідність токена та статус верифікації email
+ * Включає обробку expired session cookies та network errors
  */
 const fetchUserData = async (
   firebaseUser: FirebaseUser | null,
@@ -45,13 +49,13 @@ const fetchUserData = async (
   }
 
   try {
-    console.log('Fetching user data from server...');
-
-    // Принудительно обновляем информацию о Firebase‑пользователе
+    // Примусове оновлення інформації про Firebase користувача
     await firebaseUser.reload();
 
+    // Отримання свіжого ID токена
     const idToken = await firebaseUser.getIdToken(true);
 
+    // Відправка запиту на сервер для валідації та синхронізації
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -59,37 +63,63 @@ const fetchUserData = async (
     });
 
     if (!response.ok) {
-      console.error('Failed to fetch user data:', response.status);
-      // Вместо throw — сразу возвращаем null (неавторизован)
+      // Розширена обробка HTTP помилок
+      if (response.status === 401) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Session expired, user needs to re-authenticate');
+        }
+        return null;
+      }
+
+      if (response.status === 403) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Access forbidden, possibly revoked token');
+        }
+        return null;
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to fetch user data:', response.status);
+      }
       return null;
     }
 
     const userData = await response.json();
-    console.log('User data fetched successfully:', userData);
-    console.log('Email verified status:', userData.emailVerified);
 
-    // Если email не верифицирован — считаем, что юзер не аутентифицирован
+    // Перевірка верифікації email - обов'язкова умова для автентифікації
     if (!userData.emailVerified) {
-      console.log('User email is not verified, treating as unauthenticated');
       return null;
     }
 
     return userData;
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    // При ошибках сети или парсинга тоже возвращаем null
+    // Обробка network errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Network error fetching user data, user remains offline');
+      }
+      // Повертаємо null при network error, щоб не показувати старі дані
+      return null;
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error fetching user data:', error);
+    }
     return null;
   }
 };
 
 /**
- * Провайдер аутентификации
- * Управляет состоянием авторизации пользователя с помощью React Query
+ * Провайдер автентифікації з використанням React Query для кешування
+ * Управляє станом авторизації користувача в реальному часі
+ * Включає оптимізацію для запобігання частим refetch викликам
  */
 export function AuthProvider({ children }: AuthProviderProps) {
   const queryClient = useQueryClient();
+  const [lastRefreshTime, setLastRefreshTime] = useState(0);
+  const lastNetworkStateRef = useRef(navigator.onLine);
 
-  // React Query для управления данными пользователя
+  // React Query для управління даними користувача з оптимізованим кешуванням
   const {
     data: user = null,
     isLoading: loading,
@@ -97,100 +127,150 @@ export function AuthProvider({ children }: AuthProviderProps) {
   } = useQuery<UserData | null>({
     queryKey: ['user'],
     queryFn: () => fetchUserData(auth.currentUser),
-    enabled: false, // Отключаем автоматическое выполнение
-    staleTime: 30 * 1000, // 30 секunds - короче для быстрого обновления после верификации
-    gcTime: 5 * 60 * 1000, // 5 минут
-    retry: (failureCount, error) => {
-      // Не повторяем запросы, если пользователь не верифицирован
-      if (error.message.includes('not verified')) {
+    enabled: false, // Вимкнено автоматичне виконання
+    staleTime: 30 * 1000, // 30 секунд для швидкого оновлення після верифікації
+    gcTime: 5 * 60 * 1000, // 5 хвилин час життя в кеші
+    retry: (failureCount, error: any) => {
+      // Не повторюємо запити для 401/403 помилок
+      if (error?.status === 401 || error?.status === 403) {
         return false;
       }
-      return failureCount < 3;
+      // Не повторюємо запити для неверифікованих користувачів
+      if (error?.message?.includes('not verified')) {
+        return false;
+      }
+      // Зменшена кількість спроб для швидшого реагування
+      return failureCount < 2;
     },
   });
 
   /**
-   * Выход из системы
+   * Оптимізований refetch з debounce для запобігання частим викликам
+   */
+  const optimizedRefetchUser = async () => {
+    const now = Date.now();
+
+    // Не робити refetch частіше ніж раз на 10 секунд
+    if (now - lastRefreshTime < 10000) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Refetch skipped due to recent refresh');
+      }
+      return;
+    }
+
+    setLastRefreshTime(now);
+    return await refetchUser();
+  };
+
+  /**
+   * Функція виходу з системи з повним очищенням сесії та кешів
    */
   const signOut = async () => {
     try {
-      console.log('Starting sign out...');
-
-      // Очищаем кеш React Query для пользователя
+      // Очищення кешу React Query для користувача
       queryClient.setQueryData(['user'], null);
 
-      // Очищаем все кеши, связанные с избранным
+      // Очищення всіх кешів, пов'язаних з обраними елементами
       queryClient.removeQueries({ queryKey: ['favorites'] });
       queryClient.removeQueries({ queryKey: ['favoriteStatus'] });
 
-      // Очищаем отложенные действия
+      // Очищення відкладених дій
       removePendingAction();
 
-      // Выходим из Firebase
+      // Вихід з Firebase Authentication
       await firebaseSignOut(auth);
 
-      // Вызываем API для удаления session cookie
-      await fetch('/api/auth/logout', { method: 'POST' });
+      // Виклик API для видалення session cookie
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+      } catch (logoutError) {
+        // Не критична помилка, продовжуємо вихід
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Logout API call failed:', logoutError);
+        }
+      }
 
-      console.log('Sign out successful');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Sign out successful');
+      }
     } catch (error) {
-      console.error('Sign out error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Sign out error:', error);
+      }
       throw error;
     }
   };
 
-  // Слушатель изменений состояния аутентификации Firebase
+  /**
+   * Слухач змін стану автентифікації Firebase
+   * Автоматично оновлює дані при зміні статусу користувача
+   */
   useEffect(() => {
-    console.log('Setting up auth state listener...');
-
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        console.log('Auth state changed - user detected, refetching data...');
-        console.log('Firebase user emailVerified:', firebaseUser.emailVerified);
-
-        // Обновляем данные пользователя Firebase перед проверкой
+        // Користувач увійшов - оновлюємо та перезапитуємо дані
         await firebaseUser.reload();
-        console.log(
-          'After reload - emailVerified:',
-          firebaseUser.emailVerified,
-        );
-
-        await refetchUser();
+        await optimizedRefetchUser();
       } else {
-        console.log('Auth state changed - user signed out');
+        // Користувач вийшов - очищуємо всі дані
         queryClient.setQueryData(['user'], null);
-
-        // Очищаем кеши избранного при выходе
         queryClient.removeQueries({ queryKey: ['favorites'] });
         queryClient.removeQueries({ queryKey: ['favoriteStatus'] });
-
-        // Очищаем отложенные действия при выходе
         removePendingAction();
+        setLastRefreshTime(0); // Скидання часу останнього оновлення
       }
     });
 
     return () => {
-      console.log('Cleaning up auth state listener...');
       unsubscribe();
     };
-  }, [refetchUser, queryClient]);
+  }, [queryClient]);
 
-  // Мемоизируем контекст для оптимизации
+  /**
+   * Обробка network state changes для повторного підключення
+   */
+  useEffect(() => {
+    const handleOnline = () => {
+      if (!lastNetworkStateRef.current && navigator.onLine && user) {
+        optimizedRefetchUser().catch((error) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error refetching user on online:', error);
+          }
+        });
+      }
+      lastNetworkStateRef.current = navigator.onLine;
+    };
+
+    const handleOffline = () => {
+      lastNetworkStateRef.current = false;
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [user]);
+
+  // Мемоізація контексту для оптимізації продуктивності
   const value = useMemo<AuthContextType>(
     () => ({
       user,
       loading,
       signOut,
-      refetchUser,
+      refetchUser: optimizedRefetchUser,
     }),
-    [user, loading, refetchUser],
+    [user, loading],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 /**
- * Hook для использования контекста аутентификации
+ * Хук для використання контексту автентифікації
+ * Забезпечує типобезпечний доступ до стану автентифікації
  */
 export function useAuth() {
   const context = useContext(AuthContext);

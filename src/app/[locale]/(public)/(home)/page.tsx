@@ -1,84 +1,11 @@
-// src/app/[locale]/(public)/(home)/page.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-
-// Компонент анимированного счетчика
-const AnimatedCounter = ({
-  value,
-  duration = 2000,
-  suffix = '',
-  className = '',
-}: {
-  value: number;
-  duration?: number;
-  suffix?: string;
-  className?: string;
-}) => {
-  const [count, setCount] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
-  const counterRef = useRef<HTMLParagraphElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    if (counterRef.current) {
-      observer.observe(counterRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [isVisible]);
-
-  useEffect(() => {
-    if (!isVisible) return;
-
-    const startTime = Date.now();
-    const startValue = 0;
-    const endValue = value;
-
-    const animate = () => {
-      const now = Date.now();
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-
-      // Easing function для плавности
-      const easeOutExpo = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-
-      const currentValue = Math.floor(
-        startValue + (endValue - startValue) * easeOutExpo,
-      );
-      setCount(currentValue);
-
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
-
-    animate();
-  }, [isVisible, value, duration]);
-
-  const formatNumber = (num: number) => {
-    return num.toLocaleString('en-US');
-  };
-
-  return (
-    <p ref={counterRef} className={className}>
-      {formatNumber(count)}
-      {suffix}
-    </p>
-  );
-};
+import AnimatedCounter from '@/components/home/animated-counter';
 
 export default function HomePage() {
   const t = useTranslations('homepage');
@@ -111,9 +38,7 @@ export default function HomePage() {
     },
   ];
 
-  // Функция для стилизации текста заголовка
   const renderStyledTitle = (title: string) => {
-    // Для английского языка - выделяем "language"
     if (title.includes('language')) {
       const parts = title.split('language');
       return (
@@ -127,8 +52,6 @@ export default function HomePage() {
         </>
       );
     }
-
-    // Для украинского языка - выделяем "мов"
     if (title.includes('мов')) {
       const parts = title.split('мов');
       return (
@@ -142,7 +65,6 @@ export default function HomePage() {
         </>
       );
     }
-
     return title;
   };
 

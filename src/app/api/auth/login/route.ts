@@ -3,47 +3,68 @@ import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { UserData } from '@/lib/types/types';
 
+/**
+ * Обробляє POST запит для автентифікації користувача через Firebase ID Token
+ * Створює або оновлює дані користувача в Realtime Database
+ * Встановлює сесійний куки для підтверджених користувачів
+ * Включає обробку expired та revoked токенів
+ */
 export async function POST(request: NextRequest) {
   try {
-    console.log('--- API Login Request Started ---');
     const { idToken } = await request.json();
 
+    // Валідація наявності ID токена
     if (!idToken) {
-      console.error('ID token is missing from request body.');
       return NextResponse.json(
         { error: 'ID token is required' },
         { status: 400 },
       );
     }
-    console.log('Received ID token. Attempting to verify...');
 
-    // Верифікуємо Firebase ID Token
-    const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log(
-      'ID Token verified successfully. Decoded UID:',
-      decodedToken.uid,
-    );
-    console.log('Decoded Token Email:', decodedToken.email);
-    console.log('Decoded Token Name:', decodedToken.name);
-    console.log('Decoded Token email_verified:', decodedToken.email_verified);
+    let decodedToken;
+
+    try {
+      // Верифікація Firebase ID Token з перевіркою на revoked
+      decodedToken = await admin.auth().verifyIdToken(idToken, true);
+    } catch (tokenError: any) {
+      // Обробка специфічних помилок токена
+      if (tokenError.code === 'auth/id-token-expired') {
+        return NextResponse.json({ error: 'Token expired' }, { status: 401 });
+      }
+
+      if (tokenError.code === 'auth/id-token-revoked') {
+        return NextResponse.json({ error: 'Token revoked' }, { status: 401 });
+      }
+
+      if (tokenError.code === 'auth/argument-error') {
+        return NextResponse.json(
+          { error: 'Invalid token format' },
+          { status: 400 },
+        );
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Token verification error:', tokenError);
+      }
+
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
 
     const { uid, email, name, email_verified, firebase } = decodedToken;
 
+    // Валідація обов'язкових полів
     if (!uid) {
-      console.error('UID is missing from decoded token.');
       return NextResponse.json({ error: 'UID is missing' }, { status: 400 });
     }
 
     if (!email) {
-      console.error('Email is missing from decoded token.');
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Визначаємо провайдера аутентифікації
+    // Визначення провайдера автентифікації
     const provider = firebase?.sign_in_provider || 'email';
-    console.log('Authentication provider:', provider);
 
-    // Створюємо або оновлюємо дані користувача в Realtime Database
+    // Підготовка даних користувача для збереження
     const userData: UserData = {
       uid,
       email,
@@ -52,84 +73,78 @@ export async function POST(request: NextRequest) {
       emailVerified: email_verified ?? false,
       provider: provider === 'google.com' ? 'google' : 'email',
     };
-    console.log('Constructed userData for RTDB:', userData);
 
+    // Ініціалізація з'єднання з Realtime Database
     const database = admin.database();
     const userRef = database.ref(`users/${uid}`);
-    console.log('Realtime Database user reference path:', `users/${uid}`);
 
     let finalUserData: UserData;
 
-    // Перевіряємо, чи існує користувач вже
-    console.log('Checking if user exists in Realtime Database...');
-    const existingUserSnapshot = await userRef.once('value');
+    try {
+      // Перевірка існування користувача в базі даних
+      const existingUserSnapshot = await userRef.once('value');
 
-    if (!existingUserSnapshot.exists()) {
-      // Новий користувач - створюємо запис
-      console.log('User does NOT exist in RTDB. Creating new record...');
-      await userRef.set(userData);
-      console.log('New user record set in RTDB.');
-      finalUserData = userData;
-    } else {
-      // Існуючий користувач - оновлюємо дані при необхідності
-      console.log('User already exists in RTDB. Checking for updates...');
-      const existingData = existingUserSnapshot.val();
-      console.log('Existing RTDB data:', existingData);
-
-      const updates: Partial<UserData> = {};
-
-      // Оновлюємо emailVerified тільки якщо воно змінилося
-      if (existingData.emailVerified !== email_verified) {
-        updates.emailVerified = email_verified ?? false;
-        console.log('Email verified status changed. Adding to updates.');
-      }
-
-      // Оновлюємо username якщо в Firebase є displayName
-      if (
-        name &&
-        (!existingData.username ||
-          (existingData.username === existingData.email?.split('@')[0] &&
-            name !== existingData.username))
-      ) {
-        updates.username = name;
-        console.log('Username needs update. Adding to updates.');
-      }
-
-      // Якщо в існуючих даних немає createdAt, додамо
-      if (!existingData.createdAt && userData.createdAt) {
-        updates.createdAt = userData.createdAt;
-        console.log('Adding createdAt for existing user.');
-      }
-
-      // Додаємо updatedAt для відстеження останніх змін
-      if (Object.keys(updates).length > 0) {
-        updates.updatedAt = Date.now();
-      }
-
-      // Застосовуємо оновлення, якщо є що оновлювати
-      if (Object.keys(updates).length > 0) {
-        console.log('Applying updates to existing user:', updates);
-        await userRef.update(updates);
-        console.log('Existing user record updated in RTDB.');
-        finalUserData = { ...existingData, ...updates };
+      if (!existingUserSnapshot.exists()) {
+        // Створення нового користувача
+        await userRef.set(userData);
+        finalUserData = userData;
       } else {
-        console.log('No significant updates needed for existing user.');
-        finalUserData = existingData;
+        // Оновлення існуючого користувача
+        const existingData = existingUserSnapshot.val();
+        const updates: Partial<UserData> = {};
+
+        // Оновлення статусу підтвердження email
+        if (existingData.emailVerified !== email_verified) {
+          updates.emailVerified = email_verified ?? false;
+        }
+
+        // Оновлення username якщо є displayName від провайдера
+        if (
+          name &&
+          (!existingData.username ||
+            (existingData.username === existingData.email?.split('@')[0] &&
+              name !== existingData.username))
+        ) {
+          updates.username = name;
+        }
+
+        // Додавання createdAt для старих записів без цього поля
+        if (!existingData.createdAt && userData.createdAt) {
+          updates.createdAt = userData.createdAt;
+        }
+
+        // Встановлення часу останнього оновлення
+        if (Object.keys(updates).length > 0) {
+          updates.updatedAt = Date.now();
+          await userRef.update(updates);
+          finalUserData = { ...existingData, ...updates };
+        } else {
+          finalUserData = existingData;
+        }
       }
+    } catch (databaseError) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Database operation error:', databaseError);
+      }
+
+      return NextResponse.json(
+        { error: 'Database operation failed' },
+        { status: 500 },
+      );
     }
 
-    // Створюємо відповідь з даними користувача
+    // Створення відповіді з даними користувача
     const response = NextResponse.json(finalUserData);
 
-    // Створюємо сесійний куки ТІЛЬКИ якщо email підтверджено
+    // Створення сесійного куки для підтверджених користувачів
     if (email_verified) {
       try {
         const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 днів у мілісекундах
         const sessionCookie = await admin
           .auth()
           .createSessionCookie(idToken, { expiresIn });
-        console.log('Session cookie created (email verified).');
 
+        // Встановлення куки з відповідними параметрами безпеки
         response.cookies.set('session', sessionCookie, {
           maxAge: expiresIn / 1000, // maxAge у секундах
           httpOnly: true,
@@ -137,32 +152,35 @@ export async function POST(request: NextRequest) {
           sameSite: 'lax',
           path: '/',
         });
-        console.log('Session cookie set in response.');
-      } catch (cookieError) {
-        console.error('Error creating session cookie:', cookieError);
-        // Не перериваємо виконання, просто логуємо помилку
+      } catch (cookieError: any) {
+        // Обробка специфічних помилок створення куки
+        if (cookieError.code === 'auth/id-token-expired') {
+          return NextResponse.json(
+            { error: 'Token expired during session creation' },
+            { status: 401 },
+          );
+        }
+
+        // Логування помилки тільки в development режимі
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error creating session cookie:', cookieError);
+        }
+
+        // Продовжуємо виконання без переривання, але без куки
+        // Це дозволить користувачу працювати з Firebase токенами
       }
     } else {
-      console.log('Email not verified. Session cookie not created.');
-      // Видаляємо старий куки, якщо він є
+      // Видалення старого куки для неверифікованих користувачів
       response.cookies.delete('session');
     }
 
-    console.log('--- API Login Request Finished Successfully ---');
     return response;
   } catch (error) {
-    console.error('--- API Login Request Error ---');
-    console.error('Login error details:', error);
-
-    if (error instanceof Error) {
-      console.error('Error message:', error.message);
-      console.error('Error name:', error.name);
-      if ('code' in error) {
-        console.error('Error code:', (error as any).code);
-      }
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Login error:', error);
     }
 
-    // Повертаємо 500 для неочікуваних помилок
+    // Повернення загальної помилки без деталей для production
     return NextResponse.json(
       { error: 'Internal server error during authentication process.' },
       { status: 500 },

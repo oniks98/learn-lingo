@@ -4,57 +4,95 @@ import { admin } from '@/lib/db/firebase-admin';
 import { UserData } from '@/lib/types/types';
 
 /**
- * Извлекает и верифицирует пользователя из session cookie
- * Используется в API роутах для получения текущего пользователя
+ * Витягує та верифікує користувача з session cookie
+ * Використовується в API маршрутах для отримання поточного користувача
+ * Включає обробку expired та revoked session cookies
  */
 export async function getCurrentUserFromRequest(
   request: NextRequest,
 ): Promise<UserData | null> {
   try {
-    // Получаем session cookie из запроса
+    // Отримання session cookie з запиту
     const sessionCookie = request.cookies.get('session')?.value;
 
     if (!sessionCookie) {
-      console.log('No session cookie found');
       return null;
     }
 
-    // Верифицируем session cookie
-    const decodedClaims = await admin
-      .auth()
-      .verifySessionCookie(sessionCookie, true);
+    let decodedClaims;
+
+    try {
+      // Верифікація session cookie через Firebase Admin SDK з перевіркою на revoked
+      decodedClaims = await admin
+        .auth()
+        .verifySessionCookie(sessionCookie, true);
+    } catch (cookieError: any) {
+      // Обробка специфічних помилок session cookie
+      if (cookieError.code === 'auth/session-cookie-expired') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Session cookie expired');
+        }
+        return null;
+      }
+
+      if (cookieError.code === 'auth/session-cookie-revoked') {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Session cookie revoked');
+        }
+        return null;
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Session cookie verification error:', cookieError);
+      }
+      return null;
+    }
 
     if (!decodedClaims) {
-      console.log('Invalid session cookie');
       return null;
     }
 
     const { uid } = decodedClaims;
 
-    // Получаем данные пользователя из Realtime Database
+    // Отримання даних користувача з Realtime Database
     const userSnapshot = await admin
       .database()
       .ref(`users/${uid}`)
       .once('value');
 
     if (!userSnapshot.exists()) {
-      console.log('User not found in database');
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('User data not found in database for UID:', uid);
+      }
       return null;
     }
 
     const userData = userSnapshot.val() as UserData;
-    console.log('User authenticated successfully:', userData.uid);
+
+    // Перевірка статусу верифікації email
+    if (!userData.emailVerified) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('User email not verified:', userData.email);
+      }
+      return null;
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('User authenticated successfully:', userData.uid);
+    }
 
     return userData;
   } catch (error) {
-    console.error('Error verifying session:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error verifying session:', error);
+    }
     return null;
   }
 }
 
 /**
- * Middleware для API роутов, требующих аутентификации
- * Возвращает пользователя или null, если не аутентифицирован
+ * Middleware для API маршрутів, що вимагають автентифікації
+ * Перевіряє авторизацію та статус верифікації email користувача
  */
 export async function requireAuth(
   request: NextRequest,

@@ -7,14 +7,15 @@ import {
 import FavoritesList from '@/components/favorites/favorites-list';
 import { getFavorites } from '@/lib/api/favorites';
 
-type Props = {
-  params: Promise<{ locale: string; id: string }>;
-};
+interface Props {
+  params: Promise<{
+    id: string;
+    locale: string;
+  }>;
+}
 
 export default async function FavoritesPage({ params }: Props) {
-  // Извлекаем только нужную переменную
   const { locale } = await params;
-
   const queryClient = new QueryClient();
 
   try {
@@ -26,7 +27,9 @@ export default async function FavoritesPage({ params }: Props) {
       },
     });
   } catch (error) {
-    console.log('Could not prefetch favorites:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Could not prefetch favorites:', error);
+    }
   }
 
   return (

@@ -1,22 +1,23 @@
 // src/app/api/auth/logout/route.ts
 import { NextResponse } from 'next/server';
 
+/**
+ * Обробляє POST запит для виходу користувача з системи
+ * Видаляє сесійний куки та повертає статус успіху
+ */
 export async function POST() {
   try {
-    console.log('--- API Logout Request Started ---');
-
+    // Створення відповіді з позитивним статусом
     const response = NextResponse.json({ success: true });
 
-    // Удаляем session cookie
+    // Видалення сесійного куки для завершення сесії
     response.cookies.delete('session');
-
-    console.log('Session cookie deleted.');
-    console.log('--- API Logout Request Finished Successfully ---');
 
     return response;
   } catch (error) {
-    console.error('--- API Logout Request Error ---');
-    console.error('Logout error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Logout error:', error);
+    }
 
     return NextResponse.json(
       { error: 'Internal server error during logout.' },

@@ -4,12 +4,10 @@ import '@/styles/globals.css';
 import { Toaster } from 'sonner';
 import ScrollToTopButton from '@/components/ui/ScrollToTopButton';
 
-// Конфигурация
 import { fontClassName } from '@/config/fonts';
 import { viewport } from '@/config/viewport';
 import { metadata } from '@/config/metadata';
 
-// Экспорт метаданных для Next.js
 export { viewport, metadata };
 
 interface RootLayoutProps {

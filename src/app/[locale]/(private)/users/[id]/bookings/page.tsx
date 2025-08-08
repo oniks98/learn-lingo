@@ -8,22 +8,23 @@ import BookingsList from '@/components/bookings/bookings-list';
 import { getBookings } from '@/lib/api/bookings';
 import { getFavorites } from '@/lib/api/favorites';
 
-type Props = {
-  params: Promise<{ locale: string; id: string }>; // Promise в Next.js 15
-};
+interface Props {
+  params: Promise<{
+    id: string;
+    locale: string;
+  }>;
+}
 
 export default async function BookingsPage({ params }: Props) {
-  const { locale } = await params; // Ждем разрешения
+  const { locale } = await params;
 
   const queryClient = new QueryClient();
 
-  // Префетчуємо основні дані
   await queryClient.prefetchQuery({
     queryKey: ['bookings'],
     queryFn: getBookings,
   });
 
-  // Префетчуємо фаворити
   try {
     await queryClient.prefetchQuery({
       queryKey: ['favorites', locale],
@@ -33,7 +34,9 @@ export default async function BookingsPage({ params }: Props) {
       },
     });
   } catch (error) {
-    console.log('Could not prefetch favorites:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Could not prefetch favorites:', error);
+    }
   }
 
   return (

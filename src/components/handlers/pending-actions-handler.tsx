@@ -1,4 +1,3 @@
-// src/components/pending-actions-handler.tsx
 'use client';
 
 import { useAuth } from '@/contexts/auth-context';
@@ -6,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   getPendingAction,
   removePendingAction,
@@ -16,6 +16,7 @@ export default function PendingActionsHandler() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const t = useTranslations('pendingActionsHandler');
 
   useEffect(() => {
     if (!user?.emailVerified) return;
@@ -33,48 +34,44 @@ export default function PendingActionsHandler() {
 
           await addToFavorites(pendingAction.teacherId);
 
-          // Обновляем кеши
-          queryClient.invalidateQueries({ queryKey: ['favorites'] });
-          queryClient.invalidateQueries({
+          // Обновляем кеши с await
+          await queryClient.invalidateQueries({ queryKey: ['favorites'] });
+          await queryClient.invalidateQueries({
             queryKey: ['favoriteStatus', pendingAction.teacherId],
           });
 
-          toast.success('Вчителя додано до обраних!');
+          toast.success(t('favoriteSuccess'));
         } else if (pendingAction.type === 'booking') {
           console.log(
             'Processing pending booking for teacher:',
             pendingAction.teacherId,
           );
 
-          // Переходим на страницу учителя для бронирования
           setTimeout(() => {
             router.push(`/teachers/${pendingAction.teacherId}`, {
               scroll: false,
             });
-            // toast.success('Тепер ви можете забронювати урок!');
-          }, 1000); // Небольшая задержка для лучшего UX
+          }, 1000);
         }
 
-        // Очищаем действие только после успешного выполнения
         removePendingAction();
       } catch (error) {
         console.error('Error processing pending action:', error);
 
-        // В случае ошибки API можно решить оставить действие для повторной попытки
         const shouldRetry =
           error instanceof Error && error.message.includes('network');
 
         if (!shouldRetry) {
           removePendingAction();
-          toast.error('Помилка при виконанні дії');
+          toast.error(t('actionError'));
         } else {
-          toast.error('Помилка мережі. Спробуємо пізніше.');
+          toast.error(t('networkError'));
         }
       }
     };
 
-    processPendingAction();
-  }, [user?.emailVerified, queryClient, router]);
+    void processPendingAction();
+  }, [user?.emailVerified, queryClient, router, t]);
 
   return null;
 }

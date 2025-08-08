@@ -343,15 +343,16 @@
     "development": "2025 Development by Yurii Shpuryk"
   },
   "errors": {
-    "global": {
-      "title": "Something went wrong!",
-      "tryAgain": "Try again",
-      "errorCode": "Error code"
-    },
-    "notFound": {
+      "notFound": {
       "title": "Page Not Found",
       "description": "Sorry, we couldn't find what you're looking for.",
       "goHome": "🏠 Go home"
+    },
+    "page": {
+      "title": "Oops! Something went wrong",
+      "description": "We encountered an unexpected error. Please try again.",
+      "tryAgain": "Try Again",
+      "errorCode": "Error Code"
     }
   },
   "notifications": {
@@ -382,5 +383,10 @@
       "link_expired": "This email change link has expired. Please request a new one.",
       "change_failed": "Email change failed. Please try again."
     }
+  },
+  "pendingActionsHandler": {
+    "favoriteSuccess": "Teacher has been added to favorites!",
+    "actionError": "Error while performing the action.",
+    "networkError": "Network error. We will try again later."
   }
   }

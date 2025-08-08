@@ -21,7 +21,6 @@ export default async function TeachersPage({ params }: Props) {
   const { locale } = await params;
   const queryClient = new QueryClient();
 
-  // Prefetch teachers data with the current locale
   await queryClient.prefetchQuery({
     queryKey: ['teachers', locale],
     queryFn: () => getAllTeachers(locale),
