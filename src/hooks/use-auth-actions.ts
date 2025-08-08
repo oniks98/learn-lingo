@@ -15,13 +15,15 @@ import { useSendVerificationEmail } from '@/hooks/use-send-verification-email';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
-// Додаємо новий тип для результату логіна
+/**
+ * Розширений тип для результату входу з позначкою необхідності верифікації
+ */
 export interface SignInResult extends UserData {
   needsEmailVerification?: boolean;
 }
 
 /**
- * Перетворює Firebase User в UserData
+ * Перетворює Firebase User об'єкт в UserData формат додатка
  */
 const convertFirebaseUserToUserData = (
   firebaseUser: FirebaseUser,
@@ -39,14 +41,56 @@ const convertFirebaseUserToUserData = (
 });
 
 /**
- * Відправляє дані користувача на сервер для синхронізації з базою даних
+ * Мьютекс для запобігання одночасним викликам syncUserWithServer
+ */
+let syncInProgress = false;
+const syncQueue: Array<{
+  firebaseUser: FirebaseUser;
+  resolve: (value: UserData) => void;
+  reject: (error: any) => void;
+}> = [];
+
+/**
+ * Обробляє чергу синхронізації з успішним результатом
+ */
+const processQueueWithSuccess = (userData: UserData) => {
+  while (syncQueue.length > 0) {
+    const { resolve } = syncQueue.shift()!;
+    resolve(userData);
+  }
+};
+
+/**
+ * Обробляє чергу синхронізації з помилкою
+ */
+const processQueueWithError = (error: any) => {
+  while (syncQueue.length > 0) {
+    const { reject } = syncQueue.shift()!;
+    reject(error);
+  }
+};
+
+/**
+ * Синхронізує дані користувача з сервером через API
+ * Забезпечує узгодженість між Firebase та власною базою даних
+ * Включає обробку race conditions та network errors
  */
 const syncUserWithServer = async (
   firebaseUser: FirebaseUser,
 ): Promise<UserData> => {
+  // Перевірка race condition
+  if (syncInProgress) {
+    return new Promise<UserData>((resolve, reject) => {
+      syncQueue.push({ firebaseUser, resolve, reject });
+    });
+  }
+
+  syncInProgress = true;
+  let authError: Error | null = null;
+
   try {
-    console.log('Syncing user data with server...');
     const idToken = await firebaseUser.getIdToken(true);
+
     const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -54,23 +98,55 @@ const syncUserWithServer = async (
     });
 
     if (!response.ok) {
-      console.error('Failed to sync user data with server:', response.status);
-      // вместо throw – сразу возвращаем локальные данные
-      return convertFirebaseUserToUserData(firebaseUser);
+      // Розширена обробка помилок HTTP
+      if (response.status === 401 || response.status === 403) {
+        authError = new Error('Authentication failed');
+        processQueueWithError(authError);
+        syncInProgress = false;
+        return Promise.reject(authError);
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to sync user data with server:', response.status);
+      }
+
+      // Повертаємо локальні дані при помилці синхронізації
+      const localData = convertFirebaseUserToUserData(firebaseUser);
+      processQueueWithSuccess(localData);
+      syncInProgress = false;
+      return localData;
     }
 
     const userData = await response.json();
-    console.log('User data synced successfully:', userData);
+    processQueueWithSuccess(userData);
+    syncInProgress = false;
     return userData;
   } catch (error) {
-    console.error('Error syncing user data:', error);
-    // при любых ошибках (сеть, парсинг и т.п.) возвращаем локальные данные
-    return convertFirebaseUserToUserData(firebaseUser);
+    syncInProgress = false;
+
+    // Обробка network errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Network error during sync, using local data');
+      }
+      const localData = convertFirebaseUserToUserData(firebaseUser);
+      processQueueWithSuccess(localData);
+      return localData;
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error syncing user data:', error);
+    }
+
+    // При інших помилках відхиляємо всі запити у черзі
+    processQueueWithError(error);
+    return Promise.reject(error);
   }
 };
 
 /**
- * Hook для реєстрації з email та паролем
+ * Хук для реєстрації користувача з email та паролем
+ * Включає створення профілю та відправку email верифікації
  */
 export const useSignUp = () => {
   const queryClient = useQueryClient();
@@ -83,29 +159,35 @@ export const useSignUp = () => {
     { email: string; password: string; name: string }
   >({
     mutationFn: async ({ email, password, name }) => {
-      console.log('Starting email/password registration...');
+      // Створення нового користувача в Firebase
       const userCred = await createUserWithEmailAndPassword(
         auth,
         email,
         password,
       );
-      console.log('User created, updating profile...');
+
+      // Оновлення профілю з відображуваним ім'ям
       await updateProfile(userCred.user, { displayName: name });
-      console.log('Sending email verification...');
+
+      // Відправка email верифікації
       await sendVerification.mutateAsync();
+
+      // Оновлення локальних даних користувача
       await reload(userCred.user);
-      const userData = await syncUserWithServer(userCred.user);
-      console.log('Registration successful:', userData);
-      return userData;
+
+      // Синхронізація з сервером
+      return await syncUserWithServer(userCred.user);
     },
     onSuccess: (userData) => {
-      // Оновлюємо кеш React Query
+      // Оновлення кешу React Query
       queryClient.setQueryData(['user'], userData);
-      // toast.success(t('successMessage', { username: userData.username }));
     },
     onError: (error) => {
-      console.error('Sign up error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Sign up error:', error);
+      }
 
+      // Обробка специфічних помилок реєстрації
       if (error.code === 'auth/email-already-in-use') {
         toast.error(t('emailExists'));
       } else if (error.code === 'auth/weak-password') {
@@ -120,7 +202,9 @@ export const useSignUp = () => {
 };
 
 /**
- * Hook для входу з email та паролем
+ * Хук для входу користувача з email та паролем
+ * Перевіряє статус верифікації email перед завершенням входу
+ * Видалено зайвий reload після signInWithEmailAndPassword
  */
 export const useSignIn = () => {
   const queryClient = useQueryClient();
@@ -128,34 +212,34 @@ export const useSignIn = () => {
 
   return useMutation<SignInResult, any, { email: string; password: string }>({
     mutationFn: async ({ email, password }) => {
-      console.log('Starting email/password sign in...');
+      // Вхід в Firebase з email та паролем
       const userCred = await signInWithEmailAndPassword(auth, email, password);
-      await reload(userCred.user);
-      const userData = await syncUserWithServer(userCred.user);
-      console.log('Sign in successful:', userData);
 
-      // Перевіряємо, чи email верифіковано
+      // Синхронізація з сервером (reload вже не потрібен)
+      const userData = await syncUserWithServer(userCred.user);
+
+      // Перевірка верифікації email
       if (!userData.emailVerified) {
-        console.log('Email not verified, returning with flag');
         return { ...userData, needsEmailVerification: true };
       }
 
       return userData;
     },
     onSuccess: (result) => {
-      // Якщо потрібна верифікація email, не оновлюємо кеш і не показуємо success
+      // Пропускаємо оновлення кешу для неверифікованих користувачів
       if (result.needsEmailVerification) {
-        console.log('User needs email verification, skipping cache update');
         return;
       }
 
-      // Оновлюємо кеш React Query тільки для повністю верифікованих користувачів
+      // Оновлення кешу React Query тільки для верифікованих користувачів
       queryClient.setQueryData(['user'], result);
-      // toast.success(t('welcomeBack', { username: result.username }));
     },
     onError: (error) => {
-      console.error('Sign in error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Sign in error:', error);
+      }
 
+      // Обробка специфічних помилок входу
       if (error.code === 'auth/invalid-credential') {
         toast.error(t('wrongCredentials'));
       } else if (error.code === 'auth/user-not-found') {
@@ -176,7 +260,8 @@ export const useSignIn = () => {
 };
 
 /**
- * Hook для входу через Google OAuth
+ * Хук для входу через Google OAuth
+ * Використовує popup для швидкої автентифікації через Google
  */
 export const useSignInWithGoogle = () => {
   const queryClient = useQueryClient();
@@ -184,23 +269,32 @@ export const useSignInWithGoogle = () => {
 
   return useMutation<UserData, any, { redirectPath?: string }>({
     mutationFn: async ({ redirectPath }) => {
-      console.log('Starting Google sign in...');
+      // Налаштування Google провайдера з необхідними скоупами
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
+
+      // Вхід через Google popup
       const userCred = await signInWithPopup(auth, provider);
+
+      // Синхронізація даних з сервером
       const userData = await syncUserWithServer(userCred.user);
-      console.log('Google sign in successful:', userData);
+
+      // Перенаправлення за потреби
       if (redirectPath) window.location.href = redirectPath;
+
       return userData;
     },
     onSuccess: (userData) => {
-      // Оновлюємо кеш React Query
+      // Оновлення кешу React Query
       queryClient.setQueryData(['user'], userData);
     },
     onError: (error) => {
-      console.error('Google sign in error:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Google sign in error:', error);
+      }
 
+      // Обробка специфічних помилок Google OAuth
       if (error.code === 'auth/popup-closed-by-user') {
         toast.error(t('popupCancelled'));
       } else if (error.code === 'auth/popup-blocked') {
