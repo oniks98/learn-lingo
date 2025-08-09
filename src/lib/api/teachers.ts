@@ -11,7 +11,7 @@ function getBaseUrl() {
   // Для серверного рендерингу
   if (typeof window === 'undefined') {
     return process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
+      ? `https://learn-lingo-amber-eight.vercel.app`
       : 'http://localhost:3000';
   }
   // Для клієнтського рендерингу

@@ -10,7 +10,8 @@ export default function LocalizedStructuredData({
   const isUkrainian = locale === 'uk';
   const baseUrl =
     process.env.NODE_ENV === 'production'
-      ? process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'
+      ? process.env.NEXT_PUBLIC_SITE_URL ||
+        'https://learn-lingo-amber-eight.vercel.app'
       : 'http://localhost:3000';
 
   // Схема організації

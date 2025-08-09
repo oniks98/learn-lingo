@@ -3,7 +3,8 @@
 export const SEO_CONFIG = {
   baseUrl:
     process.env.NODE_ENV === 'production'
-      ? process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'
+      ? process.env.NEXT_PUBLIC_SITE_URL ||
+        'https://learn-lingo-amber-eight.vercel.app'
       : 'http://localhost:3000',
 
   locales: ['en', 'uk'] as const,

@@ -4,7 +4,8 @@ import clsx from 'clsx';
 // Базова URL для різних середовищ
 const BASE_URL =
   process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_SITE_URL || 'https://learnlingo.com'
+    ? process.env.NEXT_PUBLIC_SITE_URL ||
+      'https://learn-lingo-amber-eight.vercel.app'
     : 'http://localhost:3000';
 
 // Логування тільки для розробки
