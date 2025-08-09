@@ -1,131 +1,155 @@
 // src/app/api/auth/change-email/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
-import { FirebaseError } from 'firebase/app';
 
-const FIREBASE_API_BASE = 'https://identitytoolkit.googleapis.com/v1/accounts';
-
-interface EmailChangeRequest {
-  oobCode?: string;
-  checkEmail?: string;
-}
-
-// Основний обробник API для зміни email
 export async function POST(request: NextRequest) {
   try {
-    const { oobCode, checkEmail }: EmailChangeRequest = await request.json();
+    const { oobCode, checkEmail } = await request.json();
 
-    // Перевірка доступності email (без oobCode)
+    // Если это запрос на проверку email (без oobCode)
     if (checkEmail && !oobCode) {
-      return await checkEmailAvailability(checkEmail);
+      try {
+        // Пытаемся найти пользователя с таким email через Admin SDK
+        await admin.auth().getUserByEmail(checkEmail);
+
+        // Если пользователь найден, email занят
+        return NextResponse.json(
+          {
+            available: false,
+            exists: true,
+            error: 'Email is already in use by another account',
+          },
+          { status: 409 },
+        );
+      } catch (error: unknown) {
+        // Если ошибка auth/user-not-found, то email свободен
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'code' in error &&
+          error.code === 'auth/user-not-found'
+        ) {
+          return NextResponse.json({
+            available: true,
+            exists: false,
+          });
+        }
+
+        // Для любой другой ошибки
+        return NextResponse.json(
+          { error: 'Error checking email availability' },
+          { status: 500 },
+        );
+      }
     }
 
-    // Валідація наявності oobCode для зміни email
+    // Обычная логика смены email (с oobCode)
     if (!oobCode) {
-      return NextResponse.json({ error: 'OOB code required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'OOB code is required' },
+        { status: 400 },
+      );
     }
 
-    // Виконання зміни email
-    return await changeUserEmail(oobCode);
-  } catch {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 },
-    );
-  }
-}
-
-// Покращена перевірка доступності email
-async function checkEmailAvailability(email: string) {
-  try {
-    await admin.auth().getUserByEmail(email);
-    // Якщо дійшли до цієї точки - користувач знайдений, email зайнятий
-    return NextResponse.json(
+    // Используем Firebase REST API endpoint для подтверждения смены email
+    const response = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
       {
-        available: false,
-        message: 'Email already in use',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          oobCode: oobCode,
+        }),
       },
-      { status: 409 },
     );
-  } catch (error: unknown) {
-    if (
-      error instanceof FirebaseError &&
-      error.code === 'auth/user-not-found'
-    ) {
-      // Email вільний
-      return NextResponse.json({
-        available: true,
-        message: 'Email is available',
-      });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      let errorMessage = 'Email change failed';
+      let statusCode = 400;
+
+      if (responseData.error?.message) {
+        switch (responseData.error.message) {
+          case 'INVALID_OOB_CODE':
+            errorMessage =
+              'This email change link has already been used or is invalid.';
+            break;
+          case 'EXPIRED_OOB_CODE':
+            errorMessage =
+              'Email change link has expired. Please request a new one.';
+            break;
+          case 'USER_DISABLED':
+            errorMessage = 'User account is disabled';
+            statusCode = 403;
+            break;
+          case 'EMAIL_EXISTS':
+            errorMessage =
+              'This email address is already in use by another account';
+            statusCode = 409;
+            break;
+          default:
+            errorMessage = responseData.error.message;
+        }
+      }
+
+      return NextResponse.json({ error: errorMessage }, { status: statusCode });
     }
 
-    // Інші помилки Firebase
-    console.error('Error checking email availability:', error);
-    return NextResponse.json(
-      {
-        available: false,
-        message: 'Error checking email availability',
-      },
-      { status: 500 },
-    );
+    const newEmail = responseData.email;
+
+    if (!newEmail) {
+      return NextResponse.json(
+        { error: 'New email not found in change response' },
+        { status: 400 },
+      );
+    }
+
+    // Получаем пользователя по новому email через Admin SDK
+    let userRecord;
+    try {
+      userRecord = await admin.auth().getUserByEmail(newEmail);
+    } catch {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Обновляем email в Realtime Database
+    const database = admin.database();
+    const userRef = database.ref(`users/${userRecord.uid}`);
+
+    const updates = {
+      email: newEmail,
+      emailVerified: true,
+      updatedAt: Date.now(),
+    };
+
+    await userRef.update(updates);
+
+    // Получаем обновленные данные пользователя
+    const userSnapshot = await userRef.once('value');
+    const userData = userSnapshot.val();
+
+    if (!userData) {
+      return NextResponse.json(
+        { error: 'User data not found in database' },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      newEmail: newEmail,
+      user: userData,
+    });
+  } catch (error) {
+    let errorMessage = 'Internal server error during email change process.';
+
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
-}
-
-// Решта функцій залишається без змін...
-async function changeUserEmail(oobCode: string) {
-  const response = await fetch(
-    `${FIREBASE_API_BASE}:update?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ oobCode }),
-    },
-  );
-
-  if (!response.ok) {
-    const data = await response.json();
-    const message = getErrorMessage(data.error?.message);
-    const status = getStatusCode(data.error?.message);
-    return NextResponse.json({ error: message }, { status });
-  }
-
-  const { email: newEmail } = await response.json();
-  if (!newEmail) {
-    return NextResponse.json({ error: 'Invalid response' }, { status: 500 });
-  }
-
-  const userData = await updateUserInDatabase(newEmail);
-  return NextResponse.json({ success: true, newEmail, user: userData });
-}
-
-async function updateUserInDatabase(newEmail: string) {
-  const userRecord = await admin.auth().getUserByEmail(newEmail);
-  const userRef = admin.database().ref(`users/${userRecord.uid}`);
-
-  await userRef.update({
-    email: newEmail,
-    emailVerified: true,
-    updatedAt: Date.now(),
-  });
-
-  const snapshot = await userRef.once('value');
-  return snapshot.val();
-}
-
-function getErrorMessage(code?: string): string {
-  const messages: Record<string, string> = {
-    INVALID_OOB_CODE: 'Link already used or invalid',
-    EXPIRED_OOB_CODE: 'Link expired',
-    USER_DISABLED: 'Account disabled',
-    EMAIL_EXISTS: 'Email already in use',
-  };
-  return messages[code || ''] || 'Email change failed';
-}
-
-function getStatusCode(code?: string): number {
-  const codes: Record<string, number> = {
-    USER_DISABLED: 403,
-    EMAIL_EXISTS: 409,
-  };
-  return codes[code || ''] || 400;
 }

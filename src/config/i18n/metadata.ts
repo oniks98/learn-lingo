@@ -2,10 +2,7 @@ import type { Metadata } from 'next';
 
 const getBaseUrl = () => {
   if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://yourdomain.com';
+    return `https://learn-lingo-amber-eight.vercel.app`;
   }
   return 'http://localhost:3000';
 };
