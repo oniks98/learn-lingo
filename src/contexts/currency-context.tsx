@@ -1,4 +1,3 @@
-// src/contexts/currency-context.tsx
 'use client';
 
 import {
@@ -33,11 +32,12 @@ export function CurrencyProvider({ children }: CurrencyProviderProps) {
   const [currency, setCurrencyState] = useState<CurrencyCode>(DEFAULT_CURRENCY);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Загружаем сохраненную валюту при инициализации
+  // Завантаження збереженої валюти при ініціалізації
   useEffect(() => {
     const savedCurrency = localStorage.getItem(
       CURRENCY_STORAGE_KEY,
     ) as CurrencyCode;
+
     if (savedCurrency && (savedCurrency === 'USD' || savedCurrency === 'UAH')) {
       setCurrencyState(savedCurrency);
     }
