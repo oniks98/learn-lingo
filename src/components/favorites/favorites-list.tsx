@@ -162,7 +162,7 @@ export default function FavoritesList() {
                   <motion.div
                     key={teacher.id}
                     variants={cardVariants}
-                    viewport={{ once: true, margin: '1%' }}
+                    viewport={{ once: true, margin: '5%' }}
                     whileInView="visible"
                     initial="hidden"
                   >
@@ -180,7 +180,7 @@ export default function FavoritesList() {
                 <motion.div
                   className="mt-8 text-center"
                   variants={loadMoreVariants}
-                  viewport={{ once: true, margin: '1%' }}
+                  viewport={{ once: true, margin: '5%' }}
                   whileInView="visible"
                   initial="hidden"
                 >
