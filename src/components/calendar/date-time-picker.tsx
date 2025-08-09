@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { ChevronDownIcon } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
+import clsx from 'clsx';
 
 import { Button } from '@/components/calendar/button';
 import { Calendar } from '@/components/calendar/calendar';
@@ -38,7 +39,7 @@ export function DateTimePicker({
   );
   const [selectedTime, setSelectedTime] = React.useState<string>(() => {
     if (value) {
-      // Используем локальное время без конвертации в UTC
+      // Використовуємо локальний час без конвертації в UTC
       const hours = value.getHours().toString().padStart(2, '0');
       const minutes = value.getMinutes().toString().padStart(2, '0');
       return `${hours}:${minutes}`;
@@ -46,7 +47,7 @@ export function DateTimePicker({
     return defaultTime;
   });
 
-  // Sync with external value changes
+  // Синхронізація з зовнішніми змінами значень
   React.useEffect(() => {
     setSelectedDate(value);
     if (value) {
@@ -56,7 +57,7 @@ export function DateTimePicker({
     }
   }, [value]);
 
-  // Combine date and time into a single Date object (сохраняем локальное время)
+  // Поєднання дати та часу в один Date об'єкт (зберігаємо локальний час)
   const combineDateTime = (
     date: Date | undefined,
     time: string,
@@ -65,17 +66,19 @@ export function DateTimePicker({
 
     const [hours, minutes] = time.split(':').map(Number);
 
-    // Создаем дату из строки в формате YYYY-MM-DD HH:MM для избежания проблем с часовыми поясами
+    // Створюємо дату з рядка у форматі YYYY-MM-DD HH:MM для уникнення проблем з часовими поясами
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
-    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    const timeStr = `${hours.toString().padStart(2, '0')}:${minutes
+      .toString()
+      .padStart(2, '0')}`;
 
-    // Используем формат без указания часового пояса, чтобы интерпретировалось как локальное время
+    // Використовуємо формат без вказівки часового поясу, щоб інтерпретувалося як локальний час
     return new Date(`${year}-${month}-${day}T${timeStr}:00`);
   };
 
-  // Handle date selection
+  // Обробка вибору дати
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     setOpen(false);
@@ -84,7 +87,7 @@ export function DateTimePicker({
     onChange?.(combined);
   };
 
-  // Handle time change
+  // Обробка зміни часу
   const handleTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const time = event.target.value;
     setSelectedTime(time);
@@ -93,7 +96,7 @@ export function DateTimePicker({
     onChange?.(combined);
   };
 
-  // Filter past dates if needed
+  // Фільтрування минулих дат при потребі
   const isDateDisabled = (date: Date) => {
     if (!disablePastDates) return false;
 
@@ -103,7 +106,7 @@ export function DateTimePicker({
     return date < today;
   };
 
-  // Format date based on locale
+  // Форматування дати відповідно до локалі
   const formatDate = (date: Date) => {
     return date.toLocaleDateString(locale === 'uk' ? 'uk-UA' : 'en-US');
   };
@@ -134,7 +137,11 @@ export function DateTimePicker({
                 onSelect={handleDateSelect}
                 disabled={disablePastDates ? isDateDisabled : undefined}
                 classNames={{
-                  day: 'data-[selected-single=true]:bg-yellow-400 data-[selected-single=true]:text-black data-[selected-single=true]:hover:bg-yellow-500',
+                  day: clsx(
+                    'data-[selected-single=true]:bg-yellow-400',
+                    'data-[selected-single=true]:text-black',
+                    'data-[selected-single=true]:hover:bg-yellow-500',
+                  ),
                 }}
               />
             </PopoverContent>
@@ -147,7 +154,11 @@ export function DateTimePicker({
             id="time-picker"
             value={selectedTime}
             onChange={handleTimeChange}
-            className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            className={clsx(
+              'bg-background appearance-none',
+              '[&::-webkit-calendar-picker-indicator]:hidden',
+              '[&::-webkit-calendar-picker-indicator]:appearance-none',
+            )}
           />
         </div>
       </div>
