@@ -1,5 +1,3 @@
-// src/components/seo/i18n/localized-structured-data.tsx
-
 interface LocalizedStructuredDataProps {
   locale: string;
   additionalData?: object[];
@@ -15,7 +13,7 @@ export default function LocalizedStructuredData({
       ? process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'
       : 'http://localhost:3000';
 
-  // Основные схемы для организации и сайта (глобальные)
+  // Схема організації
   const organizationSchema = {
     '@type': 'Organization',
     '@id': `${baseUrl}/#organization`,
@@ -40,6 +38,7 @@ export default function LocalizedStructuredData({
     },
   };
 
+  // Схема веб-сайту
   const websiteSchema = {
     '@type': 'WebSite',
     '@id': `${baseUrl}/#website`,
@@ -58,6 +57,7 @@ export default function LocalizedStructuredData({
     },
   };
 
+  // Схема освітньої організації
   const educationalOrgSchema = {
     '@type': 'EducationalOrganization',
     '@id': `${baseUrl}/#educational-org`,
@@ -77,7 +77,7 @@ export default function LocalizedStructuredData({
     ],
   };
 
-  // Локализованная схема для конкретной страницы
+  // Локалізована схема сторінки
   const webPageSchema = {
     '@type': 'WebPage',
     '@id': `${baseUrl}/${locale}#webpage`,
@@ -109,7 +109,7 @@ export default function LocalizedStructuredData({
     },
   };
 
-  // Объединяем все схемы
+  // Об'єднуємо всі схеми
   const allSchemas = [
     organizationSchema,
     websiteSchema,
