@@ -1,15 +1,15 @@
-// src/components/favorites/favorites-list.tsx
 'use client';
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+
 import { useFavorites } from '@/hooks/use-favorites';
 import TeacherCard from '@/components/teachers/teacher-card';
 import SignUpFormModal from '@/components/modal/sign-up-form-modal';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
-import { useTranslations } from 'next-intl';
 import {
   containerVariants,
   cardVariants,
@@ -22,11 +22,15 @@ export default function FavoritesList() {
   const t = useTranslations();
   const { data: favoritesData, isLoading, error } = useFavorites();
 
+  // Стан для модального вікна реєстрації
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [pendingFavoriteTeacherId, setPendingFavoriteTeacherId] =
     useState<string>('');
+
+  // Пагінація - кількість видимих карток
   const [visibleCount, setVisibleCount] = useState(4);
 
+  // Мемоізовані дані улюблених викладачів
   const allFavorites = useMemo(() => {
     return favoritesData?.favorites || [];
   }, [favoritesData]);
@@ -36,6 +40,7 @@ export default function FavoritesList() {
     [allFavorites, visibleCount],
   );
 
+  // Завантаження додаткових карток з автоскролом
   const handleLoadMore = () => {
     setVisibleCount((prev) => {
       const newCount = prev + 4;
@@ -58,7 +63,7 @@ export default function FavoritesList() {
     setPendingFavoriteTeacherId('');
   };
 
-  // ПЕРЕМЕСТИЛИ ПРОВЕРКУ isLoading ПЕРЕД ПРОВЕРКОЙ EMPTY STATE
+  // Стан завантаження
   if (isLoading || (!favoritesData && !error)) {
     return (
       <section className="mx-auto max-w-338 px-5 pb-5">
@@ -69,6 +74,7 @@ export default function FavoritesList() {
     );
   }
 
+  // Стан помилки з можливістю перезавантаження
   if (error) {
     return (
       <section className="mx-auto max-w-338 px-5 pb-5">
@@ -91,6 +97,7 @@ export default function FavoritesList() {
     <>
       <section className="mx-auto max-w-338 px-5 pb-5">
         <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
+          {/* Заголовок сторінки з анімацією */}
           <motion.div
             className="mb-8 text-center"
             variants={headerVariants}
@@ -107,6 +114,7 @@ export default function FavoritesList() {
             </p>
           </motion.div>
 
+          {/* Пустий стан - коли немає улюблених викладачів */}
           {allFavorites.length === 0 ? (
             <motion.div
               className="py-16 text-center"
@@ -143,6 +151,7 @@ export default function FavoritesList() {
               </Link>
             </motion.div>
           ) : (
+            /* Список улюблених викладачів */
             <motion.div
               initial="hidden"
               animate="visible"
@@ -166,6 +175,7 @@ export default function FavoritesList() {
                 ))}
               </motion.div>
 
+              {/* Кнопка "Завантажити ще" */}
               {hasMore && (
                 <motion.div
                   className="mt-8 text-center"
@@ -184,6 +194,7 @@ export default function FavoritesList() {
         </div>
       </section>
 
+      {/* Модальне вікно реєстрації */}
       <SignUpFormModal
         isOpen={isRegisterModalOpen}
         onCloseAction={handleCloseRegisterModal}
