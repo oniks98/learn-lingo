@@ -1,4 +1,3 @@
-// src/config/i18n/metadata.ts
 import type { Metadata } from 'next';
 
 const getBaseUrl = () => {
@@ -6,7 +5,7 @@ const getBaseUrl = () => {
     return `https://${process.env.VERCEL_URL}`;
   }
   if (process.env.NODE_ENV === 'production') {
-    return 'https://yourdomain.com'; // Замените на ваш домен
+    return 'https://yourdomain.com';
   }
   return 'http://localhost:3000';
 };

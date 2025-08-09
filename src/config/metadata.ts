@@ -1,39 +1,48 @@
-// src/config/metadata.ts
 import type { Metadata } from 'next';
+import clsx from 'clsx';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+// Базова URL для різних середовищ
+const BASE_URL =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_SITE_URL || 'https://learnlingo.com'
+    : 'http://localhost:3000';
+
+// Логування тільки для розробки
+if (process.env.NODE_ENV === 'development') {
+  console.log('Base URL:', BASE_URL);
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
 
   title: {
-    default: 'LearnLingo - Learn Languages with Professional Teachers Online',
-    template: '%s | LearnLingo - Professional Language Learning Platform',
+    default: 'LearnLingo - Вивчай мови з професійними викладачами онлайн',
+    template: '%s | LearnLingo - Професійна платформа для вивчення мов',
   },
 
   description:
-    'Find certified language teachers and tutors online. Learn English, Ukrainian, Spanish, French and 20+ languages with personalized lessons. Book your first lesson today and start speaking fluently.',
+    'Знайди сертифікованих викладачів мов онлайн. Вивчай англійську, українську, іспанську, французьку та 20+ мов з персоналізованими уроками. Забронюй свій перший урок сьогодні та почни говорити вільно.',
 
   keywords: [
-    'language learning',
-    'online tutors',
-    'English teachers',
-    'Ukrainian lessons',
-    'language teachers',
-    'online education',
-    'learn languages online',
-    'certified tutors',
-    'language courses',
-    'speaking practice',
-    'grammar lessons',
-    'conversation practice',
+    'вивчення мов',
+    'онлайн репетитори',
+    'викладачі англійської',
+    'уроки української',
+    'викладачі мов',
+    'онлайн освіта',
+    'вивчення мов онлайн',
+    'сертифіковані репетитори',
+    'мовні курси',
+    'розмовна практика',
+    'уроки граматики',
+    'практика спілкування',
   ],
 
-  authors: [{ name: 'LearnLingo Team', url: `${BASE_URL}/about` }],
+  authors: [{ name: 'Команда LearnLingo', url: `${BASE_URL}/about` }],
   creator: 'LearnLingo',
-  publisher: 'LearnLingo Education Platform',
-  category: 'Education',
-  classification: 'Language Learning Platform',
+  publisher: 'Освітня платформа LearnLingo',
+  category: 'Освіта',
+  classification: 'Платформа для вивчення мов',
 
   robots: {
     index: true,
@@ -49,59 +58,70 @@ export const metadata: Metadata = {
     },
   },
 
+  // Мультимовність та канонічні URL
   alternates: {
     canonical: '/',
     languages: {
       en: '/en',
       uk: '/uk',
-      'x-default': '/en',
+      'x-default': '/uk', // Українська як основна
     },
   },
 
+  // Open Graph для соціальних мереж
   openGraph: {
     type: 'website',
     siteName: 'LearnLingo',
-    title: 'LearnLingo - Learn Languages with Professional Teachers',
+    title: 'LearnLingo - Вивчай мови з професійними викладачами',
     description:
-      'Find certified language teachers online. 500+ tutors, 20+ languages, personalized lessons. Start your language journey today!',
+      'Знайди сертифікованих викладачів мов онлайн. 500+ репетиторів, 20+ мов, персоналізовані уроки. Почни свою мовну подорож сьогодні!',
     url: BASE_URL,
-    locale: 'en_US',
-    alternateLocale: ['uk_UA'],
+    locale: 'uk_UA',
+    alternateLocale: ['en_US'],
     images: [
       {
-        url: `${BASE_URL}/social/opengraph/opengraph-image-en.png`,
+        url: `${BASE_URL}/social/opengraph/opengraph-image-uk.png`,
         width: 1200,
         height: 630,
-        alt: 'LearnLingo - Professional Language Learning Platform',
+        alt: 'LearnLingo - Професійна платформа для вивчення мов',
         type: 'image/png',
       },
     ],
   },
 
+  // Twitter/X карточки
   twitter: {
     card: 'summary_large_image',
-    site: '@LearnLingo',
-    creator: '@LearnLingo',
-    title: 'LearnLingo - Learn Languages Online',
+    site: '@LearnLingo_UA',
+    creator: '@LearnLingo_UA',
+    title: 'LearnLingo - Вивчай мови онлайн',
     description:
-      'Find certified language teachers. 500+ tutors, 20+ languages. Book your lesson today!',
+      'Знайди сертифікованих викладачів мов. 500+ репетиторів, 20+ мов. Забронюй свій урок сьогодні!',
     images: [
       {
-        url: `${BASE_URL}/social/twitter/twitter-image-en.png`,
-        alt: 'LearnLingo Language Learning Platform',
+        url: `${BASE_URL}/social/twitter/twitter-image-uk.png`,
+        alt: 'Платформа для вивчення мов LearnLingo',
         width: 1200,
         height: 600,
       },
     ],
   },
 
-  // ❗️ ИСПРАВЛЕННЫЙ порядок иконок - favicon.ico должен быть ПЕРВЫМ
+  // Іконки - favicon.ico першим для сумісності
   icons: {
     icon: [
-      { url: '/icons/favicon.ico', type: 'image/x-icon' }, // ❗️ Первым идет favicon.ico
+      { url: '/icons/favicon.ico', type: 'image/x-icon' },
       { url: '/icons/favicon.svg', type: 'image/svg+xml' },
-      { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      {
+        url: '/icons/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        url: '/icons/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png',
+      },
     ],
     shortcut: '/icons/favicon.svg',
     apple: [
@@ -130,6 +150,7 @@ export const metadata: Metadata = {
     ],
   },
 
+  // PWA налаштування
   manifest: '/pwa/manifest.json',
 
   appleWebApp: {
@@ -139,12 +160,16 @@ export const metadata: Metadata = {
     startupImage: [
       {
         url: '/apple/apple-startup-1170x2532.png',
-        media:
-          '(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)',
+        media: clsx(
+          '(device-width: 390px)',
+          'and (device-height: 844px)',
+          'and (-webkit-device-pixel-ratio: 3)',
+        ),
       },
     ],
   },
 
+  // Автодетекція контактної інформації
   formatDetection: {
     telephone: true,
     email: true,
@@ -153,6 +178,7 @@ export const metadata: Metadata = {
     url: true,
   },
 
+  // Додаткові мета-теги для PWA та мобільних пристроїв
   other: {
     'application-name': 'LearnLingo',
     'mobile-web-app-capable': 'yes',

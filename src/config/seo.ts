@@ -10,14 +10,14 @@ export const SEO_CONFIG = {
 
   routes: {
     public: [
-      '', // главная страница
-      '/teachers', // список учителей
+      '', // головна сторінка
+      '/teachers', // список викладачів
     ],
 
     private: ['/api/', '/(private)/', '/*/users/', '/@modal/'],
 
     dynamic: {
-      teachers: '/teachers/', // для динамических страниц учителей
+      teachers: '/teachers/', // для динамічних сторінок викладачів
     },
   },
 
@@ -49,3 +49,8 @@ export const SEO_CONFIG = {
 } as const;
 
 export type Locale = (typeof SEO_CONFIG.locales)[number];
+
+// Логування тільки для розробки
+if (process.env.NODE_ENV === 'development') {
+  console.log('SEO Config loaded:', SEO_CONFIG.baseUrl);
+}
