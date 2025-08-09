@@ -27,14 +27,9 @@ export default function PendingActionsHandler() {
 
       try {
         if (pendingAction.type === 'favorite') {
-          console.log(
-            'Processing pending favorite for teacher:',
-            pendingAction.teacherId,
-          );
-
           await addToFavorites(pendingAction.teacherId);
 
-          // Обновляем кеши с await
+          // Оновлюємо кеші
           await queryClient.invalidateQueries({ queryKey: ['favorites'] });
           await queryClient.invalidateQueries({
             queryKey: ['favoriteStatus', pendingAction.teacherId],
@@ -42,11 +37,6 @@ export default function PendingActionsHandler() {
 
           toast.success(t('favoriteSuccess'));
         } else if (pendingAction.type === 'booking') {
-          console.log(
-            'Processing pending booking for teacher:',
-            pendingAction.teacherId,
-          );
-
           setTimeout(() => {
             router.push(`/teachers/${pendingAction.teacherId}`, {
               scroll: false,
@@ -56,8 +46,6 @@ export default function PendingActionsHandler() {
 
         removePendingAction();
       } catch (error) {
-        console.error('Error processing pending action:', error);
-
         const shouldRetry =
           error instanceof Error && error.message.includes('network');
 

@@ -1,4 +1,3 @@
-// src/components/email-verification-handler.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -7,7 +6,7 @@ import { useVerifyEmailOnServer } from '@/hooks/use-verify-email-on-server';
 import { useAuth } from '@/contexts/auth-context';
 
 /**
- * Компонент для обработки верификации email через URL параметры
+ * Компонент для обробки верифікації email через URL параметри
  */
 export default function EmailVerificationHandler() {
   const searchParams = useSearchParams();
@@ -21,50 +20,36 @@ export default function EmailVerificationHandler() {
     const mode = searchParams.get('mode');
     const oobCode = searchParams.get('oobCode');
 
-    // Проверяем, является ли это запросом на верификацию email
+    // Перевіряємо, чи є це запитом на верифікацію email
     if (mode !== 'verifyEmail' || !oobCode || isProcessing) {
       return;
     }
 
-    console.log('Email verification URL detected, starting verification...');
-    console.log('OOB Code from URL:', oobCode);
-
-    // СРАЗУ очищаем URL, чтобы предотвратить повторные вызовы
+    // Одразу очищаємо URL для запобігання повторним викликам
     const cleanUrl = window.location.pathname;
     router.replace(cleanUrl);
 
     setIsProcessing(true);
 
-    // Декодируем oobCode на случай, если он URL-encoded
+    // Декодуємо oobCode
     const decodedOobCode = decodeURIComponent(oobCode);
-    console.log('Decoded OOB Code:', decodedOobCode);
 
-    // Верифицируем email через сервер
     verifyEmailMutation.mutate(
       { oobCode: decodedOobCode },
       {
         onSuccess: async () => {
-          console.log('Email verification successful, refreshing user data...');
-
-          // Даем время Firebase обновить статус
+          // Даємо час Firebase оновити статус
           setTimeout(async () => {
             await refetchUser();
             setIsProcessing(false);
           }, 1000);
         },
-        onError: (error) => {
-          console.error('Email verification failed:', error);
+        onError: () => {
           setIsProcessing(false);
         },
       },
     );
   }, [searchParams, router, verifyEmailMutation, refetchUser, isProcessing]);
 
-  // Показываем индикатор загрузки во время обработки
-  if (isProcessing) {
-    return null;
-  }
-
-  // Компонент не рендерит ничего видимого в обычном состоянии
   return null;
 }
