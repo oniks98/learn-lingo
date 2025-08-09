@@ -1,4 +1,3 @@
-// src/components/profile/profile-list.tsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -6,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations, useLocale } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { Link } from '@/i18n/navigation';
+import { clsx } from 'clsx';
 import { useAuth } from '@/contexts/auth-context';
 import { updateProfile, deleteAccount, getUserStats } from '@/lib/api/profile';
 import Loader from '@/components/ui/loader';
@@ -20,17 +20,16 @@ export default function ProfileList({ userId }: { userId: string }) {
   const { user, loading, signOut } = useAuth();
   const queryClient = useQueryClient();
 
-  // ВСЕ ХУКИ ВСЕГДА ВЫЗЫВАЮТСЯ В ОДИНАКОВОМ ПОРЯДКЕ
-  // State для редагування імені
+  // Стан для редагування імені
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(user?.username || '');
 
-  // State для модалок
+  // Стан для модалок
   const [isChangeEmailModalOpen, setIsChangeEmailModalOpen] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] =
     useState(false);
 
-  // Завантаження статистики користувача - как в BookingsList
+  // Завантаження статистики користувача
   const {
     data: userStats,
     isLoading: statsLoading,
@@ -46,11 +45,11 @@ export default function ProfileList({ userId }: { userId: string }) {
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(['user'], updatedUser);
       setIsEditingName(false);
-      // Можна додати toast повідомлення
     },
     onError: (error) => {
-      console.error('Profile update error:', error);
-      // Можна додати toast повідомлення про помилку
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Profile update error:', error);
+      }
     },
   });
 
@@ -60,27 +59,26 @@ export default function ProfileList({ userId }: { userId: string }) {
     onSuccess: async () => {
       await signOut();
       router.push('/');
-      // Можна додати toast повідомлення про успішне видалення
     },
     onError: (error) => {
-      console.error('Account deletion error:', error);
-      // Можна додати toast повідомлення про помилку
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Account deletion error:', error);
+      }
     },
   });
 
-  // useEffect для синхронизации имени пользователя
+  // Синхронізація імені користувача
   useEffect(() => {
     if (user?.username) {
       setNewName(user.username);
     }
   }, [user?.username]);
 
-  // Check if the current user is viewing their own profile
+  // Перевірка чи користувач переглядає свій профіль
   const isOwnProfile = user?.uid === userId;
 
   // Форматування дати реєстрації
   const formatDate = (timestamp: number) => {
-    // Создаем mapping локалей для правильного форматирования
     const localeMap: Record<string, string> = {
       en: 'en-US',
       uk: 'uk-UA',
@@ -116,18 +114,22 @@ export default function ProfileList({ userId }: { userId: string }) {
   if (loading || !user) {
     return (
       <section className="mx-auto max-w-338 px-5 pb-5">
-        <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16">
+        <div className={clsx('bg-gray-light mx-auto rounded-3xl px-5 py-16')}>
           <Loader />
         </div>
       </section>
     );
   }
 
-  // If user is trying to view someone else's profile, show access denied
+  // Якщо користувач намагається переглянути чужий профіль
   if (!isOwnProfile) {
     return (
       <section className="mx-auto max-w-338 px-5 pb-5">
-        <div className="bg-gray-light mx-auto rounded-3xl px-5 py-16 text-center">
+        <div
+          className={clsx(
+            'bg-gray-light mx-auto rounded-3xl px-5 py-16 text-center',
+          )}
+        >
           <h1 className="mb-4 text-2xl font-bold text-gray-800">
             {t('accessDenied')}
           </h1>
@@ -139,7 +141,7 @@ export default function ProfileList({ userId }: { userId: string }) {
 
   return (
     <section className="mx-auto max-w-338 px-5 pb-5">
-      <div className="bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5">
+      <div className={clsx('bg-gray-light mx-auto rounded-3xl px-5 pt-8 pb-5')}>
         <div className="mb-8 text-center">
           <h1 className="mb-2 text-3xl font-bold text-gray-800">
             {t('title')}
@@ -164,13 +166,18 @@ export default function ProfileList({ userId }: { userId: string }) {
                     type="text"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    className="focus:border-yellow flex-1 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none"
+                    className={clsx(
+                      'focus:border-yellow flex-1 rounded-lg border border-gray-300',
+                      'px-3 py-2 focus:outline-none',
+                    )}
                     placeholder="Введіть ім'я"
                   />
                   <Button
                     onClick={handleSaveName}
                     disabled={updateProfileMutation.isPending}
-                    className="bg-yellow hover:bg-yellow/80 px-9 py-[14px] text-black"
+                    className={clsx(
+                      'bg-yellow hover:bg-yellow/80 px-9 py-[14px] text-black',
+                    )}
                   >
                     {updateProfileMutation.isPending
                       ? t('buttons.saving')
@@ -178,7 +185,9 @@ export default function ProfileList({ userId }: { userId: string }) {
                   </Button>
                   <Button
                     onClick={handleCancelEdit}
-                    className="bg-gray-200 px-9 py-[14px] text-black hover:bg-gray-300"
+                    className={clsx(
+                      'bg-gray-200 px-9 py-[14px] text-black hover:bg-gray-300',
+                    )}
                   >
                     {t('buttons.cancel')}
                   </Button>
@@ -188,7 +197,9 @@ export default function ProfileList({ userId }: { userId: string }) {
                   <span className="text-gray-900">{user.username}</span>
                   <Button
                     onClick={() => setIsEditingName(true)}
-                    className="bg-yellow hover:bg-yellow-light px-9 py-[14px] text-black"
+                    className={clsx(
+                      'bg-yellow hover:bg-yellow-light px-9 py-[14px] text-black',
+                    )}
                   >
                     {t('buttons.edit')}
                   </Button>
@@ -205,7 +216,9 @@ export default function ProfileList({ userId }: { userId: string }) {
                 <span className="text-gray-600">{user.email}</span>
                 <Button
                   onClick={() => setIsChangeEmailModalOpen(true)}
-                  className="bg-yellow hover:bg-yellow-light px-9 py-[14px] text-black"
+                  className={clsx(
+                    'bg-yellow hover:bg-yellow-light px-9 py-[14px] text-black',
+                  )}
                 >
                   {t('changeEmail')}
                 </Button>
@@ -236,7 +249,10 @@ export default function ProfileList({ userId }: { userId: string }) {
                     </span>
                     <Link
                       href={`/users/${userId}/favorites`}
-                      className="text-yellow hover:text-yellow/80 text-2xl font-bold transition-colors"
+                      className={clsx(
+                        'text-yellow hover:text-yellow/80 text-2xl font-bold',
+                        'transition-colors',
+                      )}
                     >
                       {userStats?.favoritesCount || 0}
                     </Link>
@@ -248,7 +264,10 @@ export default function ProfileList({ userId }: { userId: string }) {
                     <span className="text-gray-600">{t('bookedLessons')}:</span>
                     <Link
                       href={`/users/${userId}/bookings`}
-                      className="text-yellow hover:text-yellow/80 text-2xl font-bold transition-colors"
+                      className={clsx(
+                        'text-yellow hover:text-yellow/80 text-2xl font-bold',
+                        'transition-colors',
+                      )}
                     >
                       {userStats?.bookingsCount || 0}
                     </Link>
@@ -277,7 +296,9 @@ export default function ProfileList({ userId }: { userId: string }) {
             <div className="flex justify-center">
               <Button
                 onClick={() => setIsDeleteAccountModalOpen(true)}
-                className="bg-red-500 px-9 py-[14px] text-white hover:bg-red-600"
+                className={clsx(
+                  'bg-red-500 px-9 py-[14px] text-white hover:bg-red-600',
+                )}
               >
                 {t('deleteAccount')}
               </Button>
