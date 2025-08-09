@@ -1,9 +1,9 @@
-// src/utils/sitemap.ts
 import { MetadataRoute } from 'next';
 import { SEO_CONFIG, type Locale } from '@/config/seo';
 
 /**
- * Получает ID учителей из API
+ * Отримує ID викладачів з API
+ * @returns масив ідентифікаторів викладачів
  */
 export async function getTeacherIds(): Promise<string[]> {
   try {
@@ -13,26 +13,31 @@ export async function getTeacherIds(): Promise<string[]> {
         headers: {
           'Content-Type': 'application/json',
         },
-        // Добавляем кеширование для статической генерации
-        next: { revalidate: 3600 }, // обновляем каждый час
+        // Додаємо кешування для статичної генерації
+        next: { revalidate: 3600 }, // оновлюємо кожну годину
       },
     );
 
     if (!response.ok) {
-      console.error(`API error: ${response.status}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`Помилка API: ${response.status}`);
+      }
       return [];
     }
 
     const data = await response.json();
     return data.teachers?.map((teacher: any) => teacher.id) || [];
   } catch (error) {
-    console.error('Error fetching teacher IDs for sitemap:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Помилка отримання ID викладачів для sitemap:', error);
+    }
     return [];
   }
 }
 
 /**
- * Создает записи sitemap для основных маршрутов
+ * Створює записи sitemap для основних маршрутів
+ * @returns масив записів для основних сторінок
  */
 export function createBasicSitemapEntries(): MetadataRoute.Sitemap {
   const sitemap: MetadataRoute.Sitemap = [];
@@ -66,7 +71,9 @@ export function createBasicSitemapEntries(): MetadataRoute.Sitemap {
 }
 
 /**
- * Создает записи sitemap для страниц учителей
+ * Створює записи sitemap для сторінок викладачів
+ * @param teacherIds - масив ідентифікаторів викладачів
+ * @returns масив записів для профілів викладачів
  */
 export function createTeacherSitemapEntries(
   teacherIds: string[],

@@ -48,9 +48,6 @@ export interface UserData {
   photoURL?: string;
 }
 
-// Тип избранных учителей
-export type Favorites = Record<string, boolean>;
-
 // Дані для створення бронювання (без ID)
 export interface CreateBookingData {
   userId: string;
@@ -67,19 +64,4 @@ export interface CreateBookingData {
 // Дані бронювання з сервера (з ID)
 export interface BookingData extends CreateBookingData {
   id: string;
-}
-
-// Тип для добавления/удаления избранного
-export interface FavoriteAction {
-  teacherId: string;
-}
-
-// Тип для ответа API избранных
-export interface FavoritesResponse {
-  favorites: TeacherPreview[];
-}
-
-// Тип для проверки статуса избранного
-export interface FavoriteStatusResponse {
-  isFavorite: boolean;
 }

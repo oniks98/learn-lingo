@@ -1,4 +1,3 @@
-// src/utils/locale.ts
 import { hasLocale } from 'next-intl';
 import { routing } from '@/i18n/routing';
 

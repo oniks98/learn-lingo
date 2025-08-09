@@ -1,8 +1,7 @@
-// src/utils/robots.ts
 import { MetadataRoute } from 'next';
 import { SEO_CONFIG } from '@/config/seo';
 
-// Определяем тип для отдельного правила робота
+// Тип для правила окремого робота
 type RobotRule = {
   userAgent: string | string[];
   allow?: string | string[];
@@ -11,7 +10,8 @@ type RobotRule = {
 };
 
 /**
- * Создает правила для обычных роботов
+ * Створює правила для звичайних роботів
+ * @returns правила для загальних веб-краулерів
  */
 export function createGeneralRobotRules(): RobotRule {
   return {
@@ -19,7 +19,7 @@ export function createGeneralRobotRules(): RobotRule {
     allow: '/',
     disallow: [
       ...SEO_CONFIG.routes.private,
-      // Добавляем специфичные для локалей блокировки
+      // Додаємо специфічні блокування для локалей
       ...SEO_CONFIG.locales.flatMap((locale) => [
         `/${locale}/(private)/`,
         `/${locale}/users/`,
@@ -29,7 +29,8 @@ export function createGeneralRobotRules(): RobotRule {
 }
 
 /**
- * Создает правила специально для Googlebot
+ * Створює правила спеціально для Googlebot
+ * @returns правила для Google веб-краулера
  */
 export function createGoogleBotRules(): RobotRule {
   return {
@@ -40,7 +41,8 @@ export function createGoogleBotRules(): RobotRule {
 }
 
 /**
- * Генерирует полную конфигурацию robots.txt
+ * Генерує повну конфігурацію robots.txt
+ * @returns об'єкт конфігурації для Next.js MetadataRoute.Robots
  */
 export function generateRobotsConfig(): MetadataRoute.Robots {
   const generalRules = createGeneralRobotRules();
