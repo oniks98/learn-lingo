@@ -27,17 +27,6 @@ export function filterTeachers(
     const matchesPrice =
       filters.price === undefined || teacher.price_per_hour === filters.price;
 
-    // Логування для розробки
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Фільтрація викладача:', {
-        teacherId: teacher.id,
-        matchesLanguage,
-        matchesLevel,
-        matchesPrice,
-        filters,
-      });
-    }
-
     return matchesLanguage && matchesLevel && matchesPrice;
   });
 }
