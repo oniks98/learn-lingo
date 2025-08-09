@@ -1,11 +1,16 @@
 import type { BookingData } from '@/lib/types/types';
 
-// Расширенный тип для отправки email с данными учителя
+/**
+ * Розширений тип для відправки email з даними викладача
+ */
 interface BookingEmailData extends BookingData {
   teacherName: string;
   teacherSurname: string;
 }
 
+/**
+ * Відправка email з деталями бронювання
+ */
 export async function sendBookingEmail(
   booking: BookingEmailData,
 ): Promise<void> {

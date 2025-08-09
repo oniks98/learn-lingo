@@ -1,5 +1,3 @@
-// src/api/currency-api.ts
-
 interface CurrencyItem {
   currencyCodeA: number;
   currencyCodeB: number;
@@ -19,7 +17,7 @@ interface CurrencyData {
 
 const CURRENCY_CACHE_KEY = 'currencyRates';
 const BASE_URL = 'https://api.monobank.ua/bank/currency';
-const CACHE_DURATION = 3600000; // 1 час
+const CACHE_DURATION = 3600000; // 1 година
 
 const fetchCurrencyData = async (): Promise<CurrencyItem[]> => {
   const response = await fetch(BASE_URL, {
@@ -27,7 +25,7 @@ const fetchCurrencyData = async (): Promise<CurrencyItem[]> => {
     headers: {
       'Content-Type': 'application/json',
     },
-    // Кешируем на 5 минут на уровне браузера
+    // Кешуємо на 5 хвилин на рівні браузера
     next: { revalidate: 300 },
   });
 
@@ -52,13 +50,16 @@ const getCachedCurrencyData = (): CurrencyData | null => {
       return parsed;
     }
   } catch (error) {
-    console.error('Error reading cached currency data:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error reading cached currency data:', error);
+    }
   }
   return null;
 };
 
 const cacheCurrencyData = (data: CurrencyItem[]): CurrencyData => {
   const now = Date.now();
+  // Знаходимо USD курс (840 - USD, 980 - UAH)
   const usd = data.find(
     (item) => item.currencyCodeA === 840 && item.currencyCodeB === 980,
   );
@@ -77,26 +78,31 @@ const cacheCurrencyData = (data: CurrencyItem[]): CurrencyData => {
     try {
       localStorage.setItem(CURRENCY_CACHE_KEY, JSON.stringify(currencyData));
     } catch (error) {
-      console.error('Error caching currency data:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error caching currency data:', error);
+      }
     }
   }
 
   return currencyData;
 };
 
+/**
+ * Отримання курсів валют з кешуванням
+ */
 export const getCurrencyRates = async (): Promise<CurrencyData> => {
-  // Проверяем кеш
+  // Перевіряємо кеш
   const cachedData = getCachedCurrencyData();
   if (cachedData?.usdRate) {
     return cachedData;
   }
 
-  // Получаем свежие данные
+  // Отримуємо свіжі дані
   const data = await fetchCurrencyData();
   const currencyData = cacheCurrencyData(data);
 
   if (!currencyData.usdRate) {
-    // Fallback данные если USD курс не найден
+    // Fallback дані якщо USD курс не знайдено
     return {
       timestamp: Date.now(),
       usdRate: {

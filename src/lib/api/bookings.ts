@@ -1,9 +1,10 @@
-// src/lib/api/bookings.ts
 import { BookingData, CreateBookingData } from '@/lib/types/types';
 
 const API_BASE = '/api';
 
-// Get all bookings for the current user
+/**
+ * Отримання всіх бронювань поточного користувача
+ */
 export async function getBookings(): Promise<{ bookings: BookingData[] }> {
   const response = await fetch(`${API_BASE}/bookings`, {
     method: 'GET',
@@ -20,7 +21,9 @@ export async function getBookings(): Promise<{ bookings: BookingData[] }> {
   return response.json();
 }
 
-// Create a new booking
+/**
+ * Створення нового бронювання
+ */
 export async function createBooking(
   bookingData: CreateBookingData,
 ): Promise<BookingData> {
@@ -39,7 +42,9 @@ export async function createBooking(
   return response.json();
 }
 
-// Delete a booking
+/**
+ * Видалення бронювання
+ */
 export async function deleteBooking(bookingId: string): Promise<void> {
   const response = await fetch(`${API_BASE}/bookings`, {
     method: 'DELETE',

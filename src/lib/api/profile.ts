@@ -1,9 +1,10 @@
-// src/lib/api/profile.ts
 import { UserData } from '@/lib/types/types';
 
 const API_BASE = '/api';
 
-// Оновити профіль користувача
+/**
+ * Оновлення профілю користувача
+ */
 export async function updateProfile(updates: {
   username: string;
 }): Promise<UserData> {
@@ -22,22 +23,9 @@ export async function updateProfile(updates: {
   return response.json();
 }
 
-// Запросити зміну email
-export async function requestEmailChange(newEmail: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/change-email`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ newEmail }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to request email change: ${response.statusText}`);
-  }
-}
-
-// Видалити акаунт
+/**
+ * Видалення акаунта користувача
+ */
 export async function deleteAccount(): Promise<void> {
   const response = await fetch(`${API_BASE}/profile`, {
     method: 'DELETE',
@@ -51,7 +39,9 @@ export async function deleteAccount(): Promise<void> {
   }
 }
 
-// Отримати статистику користувача
+/**
+ * Отримання статистики користувача
+ */
 export async function getUserStats(): Promise<{
   favoritesCount: number;
   bookingsCount: number;

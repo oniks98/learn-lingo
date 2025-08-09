@@ -1,35 +1,40 @@
-// src/lib/api/teachers.ts
 import {
   TeacherPreview,
   TeacherExtraInfo,
   TeacherInfoModal,
 } from '@/lib/types/types';
 
-// Helper function to get base URL
+/**
+ * Допоміжна функція для отримання базового URL
+ */
 function getBaseUrl() {
-  // For server-side rendering
+  // Для серверного рендерингу
   if (typeof window === 'undefined') {
     return process.env.NEXTAUTH_URL || process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000';
   }
-  // For client-side
+  // Для клієнтського рендерингу
   return window.location.origin;
 }
 
-// Helper function to get current locale
+/**
+ * Допоміжна функція для отримання поточної локалі
+ */
 function getCurrentLocale(): string {
   if (typeof window === 'undefined') {
-    return 'en'; // Default for SSR
+    return 'en'; // За замовчуванням для SSR
   }
 
-  // Extract locale from pathname
+  // Витягуємо локаль з pathname
   const pathname = window.location.pathname;
   const localeMatch = pathname.match(/^\/([a-z]{2})\//);
   return localeMatch ? localeMatch[1] : 'en';
 }
 
-// Get all teachers (preview data only)
+/**
+ * Отримання всіх викладачів (тільки preview дані)
+ */
 export async function getAllTeachers(
   locale?: string,
 ): Promise<TeacherPreview[]> {
@@ -55,7 +60,9 @@ export async function getAllTeachers(
   return data.teachers || [];
 }
 
-// Get extended teacher information by ID
+/**
+ * Отримання розширеної інформації про викладача за ID
+ */
 export async function getTeacherExtraInfo(
   teacherId: string,
   locale?: string,
@@ -85,8 +92,10 @@ export async function getTeacherExtraInfo(
   return response.json();
 }
 
-// Get teacher basic info by ID (for modals, booking cards, etc.)
-// This doesn't need localization as it only returns basic info
+/**
+ * Отримання базової інформації про викладача за ID
+ * Для модальних вікон, карток бронювання тощо (не потребує локалізації)
+ */
 export async function getTeacherById(
   teacherId: string,
 ): Promise<TeacherInfoModal | null> {

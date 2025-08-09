@@ -1,21 +1,24 @@
-// src/lib/api/favorites.ts
 import { TeacherPreview } from '@/lib/types/types';
 
 const API_BASE = '/api';
 
-// Helper function to get current locale
+/**
+ * Допоміжна функція для отримання поточної локалі
+ */
 function getCurrentLocale(): string {
   if (typeof window === 'undefined') {
-    return 'en'; // Default for SSR
+    return 'en'; // За замовчуванням для SSR
   }
 
-  // Extract locale from pathname
+  // Витягуємо локаль з pathname
   const pathname = window.location.pathname;
   const localeMatch = pathname.match(/^\/([a-z]{2})\//);
   return localeMatch ? localeMatch[1] : 'en';
 }
 
-// Отримати всі улюблені вчителі поточного користувача
+/**
+ * Отримання всіх улюблених викладачів поточного користувача
+ */
 export async function getFavorites(
   locale?: string,
 ): Promise<{ favorites: TeacherPreview[] }> {
@@ -39,7 +42,9 @@ export async function getFavorites(
   return response.json();
 }
 
-// Додати вчителя в улюблене
+/**
+ * Додавання викладача до улюблених
+ */
 export async function addToFavorites(teacherId: string): Promise<void> {
   const response = await fetch(`${API_BASE}/favorites`, {
     method: 'POST',
@@ -54,7 +59,9 @@ export async function addToFavorites(teacherId: string): Promise<void> {
   }
 }
 
-// Видалити вчителя з улюбленого
+/**
+ * Видалення викладача з улюблених
+ */
 export async function removeFromFavorites(teacherId: string): Promise<void> {
   const response = await fetch(`${API_BASE}/favorites`, {
     method: 'DELETE',
@@ -69,13 +76,15 @@ export async function removeFromFavorites(teacherId: string): Promise<void> {
   }
 }
 
-// Перевірити, чи вчитель в улюбленому
+/**
+ * Перевірка чи викладач у улюблених
+ */
 export async function checkIsFavorite(teacherId: string): Promise<boolean> {
   try {
     const { favorites } = await getFavorites();
     return favorites.some((teacher) => teacher.id === teacherId);
   } catch (error) {
-    // Якщо помилка (наприклад, не авторизований), вважаємо що не в фаворитах
+    // Якщо помилка (наприклад, не авторизований), вважаємо що не в улюблених
     return false;
   }
 }
