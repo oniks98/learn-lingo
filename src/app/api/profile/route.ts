@@ -3,16 +3,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { requireAuth } from '@/lib/auth/server-auth';
 
-// Оновлення профілю користувача
+/**
+ * Оновлення профілю користувача
+ * PATCH /api/profile
+ */
 export async function PATCH(request: NextRequest) {
   try {
-    console.log('--- API Profile Update Request Started ---');
-
-    // Проверяем аутентификацию пользователя
+    // Перевірка автентифікації користувача
     const authResult = await requireAuth(request);
-
     if ('error' in authResult) {
-      console.error('Authentication failed:', authResult.error);
       return NextResponse.json(
         { error: authResult.error },
         { status: authResult.status },
@@ -20,9 +19,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     const { user } = authResult;
-    console.log('Session verified for user:', user.uid);
 
-    // Отримуємо дані для оновлення
+    // Отримання даних для оновлення
     const { username } = await request.json();
 
     if (!username || typeof username !== 'string') {
@@ -32,7 +30,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Оновлюємо дані в Realtime Database
+    // Оновлення даних в Realtime Database
     const database = admin.database();
     const userRef = database.ref(`users/${user.uid}`);
 
@@ -42,35 +40,33 @@ export async function PATCH(request: NextRequest) {
     };
 
     await userRef.update(updates);
-    console.log('User profile updated successfully');
 
-    // Отримуємо оновлені дані користувача
+    // Отримання оновлених даних користувача
     const updatedUserSnapshot = await userRef.once('value');
     const updatedUserData = updatedUserSnapshot.val();
 
-    console.log('--- API Profile Update Request Finished Successfully ---');
     return NextResponse.json(updatedUserData);
   } catch (error) {
-    console.error('--- API Profile Update Request Error ---');
-    console.error('Profile update error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Помилка оновлення профілю:', error);
+    }
 
     return NextResponse.json(
-      { error: 'Internal server error during profile update' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 },
     );
   }
 }
 
-// Видалення акаунта користувача
+/**
+ * Видалення акаунта користувача
+ * DELETE /api/profile
+ */
 export async function DELETE(request: NextRequest) {
   try {
-    console.log('--- API Account Deletion Request Started ---');
-
-    // Проверяем аутентификацию пользователя
+    // Перевірка автентифікації користувача
     const authResult = await requireAuth(request);
-
     if ('error' in authResult) {
-      console.error('Authentication failed:', authResult.error);
       return NextResponse.json(
         { error: authResult.error },
         { status: authResult.status },
@@ -78,50 +74,46 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { user } = authResult;
-    console.log('Session verified for user:', user.uid);
-
     const database = admin.database();
 
-    // Видаляємо всі дані користувача з Realtime Database
+    // Видалення всіх даних користувача з Realtime Database
     const deletePromises = [
-      // Видаляємо профіль користувача
-      database.ref(`users/${user.uid}`).remove(),
-      // Видаляємо улюблених викладачів
-      database.ref(`favorites/${user.uid}`).remove(),
-      // Видаляємо бронювання користувача
+      // Видалення профілю користувача
+      await database.ref(`users/${user.uid}`).remove(),
+      // Видалення улюблених викладачів
+      await database.ref(`favorites/${user.uid}`).remove(),
+      // Видалення бронювань користувача
       database
         .ref('bookings')
         .orderByChild('userId')
         .equalTo(user.uid)
         .once('value')
-        .then((snapshot) => {
+        .then(async (snapshot) => {
           const updates: Record<string, null> = {};
           snapshot.forEach((childSnapshot) => {
             updates[`bookings/${childSnapshot.key}`] = null;
           });
-          return database.ref().update(updates);
+          return await database.ref().update(updates);
         }),
     ];
 
     await Promise.all(deletePromises);
-    console.log('User data deleted from Realtime Database');
 
-    // Видаляємо користувача з Firebase Auth
+    // Видалення користувача з Firebase Auth
     await admin.auth().deleteUser(user.uid);
-    console.log('User deleted from Firebase Auth');
 
-    // Очищаємо сесійний куки
+    // Очищення сесійного куки
     const response = NextResponse.json({ success: true });
     response.cookies.delete('session');
 
-    console.log('--- API Account Deletion Request Finished Successfully ---');
     return response;
   } catch (error) {
-    console.error('--- API Account Deletion Request Error ---');
-    console.error('Account deletion error:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Помилка видалення акаунта:', error);
+    }
 
     return NextResponse.json(
-      { error: 'Internal server error during account deletion' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 },
     );
   }

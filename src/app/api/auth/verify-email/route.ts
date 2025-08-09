@@ -2,136 +2,94 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 
+const FIREBASE_API_BASE = 'https://identitytoolkit.googleapis.com/v1/accounts';
+
+interface VerifyEmailRequest {
+  oobCode: string;
+}
+
+// Основний обробник API для верифікації email
 export async function POST(request: NextRequest) {
   try {
-    console.log('--- API Email Verification Request Started ---');
-    const { oobCode } = await request.json();
+    const { oobCode }: VerifyEmailRequest = await request.json();
 
+    // Валідація наявності oobCode
     if (!oobCode) {
-      console.error('OOB code is missing from request body.');
-      return NextResponse.json(
-        { error: 'OOB code is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'OOB code required' }, { status: 400 });
     }
 
-    console.log('Received OOB code. Attempting to verify email...');
-    console.log('OOB code:', oobCode);
-    console.log('OOB code length:', oobCode.length);
-
-    // Используем правильный Firebase REST API endpoint для верификации email
-    // oobCode сам выполняет верификацию, не нужно добавлять emailVerified: true
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          oobCode: oobCode,
-        }),
-      },
-    );
-
-    const responseData = await response.json();
-    console.log('Firebase API response:', responseData);
-
-    if (!response.ok) {
-      console.error('Firebase REST API error:', responseData);
-
-      let errorMessage = 'Email verification failed';
-      let statusCode = 400;
-
-      if (responseData.error?.message) {
-        switch (responseData.error.message) {
-          case 'INVALID_OOB_CODE':
-            // Возможно email уже верифицирован и код использован
-            console.log('Invalid OOB code - possibly already used');
-            errorMessage =
-              'This verification link has already been used or is invalid.';
-            break;
-          case 'EXPIRED_OOB_CODE':
-            errorMessage =
-              'Verification link has expired. Please request a new verification email.';
-            break;
-          case 'USER_DISABLED':
-            errorMessage = 'User account is disabled';
-            statusCode = 403;
-            break;
-          default:
-            errorMessage = responseData.error.message;
-        }
-      }
-
-      return NextResponse.json({ error: errorMessage }, { status: statusCode });
-    }
-
-    console.log('Email verification successful via REST API');
-    const email = responseData.email;
-
-    if (!email) {
-      console.error('No email returned from Firebase API');
-      return NextResponse.json(
-        { error: 'Email not found in verification response' },
-        { status: 400 },
-      );
-    }
-
-    // Получаем пользователя по email через Admin SDK
-    let userRecord;
-    try {
-      userRecord = await admin.auth().getUserByEmail(email);
-      console.log('Found user record. UID:', userRecord.uid);
-    } catch (error) {
-      console.error('User not found by email:', error);
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    // Обновляем статус верификации в Realtime Database
-    const database = admin.database();
-    const userRef = database.ref(`users/${userRecord.uid}`);
-
-    const updates = {
-      emailVerified: true,
-      updatedAt: Date.now(),
-    };
-
-    await userRef.update(updates);
-    console.log('User email verification status updated in database:', updates);
-
-    // Получаем обновленные данные пользователя
-    const userSnapshot = await userRef.once('value');
-    const userData = userSnapshot.val();
-
-    if (!userData) {
-      console.error('User data not found in database');
-      return NextResponse.json(
-        { error: 'User data not found in database' },
-        { status: 404 },
-      );
-    }
-
-    console.log('--- API Email Verification Request Finished Successfully ---');
-
-    return NextResponse.json({
-      success: true,
-      // message: 'Email verification confirmed successfully',
-      email: email,
-      user: userData,
-    });
+    // Виконання верифікації email
+    return await verifyUserEmail(oobCode);
   } catch (error) {
-    console.error('--- API Email Verification Request Error ---');
-    console.error('Email verification error details:', error);
-
-    let errorMessage =
-      'Internal server error during email verification process.';
-
-    if (error instanceof Error) {
-      console.error('Error message:', error.message);
-      errorMessage = error.message;
-    }
-
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
+}
+
+// Верифікація email користувача через oobCode
+async function verifyUserEmail(oobCode: string) {
+  // Запит до Firebase REST API для підтвердження email
+  const response = await fetch(
+    `${FIREBASE_API_BASE}:update?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oobCode }),
+    },
+  );
+
+  // Обробка помилок Firebase API
+  if (!response.ok) {
+    const data = await response.json();
+    const message = getErrorMessage(data.error?.message);
+    const status = getStatusCode(data.error?.message);
+    return NextResponse.json({ error: message }, { status });
+  }
+
+  // Отримання email з відповіді
+  const { email } = await response.json();
+  if (!email) {
+    return NextResponse.json({ error: 'Invalid response' }, { status: 500 });
+  }
+
+  // Оновлення статусу верифікації в базі
+  const userData = await updateVerificationStatus(email);
+  return NextResponse.json({ success: true, email, user: userData });
+}
+
+// Оновлення статусу верифікації в Realtime Database
+async function updateVerificationStatus(email: string) {
+  // Отримання користувача за email
+  const userRecord = await admin.auth().getUserByEmail(email);
+  const userRef = admin.database().ref(`users/${userRecord.uid}`);
+
+  // Оновлення статусу верифікації
+  await userRef.update({
+    emailVerified: true,
+    updatedAt: Date.now(),
+  });
+
+  // Повернення оновлених даних користувача
+  const snapshot = await userRef.once('value');
+  return snapshot.val();
+}
+
+// Мапінг кодів помилок Firebase на зрозумілі повідомлення
+function getErrorMessage(code?: string): string {
+  const messages: Record<string, string> = {
+    INVALID_OOB_CODE: 'Verification link already used or invalid',
+    EXPIRED_OOB_CODE: 'Verification link expired',
+    USER_DISABLED: 'Account disabled',
+  };
+  return messages[code || ''] || 'Email verification failed';
+}
+
+// Мапінг кодів помилок на HTTP статус коди
+function getStatusCode(code?: string): number {
+  const codes: Record<string, number> = {
+    USER_DISABLED: 403,
+  };
+  return codes[code || ''] || 400;
 }
