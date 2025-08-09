@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { TeacherExtraInfo } from '@/lib/types/types';
 
+/**
+ * Отримання додаткової інформації про викладача
+ * GET /api/teachers/[id]/extra
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -27,6 +31,7 @@ export async function GET(
       );
     }
 
+    // Отримання даних викладача з бази даних
     const snapshot = await admin
       .database()
       .ref(`teachers/${teacherId}`)
@@ -46,6 +51,7 @@ export async function GET(
       );
     }
 
+    // Формування додаткової інформації про викладача
     const extraInfo: TeacherExtraInfo = {
       experience: localizedData.experience || '',
       reviews: localizedData.reviews || [],
@@ -53,9 +59,15 @@ export async function GET(
 
     return NextResponse.json(extraInfo);
   } catch (error) {
-    console.error('Error fetching teacher extra info:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error(
+        'Помилка отримання додаткової інформації про викладача:',
+        error,
+      );
+    }
+
     return NextResponse.json(
-      { error: 'Failed to fetch teacher extra info' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 },
     );
   }

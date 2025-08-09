@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { TeacherPreview } from '@/lib/types/types';
 
+/**
+ * Отримання списку викладачів з локалізацією
+ * GET /api/teachers?locale=en|uk
+ */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,6 +20,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Отримання даних викладачів з бази даних
     const snapshot = await admin.database().ref('teachers').once('value');
 
     if (!snapshot.exists()) {
@@ -25,14 +30,16 @@ export async function GET(request: NextRequest) {
     const teachersData = snapshot.val();
     const teachers: TeacherPreview[] = [];
 
+    // Обробка кожного викладача з локалізацією
     Object.entries(teachersData).forEach(([id, data]: [string, any]) => {
-      // Перевіряємо чи є локалізовані дані
       const localizedData = data.localized?.[locale];
 
       if (!localizedData) {
-        console.warn(
-          `No localized data found for teacher ${id} in locale ${locale}`,
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(
+            `Відсутні локалізовані дані для викладача ${id} в локалі ${locale}`,
+          );
+        }
         return;
       }
 
@@ -55,9 +62,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ teachers });
   } catch (error) {
-    console.error('Error fetching teachers:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Помилка отримання списку викладачів:', error);
+    }
+
     return NextResponse.json(
-      { error: 'Failed to fetch teachers' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 },
     );
   }

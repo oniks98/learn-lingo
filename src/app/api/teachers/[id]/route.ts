@@ -1,10 +1,14 @@
 // src/app/api/teachers/[id]/route.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { TeacherInfoModal } from '@/lib/types/types';
 
+/**
+ * Отримання інформації про викладача
+ * GET /api/teachers/[id]
+ */
 export async function GET(
-  request: NextRequest,
+  _: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
@@ -17,6 +21,7 @@ export async function GET(
       );
     }
 
+    // Отримання даних викладача з бази даних
     const snapshot = await admin
       .database()
       .ref(`teachers/${teacherId}`)
@@ -28,6 +33,7 @@ export async function GET(
 
     const teacher = snapshot.val();
 
+    // Формування інформації про викладача
     const teacherInfo: TeacherInfoModal = {
       id: teacherId,
       name: teacher.name || '',
@@ -37,9 +43,12 @@ export async function GET(
 
     return NextResponse.json(teacherInfo);
   } catch (error) {
-    console.error('Error fetching teacher:', error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Помилка отримання інформації про викладача:', error);
+    }
+
     return NextResponse.json(
-      { error: 'Failed to fetch teacher' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 },
     );
   }
