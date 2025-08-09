@@ -1,7 +1,6 @@
-// src/lib/constants/animations.ts
 import { Variants } from 'framer-motion';
 
-// Container animations
+// Анімації контейнера
 export const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
@@ -12,7 +11,7 @@ export const containerVariants: Variants = {
   },
 };
 
-// Card animations
+// Анімації карток
 export const cardVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -31,7 +30,7 @@ export const cardVariants: Variants = {
   },
 };
 
-// Load more button animations
+// Анімації кнопки "Завантажити більше"
 export const loadMoreVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -46,7 +45,7 @@ export const loadMoreVariants: Variants = {
   },
 };
 
-// No results/empty state animations
+// Анімації відсутності результатів/порожнього стану
 export const noResultsVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -61,7 +60,7 @@ export const noResultsVariants: Variants = {
   },
 };
 
-// Header animations
+// Анімації заголовка
 export const headerVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -76,7 +75,7 @@ export const headerVariants: Variants = {
   },
 };
 
-// Empty state animations (with spring effect)
+// Анімації порожнього стану (з ефектом пружини)
 export const emptyStateVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -92,7 +91,7 @@ export const emptyStateVariants: Variants = {
   },
 };
 
-// Expanded content animations
+// Анімації розгорнутого контенту
 export const expandedContentVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -111,7 +110,7 @@ export const expandedContentVariants: Variants = {
   },
 };
 
-// Heart/favorite button animations
+// Анімації кнопки серця/вподобання
 export const heartVariants: Variants = {
   idle: { scale: 1 },
   hover: {

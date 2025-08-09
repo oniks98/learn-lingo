@@ -7,5 +7,3 @@ export const learningReasons = [
   'examsAndCoursework',
   'cultureTravel',
 ] as const;
-
-export type LearningReason = (typeof learningReasons)[number];

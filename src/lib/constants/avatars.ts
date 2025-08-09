@@ -1,7 +1,5 @@
-// src/lib/constants/avatars.ts
-
 /**
- * Массив смешных аватаров для отображения в развернутых карточках учителей
+ * Масив кумедних аватарів для відображення в розгорнутих картках викладачів
  */
 export const FUNNY_AVATARS = [
   '/images/funny-avatars/avatar-1.png',
@@ -18,23 +16,20 @@ export const FUNNY_AVATARS = [
 ] as const;
 
 /**
- * Функция для получения детерминированного случайного аватара для учителя
- * @param teacherId - ID учителя
- * @returns Путь к смешному аватару
+ * Функція для отримання детермінованого випадкового аватара для викладача
+ * @param teacherId - ID викладача
+ * @returns Шлях до кумедного аватара
  */
 export const getFunnyAvatarForTeacher = (teacherId: string): string => {
-  // Создаем простой хеш из ID учителя для детерминированности
+  // Створюємо простий хеш з ID викладача для детермінованості
   let hash = 0;
   for (let i = 0; i < teacherId.length; i++) {
     const char = teacherId.charCodeAt(i);
     hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
+    hash = hash & hash; // Конвертуємо в 32-бітне ціле число
   }
 
-  // Получаем индекс от 0 до длины массива аватаров
+  // Отримуємо індекс від 0 до довжини масиву аватарів
   const index = Math.abs(hash) % FUNNY_AVATARS.length;
   return FUNNY_AVATARS[index];
 };
-
-// Экспорт типа для TypeScript
-export type FunnyAvatar = (typeof FUNNY_AVATARS)[number];
