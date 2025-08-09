@@ -7,6 +7,7 @@ import {
   updateProfile,
   reload,
   User as FirebaseUser,
+  AuthError,
 } from 'firebase/auth';
 import { auth } from '@/lib/db/firebase-client';
 import { UserData } from '@/lib/types/types';
@@ -19,6 +20,22 @@ import { useTranslations } from 'next-intl';
  */
 export interface SignInResult extends UserData {
   needsEmailVerification?: boolean;
+}
+
+/**
+ * Тип для помилок синхронізації з сервером
+ */
+interface SyncError extends Error {
+  status?: number;
+}
+
+/**
+ * Тип для елементів черги синхронізації
+ */
+interface SyncQueueItem {
+  firebaseUser: FirebaseUser;
+  resolve: (value: UserData) => void;
+  reject: (error: Error) => void;
 }
 
 /**
@@ -43,11 +60,7 @@ const convertFirebaseUserToUserData = (
  * Мьютекс для запобігання одночасним викликам syncUserWithServer
  */
 let syncInProgress = false;
-const syncQueue: Array<{
-  firebaseUser: FirebaseUser;
-  resolve: (value: UserData) => void;
-  reject: (error: any) => void;
-}> = [];
+const syncQueue: SyncQueueItem[] = [];
 
 /**
  * Обробляє чергу синхронізації з успішним результатом
@@ -62,7 +75,7 @@ const processQueueWithSuccess = (userData: UserData) => {
 /**
  * Обробляє чергу синхронізації з помилкою
  */
-const processQueueWithError = (error: any) => {
+const processQueueWithError = (error: Error) => {
   while (syncQueue.length > 0) {
     const { reject } = syncQueue.shift()!;
     reject(error);
@@ -85,7 +98,7 @@ const syncUserWithServer = async (
   }
 
   syncInProgress = true;
-  let authError: Error | null = null;
+  let authError: SyncError | null = null;
 
   try {
     const idToken = await firebaseUser.getIdToken(true);
@@ -99,7 +112,8 @@ const syncUserWithServer = async (
     if (!response.ok) {
       // Розширена обробка помилок HTTP
       if (response.status === 401 || response.status === 403) {
-        authError = new Error('Authentication failed');
+        authError = new Error('Authentication failed') as SyncError;
+        authError.status = response.status;
         processQueueWithError(authError);
         syncInProgress = false;
         return Promise.reject(authError);
@@ -138,8 +152,10 @@ const syncUserWithServer = async (
     }
 
     // При інших помилках відхиляємо всі запити у черзі
-    processQueueWithError(error);
-    return Promise.reject(error);
+    const syncError =
+      error instanceof Error ? error : new Error('Unknown sync error');
+    processQueueWithError(syncError);
+    return Promise.reject(syncError);
   }
 };
 
@@ -154,7 +170,7 @@ export const useSignUp = () => {
 
   return useMutation<
     UserData,
-    any,
+    AuthError,
     { email: string; password: string; name: string }
   >({
     mutationFn: async ({ email, password, name }) => {
@@ -209,7 +225,11 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
   const t = useTranslations('authActions.login');
 
-  return useMutation<SignInResult, any, { email: string; password: string }>({
+  return useMutation<
+    SignInResult,
+    AuthError,
+    { email: string; password: string }
+  >({
     mutationFn: async ({ email, password }) => {
       // Вхід в Firebase з email та паролем
       const userCred = await signInWithEmailAndPassword(auth, email, password);
@@ -266,7 +286,7 @@ export const useSignInWithGoogle = () => {
   const queryClient = useQueryClient();
   const t = useTranslations('authActions.googleAuth');
 
-  return useMutation<UserData, any, { redirectPath?: string }>({
+  return useMutation<UserData, AuthError, { redirectPath?: string }>({
     mutationFn: async ({ redirectPath }) => {
       // Налаштування Google провайдера з необхідними скоупами
       const provider = new GoogleAuthProvider();

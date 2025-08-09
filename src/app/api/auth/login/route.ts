@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { UserData } from '@/lib/types/types';
+import { FirebaseError } from 'firebase-admin/app';
 
 /**
  * Обробляє POST запит для автентифікації користувача через Firebase ID Token
@@ -24,9 +25,10 @@ export async function POST(request: NextRequest) {
     let decodedToken;
 
     try {
-      // Верифікація Firebase ID Token з перевіркою на revoked
       decodedToken = await admin.auth().verifyIdToken(idToken, true);
-    } catch (tokenError: any) {
+    } catch (error: unknown) {
+      const tokenError = error as FirebaseError;
+
       // Обробка специфічних помилок токена
       if (tokenError.code === 'auth/id-token-expired') {
         return NextResponse.json({ error: 'Token expired' }, { status: 401 });
@@ -43,6 +45,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Логування помилки тільки в development режимі
       if (process.env.NODE_ENV === 'development') {
         console.error('Token verification error:', tokenError);
       }
@@ -152,7 +155,9 @@ export async function POST(request: NextRequest) {
           sameSite: 'lax',
           path: '/',
         });
-      } catch (cookieError: any) {
+      } catch (error: unknown) {
+        const cookieError = error as FirebaseError;
+
         // Обробка специфічних помилок створення куки
         if (cookieError.code === 'auth/id-token-expired') {
           return NextResponse.json(

@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
     // Підрахунок тільки активних фаворитів (зі значенням true)
     let favoritesCount = 0;
     if (favoritesData) {
-      favoritesCount = Object.entries(favoritesData).filter(
-        ([_, value]) => value === true,
+      favoritesCount = Object.values(favoritesData).filter(
+        (value) => value === true,
       ).length;
     }
 

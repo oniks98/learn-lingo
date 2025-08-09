@@ -78,7 +78,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
       url.searchParams.delete('message');
       router.replace(url.pathname + url.search, { scroll: false });
     }
-  }, [isOpen, message, router]);
+  }, [isOpen, message, router, t]);
 
   /**
    * Завантаження збережених даних при відкритті модалки

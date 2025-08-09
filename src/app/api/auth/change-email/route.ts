@@ -1,6 +1,7 @@
 // src/app/api/auth/change-email/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
+import { FirebaseError } from 'firebase/app';
 
 const FIREBASE_API_BASE = 'https://identitytoolkit.googleapis.com/v1/accounts';
 
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     // Виконання зміни email
     return await changeUserEmail(oobCode);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },
@@ -37,12 +38,13 @@ export async function POST(request: NextRequest) {
 // Перевірка чи зайнятий email адреса
 async function checkEmailAvailability(email: string) {
   try {
-    // Якщо користувач знайдений - email зайнятий
     await admin.auth().getUserByEmail(email);
     return NextResponse.json({ available: false }, { status: 409 });
-  } catch (error: any) {
-    // Email вільний якщо користувача не знайдено
-    if (error.code === 'auth/user-not-found') {
+  } catch (error: unknown) {
+    if (
+      error instanceof FirebaseError &&
+      error.code === 'auth/user-not-found'
+    ) {
       return NextResponse.json({ available: true });
     }
     throw error;

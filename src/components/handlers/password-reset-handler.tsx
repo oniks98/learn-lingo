@@ -75,7 +75,7 @@ export default function PasswordResetHandler() {
 
       setShowPasswordForm(false);
       setIsProcessing(false);
-    } catch (error) {
+    } catch {
       setError(t('validation.resetFailed'));
     }
   };

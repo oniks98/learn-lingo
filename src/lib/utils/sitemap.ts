@@ -1,6 +1,16 @@
 import { MetadataRoute } from 'next';
 import { SEO_CONFIG, type Locale } from '@/config/seo';
 
+interface TeacherData {
+  id: string;
+  [key: string]: unknown;
+}
+
+interface TeachersApiResponse {
+  teachers?: TeacherData[];
+  [key: string]: unknown;
+}
+
 /**
  * Отримує ID викладачів з API
  * @returns масив ідентифікаторів викладачів
@@ -25,11 +35,11 @@ export async function getTeacherIds(): Promise<string[]> {
       return [];
     }
 
-    const data = await response.json();
-    return data.teachers?.map((teacher: any) => teacher.id) || [];
-  } catch (error) {
+    const data = (await response.json()) as TeachersApiResponse;
+    return data.teachers?.map((teacher) => teacher.id) || [];
+  } catch {
     if (process.env.NODE_ENV === 'development') {
-      console.error('Помилка отримання ID викладачів для sitemap:', error);
+      console.error('Помилка отримання ID викладачів для sitemap');
     }
     return [];
   }

@@ -9,6 +9,7 @@ import {
   ReactNode,
   useState,
   useRef,
+  useCallback,
 } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -24,7 +25,7 @@ interface AuthContextType {
   user: UserData | null;
   loading: boolean;
   signOut: () => Promise<void>;
-  refetchUser: () => Promise<any>;
+  refetchUser: () => Promise<void>;
 }
 
 /**
@@ -130,13 +131,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     enabled: false, // Вимкнено автоматичне виконання
     staleTime: 30 * 1000, // 30 секунд для швидкого оновлення після верифікації
     gcTime: 5 * 60 * 1000, // 5 хвилин час життя в кеші
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: Error) => {
       // Не повторюємо запити для 401/403 помилок
-      if (error?.status === 401 || error?.status === 403) {
+      if ('status' in error && (error.status === 401 || error.status === 403)) {
         return false;
       }
       // Не повторюємо запити для неверифікованих користувачів
-      if (error?.message?.includes('not verified')) {
+      if (error.message?.includes('not verified')) {
         return false;
       }
       // Зменшена кількість спроб для швидшого реагування
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   /**
    * Оптимізований refetch з debounce для запобігання частим викликам
    */
-  const optimizedRefetchUser = async () => {
+  const optimizedRefetchUser = useCallback(async (): Promise<void> => {
     const now = Date.now();
 
     // Не робити refetch частіше ніж раз на 10 секунд
@@ -159,13 +160,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     setLastRefreshTime(now);
-    return await refetchUser();
-  };
+    await refetchUser();
+  }, [lastRefreshTime, refetchUser]);
 
   /**
    * Функція виходу з системи з повним очищенням сесії та кешів
    */
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     try {
       // Очищення кешу React Query для користувача
       queryClient.setQueryData(['user'], null);
@@ -199,7 +200,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       throw error;
     }
-  };
+  }, [queryClient]);
 
   /**
    * Слухач змін стану автентифікації Firebase
@@ -224,7 +225,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return () => {
       unsubscribe();
     };
-  }, [queryClient]);
+  }, [queryClient, optimizedRefetchUser]);
 
   /**
    * Обробка network state changes для повторного підключення
@@ -252,7 +253,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [user]);
+  }, [user, optimizedRefetchUser]);
 
   // Мемоізація контексту для оптимізації продуктивності
   const value = useMemo<AuthContextType>(
@@ -262,7 +263,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       signOut,
       refetchUser: optimizedRefetchUser,
     }),
-    [user, loading],
+    [user, loading, signOut, optimizedRefetchUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

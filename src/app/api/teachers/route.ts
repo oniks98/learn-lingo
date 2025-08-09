@@ -1,7 +1,7 @@
 // src/app/api/teachers/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
-import { TeacherPreview } from '@/lib/types/types';
+import { TeacherPreview, FirebaseTeacherData } from '@/lib/types/types';
 
 /**
  * Отримання списку викладачів з локалізацією
@@ -27,12 +27,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ teachers: [] });
     }
 
-    const teachersData = snapshot.val();
+    const teachersData = snapshot.val() as Record<string, FirebaseTeacherData>;
     const teachers: TeacherPreview[] = [];
 
     // Обробка кожного викладача з локалізацією
-    Object.entries(teachersData).forEach(([id, data]: [string, any]) => {
-      const localizedData = data.localized?.[locale];
+    Object.entries(teachersData).forEach(([id, data]) => {
+      const localizedData = data.localized?.[locale as 'en' | 'uk'];
 
       if (!localizedData) {
         if (process.env.NODE_ENV === 'development') {

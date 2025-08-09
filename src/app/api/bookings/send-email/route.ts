@@ -39,7 +39,12 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    // Логирование в development режиме
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to send email:', error);
+    }
+
     return NextResponse.json(
       { ok: false, error: 'Failed to send email' },
       { status: 500 },

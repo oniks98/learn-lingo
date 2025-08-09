@@ -65,3 +65,44 @@ export interface CreateBookingData {
 export interface BookingData extends CreateBookingData {
   id: string;
 }
+
+// Тип для локализованных данных учителя
+export interface LocalizedTeacherData {
+  lesson_info?: string;
+  conditions?: string[];
+}
+
+// Тип для данных учителя из Firebase
+export interface FirebaseTeacherData {
+  name: string;
+  surname: string;
+  languages: string[];
+  levels: string[];
+  rating: number;
+  price_per_hour: number;
+  lessons_done: number;
+  avatar_url: string;
+  localized?: {
+    [locale: string]: LocalizedTeacherData;
+  };
+}
+
+export interface ChangeEmailRequest {
+  oobCode: string;
+}
+
+export interface ChangeEmailResponse {
+  success: boolean;
+  newEmail: string;
+  user?: {
+    uid: string;
+    email: string;
+    emailVerified: boolean;
+    displayName?: string;
+    photoURL?: string;
+  };
+}
+
+export interface ChangeEmailError extends Error {
+  message: string;
+}

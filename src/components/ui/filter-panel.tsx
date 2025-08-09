@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, Control } from 'react-hook-form';
 import { useEffect } from 'react';
 import {
   Listbox,
@@ -140,7 +140,7 @@ const FilterPanel = ({
 };
 
 interface ControlledFilterProps {
-  control: any;
+  control: Control<FiltersForm>;
   name: keyof FiltersForm;
   label: string;
   options: string[];

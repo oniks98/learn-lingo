@@ -31,7 +31,7 @@ export const savePendingAction = (
 
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(pendingAction));
-  } catch (error) {
+  } catch {
     // Мовчки обробляємо помилку - localStorage може бути недоступний
   }
 };
@@ -47,7 +47,7 @@ export const getPendingAction = (): PendingAction | null => {
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
-  } catch (error) {
+  } catch {
     removePendingAction();
     return null;
   }
@@ -79,14 +79,18 @@ export const removePendingAction = (): void => {
  * @param data - дані для валідації
  * @returns true, якщо дані валідні
  */
-const validatePendingAction = (data: any): data is PendingAction => {
+const validatePendingAction = (data: unknown): data is PendingAction => {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+
+  const obj = data as Record<string, unknown>;
+
   return (
-    data &&
-    typeof data === 'object' &&
-    typeof data.teacherId === 'string' &&
-    data.teacherId.length > 0 &&
-    typeof data.timestamp === 'number' &&
-    data.timestamp > 0 &&
-    (data.type === 'favorite' || data.type === 'booking')
+    typeof obj.teacherId === 'string' &&
+    obj.teacherId.length > 0 &&
+    typeof obj.timestamp === 'number' &&
+    obj.timestamp > 0 &&
+    (obj.type === 'favorite' || obj.type === 'booking')
   );
 };

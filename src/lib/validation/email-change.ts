@@ -1,4 +1,3 @@
-// src/lib/validation/email-change.ts
 import { z } from 'zod';
 
 export const emailChangeSchema = z.object({

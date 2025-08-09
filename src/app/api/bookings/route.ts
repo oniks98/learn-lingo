@@ -4,6 +4,18 @@ import { admin } from '@/lib/db/firebase-admin';
 import { BookingData, CreateBookingData } from '@/lib/types/types';
 import { requireAuth } from '@/lib/auth/server-auth';
 
+// Тип для данных бронирования из Firebase
+interface FirebaseBookingData {
+  userId: string;
+  teacherId: string;
+  name: string;
+  email: string;
+  phone: string;
+  reason: string;
+  bookingDate: string;
+  createdAt: number;
+}
+
 // Отримання бронювань користувача
 export async function GET(request: NextRequest) {
   try {
@@ -25,11 +37,12 @@ export async function GET(request: NextRequest) {
       .equalTo(user.uid)
       .once('value');
 
-    const bookingsData = snapshot.val() || {};
+    const bookingsData: Record<string, FirebaseBookingData> =
+      snapshot.val() || {};
 
     // Конвертація даних з бази в потрібний формат
     const userBookings: BookingData[] = Object.entries(bookingsData).map(
-      ([id, booking]: [string, any]) => ({
+      ([id, booking]) => ({
         id,
         ...booking,
         bookingDate: new Date(booking.bookingDate),
@@ -38,6 +51,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ bookings: userBookings });
   } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error fetching bookings:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to fetch bookings' },
       { status: 500 },
@@ -97,6 +113,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(createdBooking, { status: 201 });
   } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error creating booking:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to create booking' },
       { status: 500 },
@@ -138,6 +157,9 @@ export async function DELETE(request: NextRequest) {
     await admin.database().ref(`bookings/${id}`).remove();
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error deleting booking:', error);
+    }
     return NextResponse.json(
       { error: 'Failed to delete booking' },
       { status: 500 },
@@ -192,6 +214,6 @@ async function checkBookingAccess(
     return false;
   }
 
-  const bookingData = bookingSnapshot.val();
+  const bookingData: FirebaseBookingData = bookingSnapshot.val();
   return bookingData.userId === userId;
 }

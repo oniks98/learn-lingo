@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -70,21 +71,27 @@ export default function Footer() {
           {/* Герб та замок з ховер ефектами */}
           <div className="flex items-center justify-center gap-4 md:justify-start">
             <div className="group relative">
-              <img
+              <Image
                 src="/images/crest.png"
                 alt="Crest"
+                width={80}
+                height={80}
                 className="h-20 w-20 object-contain transition-transform duration-300 group-hover:scale-110"
               />
             </div>
             <div className="group relative overflow-hidden rounded-lg">
-              <img
+              <Image
                 src="/images/school.png"
                 alt="Castle"
+                width={120}
+                height={80}
                 className="relative z-10 h-20 w-30 object-cover transition-all duration-500 group-hover:scale-105"
               />
-              <img
+              <Image
                 src="/images/azcaban.png"
                 alt="Azkaban"
+                width={120}
+                height={80}
                 className="pointer-events-none absolute top-0 left-0 z-20 h-20 w-30 object-cover opacity-0 blur-sm brightness-50 transition-all duration-700 ease-out group-hover:scale-130 group-hover:opacity-100 group-hover:blur-none group-hover:brightness-100"
               />
             </div>

@@ -83,7 +83,7 @@ export async function checkIsFavorite(teacherId: string): Promise<boolean> {
   try {
     const { favorites } = await getFavorites();
     return favorites.some((teacher) => teacher.id === teacherId);
-  } catch (error) {
+  } catch {
     // Якщо помилка (наприклад, не авторизований), вважаємо що не в улюблених
     return false;
   }

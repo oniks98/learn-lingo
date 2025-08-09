@@ -1,10 +1,13 @@
-// src/lib/auth/server-auth.ts
 import { NextRequest } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
 import { UserData } from '@/lib/types/types';
 
+interface FirebaseAuthError extends Error {
+  code: string;
+}
+
 /**
- * Витягує та верифікує користувача з session cookie
+ * Витягає та верифікує користувача з session cookie
  * Використовується в API маршрутах для отримання поточного користувача
  * Включає обробку expired та revoked session cookies
  */
@@ -26,16 +29,18 @@ export async function getCurrentUserFromRequest(
       decodedClaims = await admin
         .auth()
         .verifySessionCookie(sessionCookie, true);
-    } catch (cookieError: any) {
+    } catch (cookieError) {
+      const error = cookieError as FirebaseAuthError;
+
       // Обробка специфічних помилок session cookie
-      if (cookieError.code === 'auth/session-cookie-expired') {
+      if (error.code === 'auth/session-cookie-expired') {
         if (process.env.NODE_ENV === 'development') {
           console.warn('Session cookie expired');
         }
         return null;
       }
 
-      if (cookieError.code === 'auth/session-cookie-revoked') {
+      if (error.code === 'auth/session-cookie-revoked') {
         if (process.env.NODE_ENV === 'development') {
           console.warn('Session cookie revoked');
         }
@@ -43,7 +48,7 @@ export async function getCurrentUserFromRequest(
       }
 
       if (process.env.NODE_ENV === 'development') {
-        console.error('Session cookie verification error:', cookieError);
+        console.error('Session cookie verification error:', error);
       }
       return null;
     }

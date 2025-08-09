@@ -8,7 +8,7 @@ export function validateLocale(locale: string): boolean {
 export async function getMessages(locale: string) {
   try {
     return (await import(`@/messages/${locale}.json`)).default;
-  } catch (error) {
+  } catch {
     console.error(`Failed to load messages for locale: ${locale}`);
     // Fallback to English
     return (await import(`@/messages/en.json`)).default;

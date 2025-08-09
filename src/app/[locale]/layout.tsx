@@ -26,7 +26,8 @@ export function generateStaticParams(): { locale: string }[] {
   return generateStaticLocaleParams();
 }
 
-//  any для  TypeScript  без конфліктів з children і  modal
+// Next.js требует те же props что и Layout, но modal не используется в generateMetadata
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function generateMetadata({ params }: any): Promise<Metadata> {
   const { locale } = await params;
 

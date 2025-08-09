@@ -75,7 +75,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       localStorage.removeItem(`bookingForm_email_${teacher.id}`);
       localStorage.removeItem(`bookingForm_phone_${teacher.id}`);
       localStorage.removeItem(`bookingForm_comment_${teacher.id}`);
-    } catch (error) {
+    } catch {
       // Ігноруємо помилки localStorage
     }
   };
@@ -114,7 +114,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
         if (savedComment) {
           setValue('comment', savedComment);
         }
-      } catch (error) {
+      } catch {
         // Ігноруємо помилки localStorage
       }
     }
@@ -125,7 +125,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     if (watchedName && !user?.username) {
       try {
         localStorage.setItem(`bookingForm_name_${teacher.id}`, watchedName);
-      } catch (error) {
+      } catch {
         // Ігноруємо помилки localStorage
       }
     }
@@ -136,7 +136,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     if (watchedEmail && !user?.email) {
       try {
         localStorage.setItem(`bookingForm_email_${teacher.id}`, watchedEmail);
-      } catch (error) {
+      } catch {
         // Ігноруємо помилки localStorage
       }
     }
@@ -147,7 +147,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
     if (watchedPhone) {
       try {
         localStorage.setItem(`bookingForm_phone_${teacher.id}`, watchedPhone);
-      } catch (error) {
+      } catch {
         // Ігноруємо помилки localStorage
       }
     }
@@ -161,7 +161,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
           `bookingForm_comment_${teacher.id}`,
           watchedComment,
         );
-      } catch (error) {
+      } catch {
         // Ігноруємо помилки localStorage
       }
     }
@@ -212,7 +212,7 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       try {
         await sendBookingEmail(emailPayload);
         toast.success(t('success.bookingWithEmail'));
-      } catch (emailError) {
+      } catch {
         toast.success(t('success.bookingWithoutEmail'));
       }
 
@@ -220,8 +220,10 @@ export default function BookingFormModal({ isOpen, teacher }: Props) {
       clearSavedData();
       reset();
       router.back();
-    } catch (err: any) {
-      toast.error(err.message || t('errors.general'));
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : t('errors.general');
+      toast.error(errorMessage);
     } finally {
       setSending(false);
     }

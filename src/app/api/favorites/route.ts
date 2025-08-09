@@ -1,7 +1,11 @@
 // src/app/api/favorites/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { admin } from '@/lib/db/firebase-admin';
-import { TeacherPreview } from '@/lib/types/types';
+import {
+  TeacherPreview,
+  LocalizedTeacherData,
+  FirebaseTeacherData,
+} from '@/lib/types/types';
 import { requireAuth } from '@/lib/auth/server-auth';
 
 // Отримання всіх улюблених вчителів користувача
@@ -33,7 +37,7 @@ export async function GET(request: NextRequest) {
     );
 
     return NextResponse.json({ favorites: favoriteTeachers });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch favorites' },
       { status: 500 },
@@ -72,7 +76,7 @@ export async function POST(request: NextRequest) {
     await addToFavorites(user.uid, teacherId);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to add to favorites' },
       { status: 500 },
@@ -105,7 +109,7 @@ export async function DELETE(request: NextRequest) {
     await removeFromFavorites(user.uid, teacherId);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to remove from favorites' },
       { status: 500 },
@@ -120,9 +124,9 @@ async function getFavoriteTeacherIds(userId: string): Promise<string[]> {
     .ref(`users/${userId}/favorites`)
     .once('value');
 
-  const favoritesData = favoritesSnapshot.val() || {};
+  const favoritesData: Record<string, boolean> = favoritesSnapshot.val() || {};
   return Object.keys(favoritesData).filter(
-    (teacherId) => favoritesData[teacherId] === true,
+    (teacherId) => favoritesData[teacherId],
   );
 }
 
@@ -133,7 +137,8 @@ async function getFavoriteTeachersData(
 ): Promise<TeacherPreview[]> {
   const teachersSnapshot = await admin.database().ref('teachers').once('value');
 
-  const allTeachers = teachersSnapshot.val() || {};
+  const allTeachers: Record<string, FirebaseTeacherData> =
+    teachersSnapshot.val() || {};
 
   return favoriteTeacherIds
     .map((teacherId) => {
@@ -147,11 +152,11 @@ async function getFavoriteTeachersData(
 
 // Приведення даних вчителя до плоского формату з локалізацією
 function flattenTeacherData(
-  teacher: any,
+  teacher: FirebaseTeacherData,
   teacherId: string,
   locale: string,
 ): TeacherPreview {
-  const localizedData =
+  const localizedData: LocalizedTeacherData =
     teacher.localized?.[locale] || teacher.localized?.en || {};
 
   return {

@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
     // Виконання верифікації email
     return await verifyUserEmail(oobCode);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },
