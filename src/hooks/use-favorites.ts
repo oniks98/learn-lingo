@@ -1,4 +1,3 @@
-// src/hooks/use-favorites.ts
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import {
@@ -10,13 +9,15 @@ import {
 import { useAuth } from '@/contexts/auth-context';
 import { toast } from 'sonner';
 
-// ✅ Адаптер queryFn для useQuery
+// Адаптер queryFn для useQuery
 const fetchFavorites = ({ queryKey }: { queryKey: [string, string] }) => {
   const [, locale] = queryKey;
   return getFavorites(locale);
 };
 
-// Хук для отримання списку улюблених вчителів
+/**
+ * Хук для отримання списку улюблених викладачів
+ */
 export const useFavorites = () => {
   const { user } = useAuth();
   const locale = useLocale();
@@ -29,7 +30,9 @@ export const useFavorites = () => {
   });
 };
 
-// Обновите toggleFavorite для инвалидации с локалью
+/**
+ * Хук для додавання/видалення викладачів з улюблених
+ */
 export const useToggleFavorite = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -39,12 +42,11 @@ export const useToggleFavorite = () => {
   const addMutation = useMutation({
     mutationFn: addToFavorites,
     onSuccess: (_, teacherId) => {
+      // Оновлюємо статус у кеші
       queryClient.setQueryData(['favoriteStatus', teacherId], true);
-      // ✅ Возвращаем Promise из invalidateQueries
       return queryClient.invalidateQueries({ queryKey: ['favorites', locale] });
     },
-    onError: (error) => {
-      console.error('Error adding to favorites:', error);
+    onError: () => {
       toast.error(t('add_error'));
     },
   });
@@ -52,12 +54,11 @@ export const useToggleFavorite = () => {
   const removeMutation = useMutation({
     mutationFn: removeFromFavorites,
     onSuccess: (_, teacherId) => {
+      // Оновлюємо статус у кеші
       queryClient.setQueryData(['favoriteStatus', teacherId], false);
-      // ✅ Возвращаем Promise из invalidateQueries
       return queryClient.invalidateQueries({ queryKey: ['favorites', locale] });
     },
-    onError: (error) => {
-      console.error('Error removing from favorites:', error);
+    onError: () => {
       toast.error(t('remove_error'));
     },
   });
@@ -68,6 +69,7 @@ export const useToggleFavorite = () => {
       return;
     }
 
+    // Додаємо або видаляємо з улюблених
     if (isFavorite) {
       removeMutation.mutate(teacherId);
     } else {
@@ -81,7 +83,9 @@ export const useToggleFavorite = () => {
   };
 };
 
-// Остальные хуки без изменений
+/**
+ * Хук для перевірки чи викладач у улюблених
+ */
 export const useFavoriteStatus = (teacherId: string) => {
   const { user } = useAuth();
 

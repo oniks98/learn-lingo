@@ -1,4 +1,3 @@
-// src/hooks/use-send-email-change.ts
 import { useMutation } from '@tanstack/react-query';
 import { verifyBeforeUpdateEmail } from 'firebase/auth';
 import { auth } from '@/lib/db/firebase-client';
@@ -10,7 +9,7 @@ interface SendEmailChangeRequest {
 }
 
 /**
- * Hook для отправки запроса на смену email
+ * Хук для відправки запиту на зміну email
  */
 export const useSendEmailChange = () => {
   const t = useTranslations('profile.changeEmailModal');
@@ -21,16 +20,12 @@ export const useSendEmailChange = () => {
         throw new Error('No authenticated user found');
       }
 
-      console.log('Sending email change request to:', newEmail);
-
-      // Проверяем, не является ли новый email тем же, что и текущий
+      // Перевіряємо, чи новий email не є таким же, як поточний
       if (auth.currentUser.email === newEmail) {
         throw new Error('same-email');
       }
 
-      // Проверяем доступность email через серверный API
-      console.log('Checking email availability via server API:', newEmail);
-
+      // Перевіряємо доступність email через серверний API
       const checkResponse = await fetch('/api/auth/change-email', {
         method: 'POST',
         headers: {
@@ -40,29 +35,22 @@ export const useSendEmailChange = () => {
       });
 
       const checkResult = await checkResponse.json();
-      console.log('Email availability check result:', checkResult);
 
-      // Если email уже занят
+      // Якщо email вже зайнятий
       if (!checkResponse.ok || !checkResult.available || checkResult.exists) {
-        console.log('Email is already in use');
         throw new Error('email-already-in-use');
       }
 
-      console.log('Email is available, proceeding with change request');
-
-      // Используем verifyBeforeUpdateEmail для отправки письма подтверждения на новый email
+      // Використовуємо verifyBeforeUpdateEmail для відправки листа підтвердження
       await verifyBeforeUpdateEmail(auth.currentUser, newEmail);
-      console.log('Email change verification sent successfully');
     },
     onSuccess: () => {
       toast.success(t('success'));
     },
     onError: (error) => {
-      console.error('Failed to send email change request:', error);
-
-      // Обработка специфических ошибок по message
       const errorMessage = error.message;
 
+      // Обробляємо специфічні помилки
       if (errorMessage.includes('email-already-in-use')) {
         toast.error(t('validation.emailAlreadyInUse'));
       } else if (errorMessage.includes('invalid-email')) {

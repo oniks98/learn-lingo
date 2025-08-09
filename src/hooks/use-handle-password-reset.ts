@@ -1,4 +1,3 @@
-//  src/hooks/use-handle-password-reset.ts
 import { useMutation } from '@tanstack/react-query';
 import { confirmPasswordReset } from 'firebase/auth';
 import { useTranslations } from 'next-intl';
@@ -11,25 +10,20 @@ interface HandlePasswordResetRequest {
 }
 
 /**
- * Hook для обробки скидання паролю через oobCode
+ * Хук для обробки скидання паролю через oobCode
  */
 export const useHandlePasswordReset = () => {
   const t = useTranslations('notifications.password_reset');
 
   return useMutation<void, Error, HandlePasswordResetRequest>({
     mutationFn: async ({ oobCode, newPassword }) => {
-      console.log('Handling password reset with oobCode...');
-
       // Підтверджуємо скидання паролю через Firebase
       await confirmPasswordReset(auth, oobCode, newPassword);
-      console.log('Password reset completed successfully');
     },
     onSuccess: () => {
       toast.success(t('success_message'));
     },
     onError: (error) => {
-      console.error('Password reset failed:', error);
-
       let errorMessage = t('general_error');
 
       // Обробляємо специфічні помилки Firebase

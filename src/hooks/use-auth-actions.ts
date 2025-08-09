@@ -1,4 +1,3 @@
-// src/hooks/use-auth-actions.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   GoogleAuthProvider,

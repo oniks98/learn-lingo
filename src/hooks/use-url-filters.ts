@@ -1,4 +1,3 @@
-// src/hooks/use-url-filters.ts
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -10,10 +9,13 @@ const FILTERS_STORAGE_KEY = 'teachersFilters';
 interface UseUrlFiltersReturn {
   filters: FiltersForm;
   setFilters: (filters: FiltersForm) => void;
-  applyFilters: (filters: FiltersForm) => void; // Новый метод для применения фильтров с обновлением URL
+  applyFilters: (filters: FiltersForm) => void;
   isLoading: boolean;
 }
 
+/**
+ * Хук для управління фільтрами з синхронізацією URL та localStorage
+ */
 export function useUrlFilters(): UseUrlFiltersReturn {
   const router = useRouter();
   const pathname = usePathname();
@@ -26,13 +28,13 @@ export function useUrlFilters(): UseUrlFiltersReturn {
     price: '',
   });
 
-  // Инициализация фильтров из URL и localStorage
+  // Ініціалізація фільтрів з URL та localStorage
   useEffect(() => {
     const urlLanguage = searchParams.get('language') || '';
     const urlLevel = searchParams.get('level') || '';
     const urlPrice = searchParams.get('price') || '';
 
-    // Если есть параметры в URL, используем их
+    // Якщо є параметри в URL, використовуємо їх
     if (urlLanguage || urlLevel || urlPrice) {
       const urlFilters: FiltersForm = {
         language: urlLanguage,
@@ -41,22 +43,23 @@ export function useUrlFilters(): UseUrlFiltersReturn {
       };
       setFiltersState(urlFilters);
 
-      // Сохраняем в localStorage
+      // Зберігаємо в localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(urlFilters));
       }
     } else {
-      // Если нет параметров в URL, пробуем загрузить из localStorage
+      // Якщо немає параметрів в URL, завантажуємо з localStorage
       if (typeof window !== 'undefined') {
         try {
           const savedFilters = localStorage.getItem(FILTERS_STORAGE_KEY);
           if (savedFilters) {
             const parsedFilters: FiltersForm = JSON.parse(savedFilters);
             setFiltersState(parsedFilters);
-            // НЕ обновляем URL при загрузке из localStorage
           }
         } catch (error) {
-          console.error('Error loading filters from localStorage:', error);
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Error loading filters from localStorage:', error);
+          }
         }
       }
     }
@@ -74,30 +77,30 @@ export function useUrlFilters(): UseUrlFiltersReturn {
     const queryString = params.toString();
     const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
 
-    // Используем replace чтобы не добавлять записи в историю браузера
+    // Використовуємо replace щоб не додавати записи в історію браузера
     router.replace(newUrl, { scroll: false });
   };
 
-  // Обновляет фильтры и localStorage БЕЗ обновления URL
+  // Оновлює фільтри та localStorage БЕЗ оновлення URL
   const setFilters = (newFilters: FiltersForm) => {
     setFiltersState(newFilters);
 
-    // Сохраняем в localStorage при каждом изменении
+    // Зберігаємо в localStorage при кожній зміні
     if (typeof window !== 'undefined') {
       localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(newFilters));
     }
   };
 
-  // Применяет фильтры с обновлением URL (для кнопки "Поиск")
+  // Застосовує фільтри з оновленням URL (для кнопки "Пошук")
   const applyFilters = (newFilters: FiltersForm) => {
     setFiltersState(newFilters);
 
-    // Сохраняем в localStorage
+    // Зберігаємо в localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(newFilters));
     }
 
-    // Обновляем URL
+    // Оновлюємо URL
     updateUrl(newFilters);
   };
 
