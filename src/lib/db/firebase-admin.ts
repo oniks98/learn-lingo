@@ -1,4 +1,3 @@
-// src/lib/db/firebase-admin.ts
 import * as admin from 'firebase-admin';
 
 if (!admin.apps.length) {
@@ -12,7 +11,7 @@ if (!admin.apps.length) {
     );
   }
 
-  // Private key may contain literal '\n', replace with actual newline
+  // Приватний ключ може містити літеральний '\n', замінюємо на фактичний перенос рядка
   privateKey = privateKey.replace(/\\n/g, '\n');
 
   admin.initializeApp({
