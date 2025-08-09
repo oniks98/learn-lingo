@@ -1,4 +1,3 @@
-// src/components/ui/filter-panel.tsx
 'use client';
 
 import { useForm, Controller } from 'react-hook-form';
@@ -9,11 +8,11 @@ import {
   ListboxOptions,
   ListboxOption,
 } from '@headlessui/react';
-import { LANGUAGES, LEVELS, PRICES } from '@/lib/constants/filters';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import { useTranslations } from 'next-intl';
+import { clsx } from 'clsx';
+import { LANGUAGES, LEVELS, PRICES } from '@/lib/constants/filters';
 import CurrencySwitcher from '@/components/ui/currency-switcher';
-import clsx from 'clsx';
 
 export interface FiltersForm {
   language: string;
@@ -23,8 +22,8 @@ export interface FiltersForm {
 
 interface FilterPanelProps {
   initialFilters?: FiltersForm;
-  onChange: (filters: FiltersForm) => void; // Убрали - больше не используется
-  onApply: (filters: FiltersForm) => void; // Вызывается при клике "Поиск"
+  onChange: (filters: FiltersForm) => void;
+  onApply: (filters: FiltersForm) => void; // Викликається при кліку "Пошук"
   isLoading?: boolean;
 }
 
@@ -44,7 +43,7 @@ const FilterPanel = ({
       },
     });
 
-  // Устанавливаем начальные значения когда они загружены
+  // Встановлюємо початкові значення коли вони завантажені
   useEffect(() => {
     if (initialFilters && !isLoading) {
       setValue('language', initialFilters.language);
@@ -53,10 +52,10 @@ const FilterPanel = ({
     }
   }, [initialFilters, isLoading, setValue]);
 
-  // Подписка на изменения формы только для кнопок
+  // Підписка на зміни форми
   const values = watch();
 
-  // Проверяем, есть ли выбранные фильтры
+  // Перевіряємо, чи є обрані фільтри
   const hasSelectedFilters = Object.values(values).some((v) => v !== '');
 
   const onSubmit = (data: FiltersForm) => {
@@ -72,7 +71,11 @@ const FilterPanel = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="@container grid gap-2 px-3 py-8 md:grid-cols-[repeat(3,minmax(200px,1fr))] xl:grid-cols-[repeat(3,minmax(200px,min-content))_auto_1fr_auto]"
+      className={clsx(
+        '@container grid gap-2 px-3 py-8',
+        'md:grid-cols-[repeat(3,minmax(200px,1fr))]',
+        'xl:grid-cols-[repeat(3,minmax(200px,min-content))_auto_1fr_auto]',
+      )}
     >
       <h2 className="sr-only">{t('title')}</h2>
 
@@ -103,7 +106,10 @@ const FilterPanel = ({
       <div className="grid grid-cols-2 gap-2 self-end md:col-1 xl:col-4">
         <button
           type="submit"
-          className="bg-yellow text-dark rounded-xl px-[1cqw] py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+          className={clsx(
+            'bg-yellow text-dark rounded-xl px-[1cqw] py-[14px]',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+          )}
           disabled={!hasSelectedFilters}
         >
           {t('search')}
@@ -112,15 +118,21 @@ const FilterPanel = ({
         <button
           type="button"
           onClick={handleReset}
-          className="bg-gray-muted text-dark rounded-xl px-[1cqw] py-[14px] disabled:cursor-not-allowed disabled:opacity-50"
+          className={clsx(
+            'bg-gray-muted text-dark rounded-xl px-[1cqw] py-[14px]',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+          )}
           disabled={!hasSelectedFilters}
         >
           {t('reset')}
         </button>
       </div>
 
-      {/* Currency Switcher */}
-      <div className="justify-self-center md:col-3 md:self-end md:justify-self-end xl:col-6">
+      <div
+        className={clsx(
+          'justify-self-center md:col-3 md:self-end md:justify-self-end xl:col-6',
+        )}
+      >
         <CurrencySwitcher />
       </div>
     </form>
@@ -144,7 +156,9 @@ const ControlledFilter = ({
 }: ControlledFilterProps) => {
   return (
     <div className="grid gap-2">
-      <span className="text-gray-muted text-sm leading-[1.29] font-medium">
+      <span
+        className={clsx('text-gray-muted text-sm leading-[1.29] font-medium')}
+      >
         {label}
       </span>
 
@@ -155,13 +169,21 @@ const ControlledFilter = ({
           <Listbox
             value={field.value}
             onChange={(value) => {
-              field.onChange(value); // Только обновляем значение в форме
-              // Убрали вызов onFieldChange - больше не вызываем onChange при каждом изменении
+              field.onChange(value);
             }}
           >
             <div className="relative">
-              <ListboxButton className="relative w-full cursor-pointer rounded-[14px] bg-white py-4 pr-8 pl-3 text-left shadow-sm focus:outline-none">
-                <span className="text-dark block truncate text-[18px] leading-[1.11] font-medium">
+              <ListboxButton
+                className={clsx(
+                  'relative w-full cursor-pointer rounded-[14px] bg-white',
+                  'py-4 pr-8 pl-3 text-left shadow-sm focus:outline-none',
+                )}
+              >
+                <span
+                  className={clsx(
+                    'text-dark block truncate text-[18px] leading-[1.11] font-medium',
+                  )}
+                >
                   {field.value || placeholder}
                 </span>
 
@@ -170,7 +192,12 @@ const ControlledFilter = ({
                 </span>
               </ListboxButton>
 
-              <ListboxOptions className="ring-opacity-5 absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl bg-white py-1 text-[18px] shadow-lg focus:outline-none">
+              <ListboxOptions
+                className={clsx(
+                  'ring-opacity-5 absolute z-10 mt-1 max-h-60 w-full overflow-auto',
+                  'rounded-xl bg-white py-1 text-[18px] shadow-lg focus:outline-none',
+                )}
+              >
                 {options.map((option, index) => (
                   <ListboxOption
                     key={option || `empty-${index}`}

@@ -1,10 +1,9 @@
-// src/components/ui/currency-switcher.tsx
 'use client';
 
 import React from 'react';
+import { clsx } from 'clsx';
 import { useCurrency } from '@/contexts/currency-context';
 import { CURRENCIES, CurrencyCode } from '@/lib/constants/currency';
-import clsx from 'clsx';
 
 interface CurrencySwitcherProps {
   className?: string;
@@ -19,8 +18,8 @@ export default function CurrencySwitcher({ className }: CurrencySwitcherProps) {
     }
   };
 
-  // Статичная отрисовка кнопок без ожидания контекста
-  // Это предотвращает мерцание при загрузке страницы
+  // Статична відрисовка кнопок без очікування контексту
+  // Це запобігає мерехтінню при завантаженні сторінки
   return (
     <div className={clsx('flex items-center gap-2', className)}>
       {Object.entries(CURRENCIES).map(([code, currencyInfo]) => (
@@ -31,9 +30,9 @@ export default function CurrencySwitcher({ className }: CurrencySwitcherProps) {
           className={clsx(
             'rounded-xl px-4 py-[14px] transition-all duration-200',
             'hover:bg-yellow disabled:cursor-wait disabled:opacity-75',
-            // Используем fallback если контекст еще не загружен
+            // Використовуємо fallback якщо контекст ще не завантажений
             !isLoading && currency === code ? 'bg-yellow' : 'bg-gray-muted',
-            // При загрузке показываем USD как активный по умолчанию
+            // При завантаженні показуємо USD як активний за замовчуванням
             isLoading && code === 'USD'
               ? 'bg-yellow'
               : isLoading

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import clsx from 'clsx';
+import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -22,7 +22,8 @@ export default function Button({
       {...rest}
       className={twMerge(
         clsx(
-          'text-dark bg-yellow hover:bg-yellow-light rounded-xl px-12 py-4 leading-[1.56] font-bold transition-colors',
+          'text-dark bg-yellow hover:bg-yellow-light rounded-xl px-12 py-4',
+          'leading-[1.56] font-bold transition-colors',
           className,
         ),
       )}
