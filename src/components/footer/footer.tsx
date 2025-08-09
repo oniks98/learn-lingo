@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
 import Telegram from '@/lib/icons/telegram.svg';
 import Viber from '@/lib/icons/viber.svg';
 import WhatsApp from '@/lib/icons/whatsapp.svg';
@@ -12,8 +13,8 @@ export default function Footer() {
   const [isVisible, setIsVisible] = useState(false);
   const t = useTranslations('footer');
 
+  // Запуск анімації після монтування компонента
   useEffect(() => {
-    // Запускаем анимацию после монтирования компонента
     const timer = setTimeout(() => {
       setIsVisible(true);
     }, 300);
@@ -21,6 +22,7 @@ export default function Footer() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Конфігурація соціальних мереж з анімаціями
   const socialLinks = [
     {
       name: 'Telegram',
@@ -52,8 +54,8 @@ export default function Footer() {
     },
   ];
 
+  // Відкриття карти Шотландії у новому вікні
   const handleScotlandClick = () => {
-    // Координаты Шотландии: 57° с. ш. 5° з. д.
     const lat = 57.0;
     const lng = -5.0;
     const url = `https://www.google.com/maps?q=${lat},${lng}&z=6`;
@@ -63,9 +65,9 @@ export default function Footer() {
   return (
     <footer className="bg-gray-light border-t border-gray-200">
       <div className="mx-auto max-w-338 px-5 py-4">
-        {/* Основной контент футера */}
+        {/* Основний контент футера */}
         <div className="mb-4 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          {/* Герб и замок */}
+          {/* Герб та замок з ховер ефектами */}
           <div className="flex items-center justify-center gap-4 md:justify-start">
             <div className="group relative">
               <img
@@ -88,12 +90,12 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Копирайт */}
+          {/* Копірайт */}
           <div className="text-center">
             <p className="text-dark-70 text-sm">{t('copyright')}</p>
           </div>
 
-          {/* Локация и переключатель языков */}
+          {/* Локація з інтерактивною картою */}
           <div className="flex justify-center gap-3 md:justify-end">
             <button
               onClick={handleScotlandClick}
@@ -115,10 +117,10 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Нижняя секция - Социальные иконки и разработка */}
+        {/* Нижня секція - соціальні мережі та розробка */}
         <div className="border-t border-gray-200 pt-4">
           <div className="flex flex-col items-center justify-center gap-4 md:flex-row">
-            {/* Социальные иконки */}
+            {/* Соціальні іконки з анімованою появою */}
             <div className="flex justify-center gap-6">
               {socialLinks.map((social) => {
                 const { IconComponent } = social;
@@ -128,21 +130,21 @@ export default function Footer() {
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`group relative transition-all duration-500 ease-out ${isVisible ? 'animate-spin-settle' : 'opacity-0'} ${social.color} `}
+                    className={`group relative transition-all duration-500 ease-out ${
+                      isVisible ? 'animate-spin-settle' : 'opacity-0'
+                    } ${social.color}`}
                     style={{
                       animationDelay: isVisible ? social.delay : '0s',
                     }}
                     title={social.name}
                   >
-                    {/*<div className="rounded-full bg-white p-1 shadow-md transition-all duration-300 group-hover:scale-110 hover:shadow-lg">*/}
                     <IconComponent
                       width={24}
                       height={24}
                       className="text-dark transition-colors duration-300 group-hover:scale-110"
                     />
-                    {/*</div>*/}
 
-                    {/* Тултип */}
+                    {/* Тултип при ховері */}
                     <span className="bg-dark pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 transform rounded px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                       {social.name}
                     </span>
@@ -151,7 +153,7 @@ export default function Footer() {
               })}
             </div>
 
-            {/* Разработка сайтов */}
+            {/* Інформація про розробку */}
             <div className="text-center md:text-right">
               <p className="text-dark-70 text-[10px]">{t('development')}</p>
             </div>
