@@ -1,7 +1,7 @@
-// src/components/modal/email-verification-modal.tsx
 'use client';
 
 import { useTranslations } from 'next-intl';
+import clsx from 'clsx';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 import { useSendVerificationEmail } from '@/hooks/use-send-verification-email';
@@ -23,13 +23,13 @@ export default function EmailVerificationModal({
   const t = useTranslations('loginForm');
 
   /**
-   * Обработчик повторной отправки письма верификации
+   * Обробник повторного надсилання листа верифікації
    */
   const handleResendVerification = async () => {
     try {
       await sendVerification.mutateAsync();
     } catch (err) {
-      console.error('Ошибка повторной отправки верификации:', err);
+      console.error('Помилка повторного надсилання верифікації:', err);
     }
   };
 
@@ -42,8 +42,13 @@ export default function EmailVerificationModal({
       title={t('emailVerification.title')}
     >
       <div className="space-y-4">
-        {/* Иконка предупреждения */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100">
+        {/* Іконка попередження */}
+        <div
+          className={clsx(
+            'mx-auto flex h-16 w-16 items-center justify-center',
+            'rounded-full bg-yellow-100',
+          )}
+        >
           <svg
             className="h-8 w-8 text-yellow-600"
             fill="none"
@@ -59,17 +64,17 @@ export default function EmailVerificationModal({
           </svg>
         </div>
 
-        {/* Заголовок и описание */}
+        {/* Заголовок та опис */}
         <div className="text-center">
           <h3 className="mb-2 text-lg font-medium text-gray-900">
             {t('emailVerification.heading')}
           </h3>
-          <p className="text-shadow-gray-muted mb-4 leading-snug">
+          <p className={clsx('text-shadow-gray-muted mb-4 leading-snug')}>
             {t('emailVerification.description', { email: userEmail })}
           </p>
         </div>
 
-        {/* Кнопки действий */}
+        {/* Кнопки дій */}
         <div className="space-y-3">
           <Button
             type="button"
@@ -86,14 +91,14 @@ export default function EmailVerificationModal({
             type="button"
             onClick={onBackToLoginAction}
             disabled={isResendLoading}
-            className="w-full bg-gray-500 hover:bg-gray-600"
+            className={clsx('w-full bg-gray-500 hover:bg-gray-600')}
           >
             {t('buttons.backToLogin')}
           </Button>
         </div>
 
-        {/* Вспомогательный текст */}
-        <div className="mt-4 text-center text-xs text-gray-500">
+        {/* Допоміжний текст */}
+        <div className={clsx('mt-4 text-center text-xs text-gray-500')}>
           <p>{t('emailVerification.helpText')}</p>
         </div>
       </div>

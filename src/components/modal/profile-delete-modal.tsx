@@ -1,8 +1,8 @@
-// src/components/modal/profile-delete-modal.tsx
 'use client';
 
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import clsx from 'clsx';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 
@@ -24,11 +24,17 @@ export default function ProfileDeleteModal({
   const t = useTranslations('profile');
   const [confirmEmail, setConfirmEmail] = useState('');
 
+  /**
+   * Обробник закриття модалки з очищенням стану
+   */
   const handleClose = () => {
     setConfirmEmail('');
     onCloseAction();
   };
 
+  /**
+   * Обробник підтвердження видалення профілю
+   */
   const handleConfirm = () => {
     if (confirmEmail === userEmail) {
       onConfirmAction();
@@ -47,13 +53,17 @@ export default function ProfileDeleteModal({
           {t('deleteAccountModal.description')}
         </p>
 
+        {/* Поле підтвердження email */}
         <div className="mb-6">
           <input
             type="email"
             value={confirmEmail}
             onChange={(e) => setConfirmEmail(e.target.value)}
             placeholder={t('deleteAccountModal.placeholder')}
-            className="focus:border-yellow w-full rounded-lg border border-gray-300 px-4 py-3 focus:outline-none"
+            className={clsx(
+              'focus:border-yellow w-full rounded-lg border border-gray-300',
+              'px-4 py-3 focus:outline-none',
+            )}
           />
           {confirmEmail && !isDeleteFormValid && (
             <p className="mt-2 text-sm text-red-500">
@@ -62,10 +72,11 @@ export default function ProfileDeleteModal({
           )}
         </div>
 
+        {/* Кнопки дій */}
         <div className="flex justify-center gap-4">
           <Button
             type="button"
-            className="bg-gray-200 text-black hover:bg-gray-300"
+            className={clsx('bg-gray-200 text-black hover:bg-gray-300')}
             onClick={handleClose}
             disabled={isLoading}
           >
@@ -73,7 +84,7 @@ export default function ProfileDeleteModal({
           </Button>
           <Button
             type="button"
-            className="bg-red-500 text-white hover:bg-red-600"
+            className={clsx('bg-red-500 text-white hover:bg-red-600')}
             onClick={handleConfirm}
             disabled={isLoading || !isDeleteFormValid}
           >

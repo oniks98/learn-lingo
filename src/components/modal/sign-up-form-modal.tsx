@@ -1,4 +1,3 @@
-// src/components/modal/sign-up-form-modal.tsx
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -32,11 +31,11 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
     watch,
   } = useForm<SignUpFormValues>({ resolver: zodResolver(signUpSchema) });
 
-  // Наблюдаем за изменениями в полях формы
+  // Відстеження змін у полях форми
   const watchedName = watch('name');
   const watchedEmail = watch('email');
 
-  // Загружаем сохраненные данные при открытии модалки
+  // Завантажуємо збережені дані при відкритті модалки
   useEffect(() => {
     if (isOpen) {
       try {
@@ -50,29 +49,35 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
           setValue('email', savedEmail);
         }
       } catch (error) {
-        console.warn('Could not load saved form data:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Could not load saved form data:', error);
+        }
       }
     }
   }, [isOpen, setValue]);
 
-  // Сохраняем имя при его изменении
+  // Зберігаємо ім'я при зміні
   useEffect(() => {
     if (watchedName) {
       try {
         localStorage.setItem('signUpForm_name', watchedName);
       } catch (error) {
-        console.warn('Could not save form data:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Could not save form data:', error);
+        }
       }
     }
   }, [watchedName]);
 
-  // Сохраняем email при его изменении
+  // Зберігаємо email при зміні
   useEffect(() => {
     if (watchedEmail) {
       try {
         localStorage.setItem('signUpForm_email', watchedEmail);
       } catch (error) {
-        console.warn('Could not save form data:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Could not save form data:', error);
+        }
       }
     }
   }, [watchedEmail]);
@@ -85,19 +90,22 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
         name: data.name,
       });
 
-      // Очищаем сохраненные данные при успешной регистрации
+      // Очищаємо збережені дані при успішній реєстрації
       try {
         localStorage.removeItem('signUpForm_name');
         localStorage.removeItem('signUpForm_email');
       } catch (error) {
-        console.warn('Could not clear saved form data:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Could not clear saved form data:', error);
+        }
       }
 
       reset();
       onCloseAction();
     } catch (err) {
-      console.error('Registration error in component:', err);
-      // toast removed — хуки вже показують повідомлення
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Registration error in component:', err);
+      }
     }
   };
 
@@ -105,18 +113,21 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
     try {
       await signInWithGoogle.mutateAsync({ redirectPath: '/' });
 
-      // Очищаем сохраненные данные при успешном входе через Google
+      // Очищаємо збережені дані при успішному вході через Google
       try {
         localStorage.removeItem('signUpForm_name');
         localStorage.removeItem('signUpForm_email');
       } catch (error) {
-        console.warn('Could not clear saved form data:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Could not clear saved form data:', error);
+        }
       }
 
       onCloseAction();
     } catch (err) {
-      console.error('Google auth error in component:', err);
-      // toast removed — хуки вже показують повідомлення
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Google auth error in component:', err);
+      }
     }
   };
 
@@ -177,8 +188,6 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
               disabled={isAnyLoading}
             >
               {showPassword ? (
-                // Закрытый глаз (скрыть пароль)
-
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -199,7 +208,6 @@ export default function SignUpFormModal({ isOpen, onCloseAction }: Props) {
                   />
                 </svg>
               ) : (
-                // Открытый глаз (показать пароль)
                 <svg
                   className="h-5 w-5"
                   fill="none"

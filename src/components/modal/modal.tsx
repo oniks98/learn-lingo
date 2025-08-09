@@ -1,4 +1,3 @@
-// src/components/modal/modal.tsx
 'use client';
 
 import {
@@ -31,7 +30,11 @@ export default function Modal({
       <Dialog as="div" className="relative z-50" onClose={onCloseAction}>
         <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" />
 
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className={clsx(
+            'fixed inset-0 z-50 flex items-center justify-center p-4',
+          )}
+        >
           <Transition
             show={isOpen}
             enter="transition duration-300 ease-out"
@@ -44,20 +47,27 @@ export default function Modal({
           >
             <DialogPanel
               className={clsx(
-                '@container relative w-full max-w-[599px] rounded-[30px] bg-white shadow-xl',
+                '@container relative w-full max-w-[599px]',
+                'rounded-[30px] bg-white shadow-xl',
                 className,
               )}
             >
               <div className="p-[10.68cqw]">
                 <button
                   onClick={onCloseAction}
-                  className="hover:text-yellow absolute top-5 right-5 transition"
+                  className={clsx(
+                    'hover:text-yellow absolute top-5 right-5 transition',
+                  )}
                 >
                   <ExitIcon className="h-8 w-8" />
                 </button>
 
                 {title && (
-                  <DialogTitle className="mb-5 text-[40px] leading-[1.2] font-medium tracking-[-0.02em]">
+                  <DialogTitle
+                    className={clsx(
+                      'mb-5 text-[40px] leading-[1.2] font-medium tracking-[-0.02em]',
+                    )}
+                  >
                     {title}
                   </DialogTitle>
                 )}

@@ -1,4 +1,3 @@
-// src/components/modal/email-change-modal.tsx
 'use client';
 
 import React from 'react';
@@ -29,11 +28,11 @@ export default function EmailChangeModal({ isOpen, onCloseAction }: Props) {
     reset,
   } = useForm<EmailChangeFormValues>({
     resolver: zodResolver(emailChangeSchema),
-    mode: 'onChange', // Валидация при каждом изменении
+    mode: 'onChange',
   });
 
   const handleClose = () => {
-    reset(); // Очищаем форму
+    reset();
     onCloseAction();
   };
 
@@ -42,7 +41,7 @@ export default function EmailChangeModal({ isOpen, onCloseAction }: Props) {
       { newEmail: data.email },
       {
         onSuccess: () => {
-          handleClose(); // Закрываем модал после успешной отправки
+          handleClose();
         },
       },
     );

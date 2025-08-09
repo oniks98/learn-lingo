@@ -1,4 +1,3 @@
-// src/components/modal/login-form-modal.tsx
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -7,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import clsx from 'clsx';
 
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
@@ -30,14 +30,14 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const signInWithGoogle = useSignInWithGoogle();
   const t = useTranslations('loginForm');
 
-  // Состояния для управления UI
+  // Стани для управління UI
   const [showEmailVerificationUI, setShowEmailVerificationUI] = useState(false);
   const [showForgotPasswordUI, setShowForgotPasswordUI] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [contextMessage, setContextMessage] = useState<string | null>(null);
 
-  // Форма логина
+  // Форма логіну
   const {
     register,
     handleSubmit,
@@ -50,7 +50,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   const watchedEmail = watch('email');
 
   /**
-   * Обработка контекстных сообщений на основе URL параметров
+   * Обробка контекстних повідомлень на основі URL параметрів
    */
   useEffect(() => {
     if (isOpen && message) {
@@ -73,7 +73,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
 
       setContextMessage(modalMessage);
 
-      // Очищаем параметр message чтобы избежать повторного показа toast при обновлении
+      // Очищаємо параметр message щоб уникнути повторного показу toast при оновленні
       const url = new URL(window.location.href);
       url.searchParams.delete('message');
       router.replace(url.pathname + url.search, { scroll: false });
@@ -81,7 +81,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   }, [isOpen, message, router]);
 
   /**
-   * Загрузка сохраненных данных при открытии модалки
+   * Завантаження збережених даних при відкритті модалки
    */
   useEffect(() => {
     if (isOpen) {
@@ -91,26 +91,30 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           setValue('email', savedEmail);
         }
       } catch (error) {
-        console.warn('Не удалось загрузить сохраненные данные формы:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Не вдалося завантажити збережені дані форми:', error);
+        }
       }
     }
   }, [isOpen, setValue]);
 
   /**
-   * Сохранение email при его изменении
+   * Збереження email при його зміні
    */
   useEffect(() => {
     if (watchedEmail) {
       try {
         localStorage.setItem('loginForm_email', watchedEmail);
       } catch (error) {
-        console.warn('Не удалось сохранить данные формы:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Не вдалося зберегти дані форми:', error);
+        }
       }
     }
   }, [watchedEmail]);
 
   /**
-   * Обработчик отправки формы логина
+   * Обробник відправки форми логіну
    */
   const onSubmit = async (data: LoginFormValues) => {
     try {
@@ -119,62 +123,68 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         password: data.password,
       });
 
-      // Проверяем, нужна ли верификация email
+      // Перевіряємо, чи потрібна верифікація email
       if (result.needsEmailVerification) {
         setUserEmail(data.email);
         setShowEmailVerificationUI(true);
-        return; // НЕ закрываем модалку
+        return; // НЕ закриваємо модалку
       }
 
-      // При успешном логине очищаем сохраненные данные и закрываем модалку
+      // При успішному логіні очищаємо збережені дані та закриваємо модалку
       clearSavedFormData();
       setContextMessage(null);
       reset();
       onCloseAction();
 
-      // Показываем сообщение об успехе для повторной аутентификации
+      // Показуємо повідомлення про успіх для повторної аутентифікації
       if (message) {
         toast.success('Authentication successful!');
       }
     } catch (err) {
-      console.error('Ошибка логина в компоненте:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Помилка логіну в компоненті:', err);
+      }
     }
   };
 
   /**
-   * Обработчик входа через Google
+   * Обробник входу через Google
    */
   const handleGoogle = async () => {
     try {
       await signInWithGoogle.mutateAsync({ redirectPath: '/' });
 
-      // Очищаем сохраненные данные при успешном входе через Google
+      // Очищаємо збережені дані при успішному вході через Google
       clearSavedFormData();
       setContextMessage(null);
       onCloseAction();
 
-      // Показываем сообщение об успехе для повторной аутентификации
+      // Показуємо повідомлення про успіх для повторної аутентифікації
       if (message) {
         toast.success('Authentication successful!');
       }
     } catch (err) {
-      console.error('Ошибка Google аутентификации в компоненте:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Помилка Google аутентифікації в компоненті:', err);
+      }
     }
   };
 
   /**
-   * Очистка сохраненных данных формы
+   * Очищення збережених даних форми
    */
   const clearSavedFormData = () => {
     try {
       localStorage.removeItem('loginForm_email');
     } catch (error) {
-      console.warn('Не удалось очистить сохраненные данные формы:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Не вдалося очистити збережені дані форми:', error);
+      }
     }
   };
 
   /**
-   * Возврат к основной форме логина
+   * Повернення до основної форми логіну
    */
   const handleBackToLogin = () => {
     setShowEmailVerificationUI(false);
@@ -183,25 +193,25 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
   };
 
   /**
-   * Показ формы восстановления пароля
+   * Показ форми відновлення пароля
    */
   const handleForgotPassword = () => {
     setShowForgotPasswordUI(true);
   };
 
   /**
-   * Переключение видимости пароля
+   * Перемикання видимості пароля
    */
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // Состояния загрузки
+  // Стани завантаження
   const isSignInLoading = signIn.isPending;
   const isGoogleLoading = signInWithGoogle.isPending;
   const isAnyLoading = isSignInLoading || isGoogleLoading;
 
-  // Показываем модалку восстановления пароля
+  // Показуємо модалку відновлення пароля
   if (showForgotPasswordUI) {
     return (
       <PasswordResetModal
@@ -212,7 +222,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     );
   }
 
-  // Показываем модалку верификации email
+  // Показуємо модалку верифікації email
   if (showEmailVerificationUI) {
     return (
       <EmailVerificationModal
@@ -224,12 +234,16 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
     );
   }
 
-  // Основной UI логина
+  // Основний UI логіну
   return (
     <Modal isOpen={isOpen} onCloseAction={onCloseAction} title={t('title')}>
-      {/* Показываем контекстное сообщение если есть */}
+      {/* Показуємо контекстне повідомлення якщо є */}
       {contextMessage && (
-        <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+        <div
+          className={clsx(
+            'mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3',
+          )}
+        >
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
@@ -255,7 +269,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
         {t('description')}
       </p>
 
-      {/* Форма логина */}
+      {/* Форма логіну */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-[18px]">
         {/* Поле email */}
         <div>
@@ -263,7 +277,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
             type="email"
             placeholder={t('placeholders.email')}
             {...register('email')}
-            className="border-gray-muted w-full rounded-xl border p-4"
+            className={clsx('border-gray-muted w-full rounded-xl border p-4')}
             disabled={isAnyLoading}
           />
           {errors.email && (
@@ -278,18 +292,23 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               type={showPassword ? 'text' : 'password'}
               placeholder={t('placeholders.password')}
               {...register('password')}
-              className="border-gray-muted w-full rounded-xl border p-4 pr-12"
+              className={clsx(
+                'border-gray-muted w-full rounded-xl border p-4 pr-12',
+              )}
               disabled={isAnyLoading}
             />
-            {/* Кнопка показа/скрытия пароля */}
+            {/* Кнопка показу/приховування пароля */}
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className={clsx(
+                'absolute top-1/2 right-4 -translate-y-1/2',
+                'text-gray-500 hover:text-gray-700',
+              )}
               disabled={isAnyLoading}
             >
               {showPassword ? (
-                // Иконка скрытия пароля
+                // Іконка приховування пароля
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -310,7 +329,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
                   />
                 </svg>
               ) : (
-                // Иконка показа пароля
+                // Іконка показу пароля
                 <svg
                   className="h-5 w-5"
                   fill="none"
@@ -332,12 +351,14 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
               {errors.password.message}
             </p>
           )}
-          {/* Ссылка "Забыли пароль?" */}
+          {/* Посилання "Забули пароль?" */}
           <div className="mt-2 text-right">
             <button
               type="button"
               onClick={handleForgotPassword}
-              className="hover:text-yellow text-sm text-black hover:underline"
+              className={clsx(
+                'hover:text-yellow text-sm text-black hover:underline',
+              )}
               disabled={isAnyLoading}
             >
               {t('forgotPassword')}
@@ -345,7 +366,7 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           </div>
         </div>
 
-        {/* Кнопка входа */}
+        {/* Кнопка входу */}
         <Button
           type="submit"
           disabled={isAnyLoading}
@@ -354,19 +375,22 @@ export default function LoginFormModal({ isOpen, onCloseAction }: Props) {
           {isSignInLoading ? t('buttons.loggingIn') : t('buttons.logIn')}
         </Button>
 
-        {/* Разделитель */}
+        {/* Роздільник */}
         <div className="my-4 flex items-center">
           <hr className="flex-grow border-gray-300" />
           <span className="px-2 text-gray-500">{t('or')}</span>
           <hr className="flex-grow border-gray-300" />
         </div>
 
-        {/* Кнопка входа через Google */}
+        {/* Кнопка входу через Google */}
         <Button
           type="button"
           onClick={handleGoogle}
           disabled={isAnyLoading}
-          className="flex w-full items-center justify-center gap-2 disabled:opacity-50"
+          className={clsx(
+            'flex w-full items-center justify-center gap-2',
+            'disabled:opacity-50',
+          )}
         >
           <GoogleIcon className="h-5 w-5" />
           {isGoogleLoading

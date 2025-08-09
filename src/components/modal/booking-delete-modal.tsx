@@ -1,4 +1,3 @@
-// src/components/modal/booking-delete-modal.tsx
 'use client';
 
 import { useTranslations } from 'next-intl';

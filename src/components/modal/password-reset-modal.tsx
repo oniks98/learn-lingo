@@ -1,7 +1,7 @@
-// src/components/modal/password-reset-modal.tsx
 'use client';
 
 import { useTranslations } from 'next-intl';
+import clsx from 'clsx';
 import Modal from '@/components/modal/modal';
 import Button from '@/components/ui/button';
 import { useSendPasswordReset } from '@/hooks/use-password-reset';
@@ -21,13 +21,15 @@ export default function PasswordResetModal({
   const t = useTranslations('loginForm');
 
   /**
-   * Обработчик отправки письма для сброса пароля
+   * Обробник надсилання листа для скидання пароля
    */
   const handleSendPasswordReset = async (email: string) => {
     try {
       await sendPasswordReset.mutateAsync({ email });
     } catch (err) {
-      console.error('Ошибка отправки сброса пароля:', err);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Помилка надсилання скидання пароля:', err);
+      }
     }
   };
 
@@ -40,8 +42,13 @@ export default function PasswordResetModal({
       title={t('passwordReset.title')}
     >
       <div className="space-y-4">
-        {/* Иконка ключа */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+        {/* Іконка ключа */}
+        <div
+          className={clsx(
+            'mx-auto flex h-16 w-16 items-center justify-center',
+            'rounded-full bg-blue-100',
+          )}
+        >
           <svg
             className="h-8 w-8 text-blue-600"
             fill="none"
@@ -57,39 +64,39 @@ export default function PasswordResetModal({
           </svg>
         </div>
 
-        {/* Заголовок и описание */}
+        {/* Заголовок та опис */}
         <div className="text-center">
           <h3 className="mb-2 text-lg font-medium text-gray-900">
             {t('passwordReset.heading')}
           </h3>
-          <p className="text-shadow-gray-muted mb-4 leading-snug">
+          <p className={clsx('text-shadow-gray-muted mb-4 leading-snug')}>
             {t('passwordReset.description')}
           </p>
         </div>
 
-        {/* Форма сброса пароля */}
+        {/* Форма скидання пароля */}
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
             const email = formData.get('email') as string;
-            handleSendPasswordReset(email);
+            await handleSendPasswordReset(email);
           }}
           className="space-y-4"
         >
-          {/* Поле ввода email */}
+          {/* Поле введення email */}
           <div>
             <input
               type="email"
               name="email"
               placeholder={t('placeholders.email')}
               required
-              className="border-gray-muted w-full rounded-xl border p-4"
+              className={clsx('border-gray-muted w-full rounded-xl border p-4')}
               disabled={isPasswordResetLoading}
             />
           </div>
 
-          {/* Кнопки действий */}
+          {/* Кнопки дій */}
           <div className="space-y-3">
             <Button
               type="submit"
@@ -105,15 +112,15 @@ export default function PasswordResetModal({
               type="button"
               onClick={onBackToLoginAction}
               disabled={isPasswordResetLoading}
-              className="w-full bg-gray-500 hover:bg-gray-600"
+              className={clsx('w-full bg-gray-500 hover:bg-gray-600')}
             >
               {t('buttons.backToLogin')}
             </Button>
           </div>
         </form>
 
-        {/* Ссылка на возврат к логину */}
-        <div className="mt-4 text-center text-xs text-gray-500">
+        {/* Посилання на повернення до логіну */}
+        <div className={clsx('mt-4 text-center text-xs text-gray-500')}>
           <p>
             {t('passwordReset.rememberPassword')}{' '}
             <button
