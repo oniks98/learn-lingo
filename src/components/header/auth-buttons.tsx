@@ -24,7 +24,7 @@ export default function AuthButtons({ className }: AuthButtonsProps) {
     router.push('/', { scroll: false });
   };
 
-  // Пользователь считается аутентифицированным только если email подтвержден
+  // Користувач вважається автентифікованим лише якщо email підтверджено
   const isAuthenticated = user && user.emailVerified;
 
   return (

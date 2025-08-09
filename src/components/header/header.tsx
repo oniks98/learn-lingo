@@ -9,9 +9,7 @@ import BurgerMenuMob from '@/components/header/burger-menu-mob';
 import BurgerMenuTab from '@/components/header/burger-menu-tab';
 import clsx from 'clsx';
 
-export interface HeaderProps {}
-
-export default function Header({}: HeaderProps) {
+export default function Header() {
   return (
     <header className="@container">
       <div

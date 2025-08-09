@@ -1,4 +1,3 @@
-// src/app/components/header/navigation.tsx
 'use client';
 
 import { Link, usePathname } from '@/i18n/navigation';
@@ -20,7 +19,7 @@ export default function Navigation({ className }: NavigationProps) {
   const { user } = useAuth();
   const t = useTranslations('navigation');
 
-  // Пользователь считается аутентифицированным только если email подтвержден
+  // Користувач вважається автентифікованим лише якщо email підтверджено
   const isAuthenticated = user && user.emailVerified;
 
   const items: NavigationItemType[] = [
@@ -28,7 +27,7 @@ export default function Navigation({ className }: NavigationProps) {
     { href: '/teachers', label: t('teachers') },
   ];
 
-  // Приватные разделы доступны только подтвержденным пользователям
+  // Приватні розділи доступні лише підтвердженим користувачам
   if (isAuthenticated) {
     items.push(
       { href: `/users/${user.uid}/favorites`, label: t('favorites') },

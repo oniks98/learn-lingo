@@ -44,13 +44,13 @@ export default function BurgerMenuMob({ className }: BurgerMenuProps) {
   const isAuthenticated = user && user.emailVerified;
 
   const items: MenuItemType[] = [
-    // Основная навигация - всегда видна
+    // Основна навігація - завжди видима
     { type: 'link', href: '/', label: tNav('home') },
     { type: 'link', href: '/teachers', label: tNav('teachers') },
   ];
 
   if (isAuthenticated) {
-    // Приватные разделы для аутентифицированных пользователей
+    // Приватні розділи для автентифікованих користувачів
     items.push(
       {
         type: 'link',
@@ -67,11 +67,10 @@ export default function BurgerMenuMob({ className }: BurgerMenuProps) {
         href: `/users/${user.uid}/profile`,
         label: tCommon('profile'),
       },
-      // Действие logout
       { type: 'action', action: handleLogout, label: t('logout') },
     );
   } else {
-    // Ссылки для неаутентифицированных пользователей
+    // Посилання для неавтентифікованих користувачів
     items.push(
       { type: 'link', href: '/login', label: t('login') },
       { type: 'link', href: '/signup', label: t('registration') },
