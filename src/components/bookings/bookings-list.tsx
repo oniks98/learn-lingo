@@ -10,6 +10,7 @@ import { getBookings } from '@/lib/api/bookings';
 import BookingCard from '@/components/bookings/booking-card';
 import Loader from '@/components/ui/loader';
 import Button from '@/components/ui/button';
+import clsx from 'clsx';
 import {
   containerVariants,
   loadMoreVariants,
@@ -21,7 +22,7 @@ export default function BookingsList() {
   const t = useTranslations();
   const [visibleCount, setVisibleCount] = useState(4);
 
-  // Fetch bookings data
+  // Отримання даних про бронювання
   const {
     data: bookingsData,
     isLoading,
@@ -35,7 +36,7 @@ export default function BookingsList() {
     return bookingsData?.bookings || [];
   }, [bookingsData]);
 
-  // Sort bookings by creation date (newest first)
+  // Сортування бронювань за датою створення (найновіші перші)
   const sortedBookings = useMemo(() => {
     return [...allBookings].sort((a, b) => b.createdAt - a.createdAt);
   }, [allBookings]);
@@ -80,7 +81,10 @@ export default function BookingsList() {
             <p className="mb-4 text-red-500">{t('bookings.errorLoading')}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-yellow hover:bg-yellow/80 rounded px-4 py-2 text-white"
+              className={clsx(
+                'bg-yellow hover:bg-yellow/80',
+                'rounded px-4 py-2 text-white',
+              )}
             >
               {t('bookings.tryAgain')}
             </button>
@@ -125,7 +129,9 @@ export default function BookingsList() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={1.5}
-                    d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                    d={clsx(
+                      'M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01',
+                    )}
                   />
                 </svg>
               </div>
@@ -137,7 +143,11 @@ export default function BookingsList() {
               </p>
               <Link
                 href="/teachers"
-                className="bg-yellow hover:bg-yellow/80 inline-flex items-center rounded-lg px-6 py-3 font-medium text-black transition-colors"
+                className={clsx(
+                  'bg-yellow hover:bg-yellow/80',
+                  'inline-flex items-center rounded-lg px-6 py-3',
+                  'font-medium text-black transition-colors',
+                )}
               >
                 {t('bookings.emptyState.browseTeachers')}
               </Link>

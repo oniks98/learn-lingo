@@ -30,7 +30,7 @@ export default function BookingCard({ booking }: Props) {
   const queryClient = useQueryClient();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
-  // Currency converter hook
+  // Хук для конвертації валют
   const { formatPrice: formatCurrencyPrice } = useCurrencyConverter();
 
   const { data: teachers, isLoading: isLoadingTeachers } = useQuery<
@@ -43,7 +43,7 @@ export default function BookingCard({ booking }: Props) {
   const teacher = teachers?.find((t) => t.id === booking.teacherId) || null;
   const isLoadingTeacher = isLoadingTeachers;
 
-  // Добавляем логику избранного
+  // Логіка обраних викладачів
   const { data: isFavorite = false } = useFavoriteStatus(booking.teacherId);
   const { toggleFavorite, isLoading: isFavoriteLoading } = useToggleFavorite();
 
@@ -64,7 +64,7 @@ export default function BookingCard({ booking }: Props) {
   };
 
   const handleFavoriteClick = () => {
-    // На странице bookings пользователь уже залогинен и подтвержден
+    // На сторінці bookings користувач вже залогінен і підтверджений
     toggleFavorite(booking.teacherId, isFavorite);
   };
 
@@ -77,11 +77,11 @@ export default function BookingCard({ booking }: Props) {
   };
 
   const formatBookingDateTime = (dateValue: Date | string) => {
-    // Правильно обрабатываем и Date объекты, и строки
+    // Правильно обробляємо і Date об'єкти, і рядки
     const date =
       typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
 
-    // Проверяем, что дата валидна
+    // Перевіряємо, що дата валідна
     if (isNaN(date.getTime())) {
       return { date: t('invalidDate'), time: '' };
     }
@@ -96,7 +96,7 @@ export default function BookingCard({ booking }: Props) {
     const formattedTime = date.toLocaleTimeString(locale, {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false, // 24-часовой формат
+      hour12: false, // 24-годинний формат
     });
 
     return {
@@ -114,9 +114,7 @@ export default function BookingCard({ booking }: Props) {
   return (
     <>
       <motion.section
-        className={clsx(
-          'rounded-xl bg-white p-6 shadow transition-all duration-300',
-        )}
+        className="rounded-xl bg-white p-6 shadow transition-all duration-300"
         layout
         transition={{ duration: 0.3 }}
       >
@@ -127,7 +125,7 @@ export default function BookingCard({ booking }: Props) {
             'xl:grid-rows-[32px_56px_repeat(4,auto)]',
           )}
         >
-          {/* Teacher Avatar */}
+          {/* Аватар викладача */}
           <div
             className={clsx(
               'border-yellow relative mb-[2.61cqw]',
@@ -160,7 +158,7 @@ export default function BookingCard({ booking }: Props) {
             )}
           </div>
 
-          {/* Booking Header Info */}
+          {/* Заголовок бронювання */}
           <div
             className={clsx(
               'mb-2 flex flex-wrap items-center justify-between self-start',
@@ -195,7 +193,7 @@ export default function BookingCard({ booking }: Props) {
             </motion.button>
           </div>
 
-          {/* Teacher Name */}
+          {/* Ім'я викладача */}
           <h2
             className={clsx(
               'row-2 mb-[2.61cqw] text-2xl font-medium',
@@ -205,7 +203,7 @@ export default function BookingCard({ booking }: Props) {
             {teacher ? `${teacher.name} ${teacher.surname}` : <Loader />}
           </h2>
 
-          {/* Main Booking Information */}
+          {/* Основна інформація про бронювання */}
           <ul
             className={clsx(
               'mb-2 grid gap-2 font-medium',
@@ -282,7 +280,7 @@ export default function BookingCard({ booking }: Props) {
             )}
           </ul>
 
-          {/* Delete Button */}
+          {/* Кнопка видалення */}
           <Button
             className={clsx(
               'max-w-68 px-[3.55cqw]',
@@ -304,7 +302,7 @@ export default function BookingCard({ booking }: Props) {
         </div>
       </motion.section>
 
-      {/* Confirm Delete Modal */}
+      {/* Модальне вікно підтвердження видалення */}
       <BookingDeleteModal
         isOpen={isConfirmOpen}
         onCloseAction={() => setIsConfirmOpen(false)}
