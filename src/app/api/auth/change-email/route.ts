@@ -35,25 +35,44 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Перевірка чи зайнятий email адреса
+// Покращена перевірка доступності email
 async function checkEmailAvailability(email: string) {
   try {
     await admin.auth().getUserByEmail(email);
-    return NextResponse.json({ available: false }, { status: 409 });
+    // Якщо дійшли до цієї точки - користувач знайдений, email зайнятий
+    return NextResponse.json(
+      {
+        available: false,
+        message: 'Email already in use',
+      },
+      { status: 409 },
+    );
   } catch (error: unknown) {
     if (
       error instanceof FirebaseError &&
       error.code === 'auth/user-not-found'
     ) {
-      return NextResponse.json({ available: true });
+      // Email вільний
+      return NextResponse.json({
+        available: true,
+        message: 'Email is available',
+      });
     }
-    throw error;
+
+    // Інші помилки Firebase
+    console.error('Error checking email availability:', error);
+    return NextResponse.json(
+      {
+        available: false,
+        message: 'Error checking email availability',
+      },
+      { status: 500 },
+    );
   }
 }
 
-// Зміна email користувача через oobCode
+// Решта функцій залишається без змін...
 async function changeUserEmail(oobCode: string) {
-  // Запит до Firebase REST API для підтвердження зміни
   const response = await fetch(
     `${FIREBASE_API_BASE}:update?key=${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}`,
     {
@@ -63,7 +82,6 @@ async function changeUserEmail(oobCode: string) {
     },
   );
 
-  // Обробка помилок Firebase API
   if (!response.ok) {
     const data = await response.json();
     const message = getErrorMessage(data.error?.message);
@@ -71,36 +89,29 @@ async function changeUserEmail(oobCode: string) {
     return NextResponse.json({ error: message }, { status });
   }
 
-  // Отримання нового email з відповіді
   const { email: newEmail } = await response.json();
   if (!newEmail) {
     return NextResponse.json({ error: 'Invalid response' }, { status: 500 });
   }
 
-  // Оновлення даних користувача в базі
   const userData = await updateUserInDatabase(newEmail);
   return NextResponse.json({ success: true, newEmail, user: userData });
 }
 
-// Оновлення даних користувача в Realtime Database
 async function updateUserInDatabase(newEmail: string) {
-  // Отримання користувача за новим email
   const userRecord = await admin.auth().getUserByEmail(newEmail);
   const userRef = admin.database().ref(`users/${userRecord.uid}`);
 
-  // Оновлення email та статусу верифікації
   await userRef.update({
     email: newEmail,
     emailVerified: true,
     updatedAt: Date.now(),
   });
 
-  // Повернення оновлених даних користувача
   const snapshot = await userRef.once('value');
   return snapshot.val();
 }
 
-// Мапінг кодів помилок Firebase на зрозумілі повідомлення
 function getErrorMessage(code?: string): string {
   const messages: Record<string, string> = {
     INVALID_OOB_CODE: 'Link already used or invalid',
@@ -111,7 +122,6 @@ function getErrorMessage(code?: string): string {
   return messages[code || ''] || 'Email change failed';
 }
 
-// Мапінг кодів помилок на HTTP статус коди
 function getStatusCode(code?: string): number {
   const codes: Record<string, number> = {
     USER_DISABLED: 403,

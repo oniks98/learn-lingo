@@ -36,8 +36,18 @@ export const useSendEmailChange = () => {
 
       const checkResult = await checkResponse.json();
 
-      // Якщо email вже зайнятий
-      if (!checkResponse.ok || !checkResult.available || checkResult.exists) {
+      // Виправлена логіка перевірки доступності
+      if (!checkResponse.ok) {
+        // Якщо статус 409 - email зайнятий
+        if (checkResponse.status === 409) {
+          throw new Error('email-already-in-use');
+        }
+        // Інші помилки сервера
+        throw new Error('server-error');
+      }
+
+      // Перевіряємо чи email доступний
+      if (checkResult.available === false) {
         throw new Error('email-already-in-use');
       }
 
