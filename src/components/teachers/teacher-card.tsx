@@ -1,10 +1,10 @@
-// src/components/teachers/teacher-card.tsx
 'use client';
 
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
+import { clsx } from 'clsx';
 import { TeacherPreview, TeacherExtraInfo, Review } from '@/lib/types/types';
 import { getTeacherExtraInfo } from '@/lib/api/teachers';
 import { useFavoriteStatus, useToggleFavorite } from '@/hooks/use-favorites';
@@ -20,12 +20,10 @@ import StarIcon from '@/lib/icons/star.svg';
 import HeartIcon from '@/lib/icons/heart';
 import Button from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import clsx from 'clsx';
 import {
   expandedContentVariants,
   heartVariants,
 } from '@/lib/constants/animations';
-
 import { getFunnyAvatarForTeacher } from '@/lib/constants/avatars';
 
 type Props = {
@@ -45,7 +43,7 @@ export default function TeacherCard({
   const { formatPrice } = useCurrencyConverter();
   const t = useTranslations('teacherCard');
 
-  // Мемоизируем смешной аватар для текущего учителя
+  // Мемоізуємо смішний аватар для поточного вчителя
   const funnyAvatar = useMemo(
     () => getFunnyAvatarForTeacher(teacher.id),
     [teacher.id],
@@ -87,7 +85,7 @@ export default function TeacherCard({
     router.push(`/teachers/${teacher.id}`, { scroll: false });
   };
 
-  // Определяем какой аватар показывать
+  // Визначаємо який аватар показувати
   const currentAvatar = expanded ? funnyAvatar : teacher.avatar_url;
   const avatarAlt = expanded
     ? `${teacher.name} ${teacher.surname} (funny avatar)`
@@ -307,7 +305,8 @@ export default function TeacherCard({
             <li key={idx}>
               <p
                 className={clsx(
-                  'border-gray-muted rounded-[35px] border px-3 py-2 text-sm leading-[1.14] font-medium',
+                  'border-gray-muted rounded-[35px] border px-3 py-2',
+                  'text-sm leading-[1.14] font-medium',
                   level === lev && 'bg-yellow',
                 )}
               >

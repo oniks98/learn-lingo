@@ -1,4 +1,3 @@
-// src/components/teachers/teachers-list.tsx
 'use client';
 
 import React, { useMemo, useState, useCallback } from 'react';
@@ -54,7 +53,7 @@ export default function TeachersList() {
     [filteredTeachers, visibleCount],
   );
 
-  // Обработчик изменения фильтров (сохраняет в localStorage, НЕ обновляет URL)
+  // Обробник зміни фільтрів (зберігає в localStorage, НЕ оновлює URL)
   const handleFilterChange = useCallback(
     (newFilters: FiltersForm) => {
       setFilters(newFilters);
@@ -63,7 +62,7 @@ export default function TeachersList() {
     [setFilters],
   );
 
-  // Обработчик применения фильтров (сохраняет в localStorage И обновляет URL)
+  // Обробник застосування фільтрів (зберігає в localStorage І оновлює URL)
   const handleApplyFilters = useCallback(
     (newFilters: FiltersForm) => {
       applyFilters(newFilters);
