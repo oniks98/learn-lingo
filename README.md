@@ -1,76 +1,77 @@
-# Language Tutors App
+# **Language Tutors App**
 
-A Next.js + Tailwind CSS web application with Firebase Realtime Database for online language tutor services.
+A **Next.js + Tailwind CSS** web application with **Firebase Realtime Database** for online language tutor services.
 
 ---
 
-## Project Overview
+## **Project Overview**
 
-This project is a multi-page web app designed for a company that offers online language learning services through tutors. The app consists of three main pages:
+This project is a multi-page web app designed for a company that offers online language learning services through tutors.
+
+The app consists of five main pages:
 
 - **Home** — Presents company advantages and a call-to-action button linking to the Teachers page. The design uses variations of the color palette based on the provided mockup or prototype to keep the project unique.
 
 - **Teachers** — Displays a list of tutors that users can filter by:
-
-  - Language of instruction
-  - Student proficiency level
-  - Price per hour
+   - **Language of instruction**
+   - **Student proficiency level**
+   - **Price per hour**
 
 - **Favorites** — A private page showing tutors the user has marked as favorites.
 
+- **Bookings** — A private page listing all trial lessons booked by the authenticated user.
+   - Users can view the **booking date**, **tutor name**, and **status**.
+   - Booking data is fetched from **Firebase Realtime Database** and displayed in a **responsive card layout**.
+
+- **Profile** — A private page where authenticated users can:
+   - **View** and **update** their personal information (**name**, **email**)
+   - See **account creation date** and other profile details stored in **Firebase Realtime Database**
+
 ---
 
-## Key Features & Technical Requirements
+## **Key Features & Technical Requirements**
 
-1. **User Authentication**  
-   Implemented with Firebase Realtime Database: registration, login, current user data retrieval, and logout.
+- **User Authentication** — Implemented with **Firebase Realtime Database**: registration, login, current user data retrieval, and logout.
 
-2. **Forms & Validation**  
-   Registration and login forms use `react-hook-form` with `yup` for minimal field validation. All fields are mandatory.  
-   Modal windows close when clicking the "X" button, clicking outside (backdrop), or pressing Esc.
+- **Forms & Validation** — Registration and login forms use **react-hook-form** with **zod** for minimal field validation. All fields are mandatory.
+   - Modal windows close when clicking the **"X"** button, clicking outside (backdrop), or pressing **Esc**.
 
-3. **Tutors Collection in Firebase Realtime Database**  
-   Collection fields include:  
-   `name`, `surname`, `languages`, `levels`, `rating`, `reviews`, `price_per_hour`, `lessons_done`, `avatar_url`, `lesson_info`, `conditions`, `experience`.  
-   Use the provided `teachers.json` to populate the database.
+- **Tutors Collection in Firebase Realtime Database** — Collection fields include:
+  `name`, `surname`, `languages`, `levels`, `rating`, `reviews`, `price_per_hour`, `lessons_done`, `avatar_url`, `lesson_info`, `conditions`, `experience`.
+   
+- **Tutor Cards** — Cards display tutor details according to the mockup.
 
-4. **Tutor Cards**  
-   Cards display tutor details according to the mockup.
+- **Pagination** — Initially, 4 tutor cards are displayed on the Teachers page. Additional cards load upon clicking the **"Load more"** button, fetching the next batch from the database.
 
-5. **Pagination**  
-   Initially, 4 tutor cards are displayed on the Teachers page. Additional cards load upon clicking the "Load more" button, fetching the next batch from the database.
-
-6. **Favorites Functionality**
-
-   - If an unauthenticated user clicks the "heart" button, show a modal or toast notifying that this feature requires login.
-   - For authenticated users, add/remove tutors to/from favorites, persist this state (via localStorage or Firebase users collection), and toggle the heart button color accordingly.
+- **Favorites Functionality**
+   - If an unauthenticated user clicks the **"heart"** button, show a modal login.
+   - For authenticated users, add/remove tutors to/from favorites, and toggle the heart button color accordingly.
    - On page reload, the favorites state must persist and reflect correctly.
 
-7. **Read More**  
-   Clicking "Read more" expands the card showing detailed tutor info and student reviews.
+- **Read More** — Clicking **"Read more"** expands the card showing detailed tutor info and student reviews.
 
-8. **Booking Trial Lessons**  
-   Clicking "Book trial lesson" opens a modal with a booking form validated by `react-hook-form` and `yup`. All fields are required. Modal closes via "X", backdrop click, or Esc.
+- **Booking Trial Lessons** — Clicking **"Book trial lesson"** opens a modal with a booking form validated by **react-hook-form** and **zod**. All fields are required.
+   - Modal closes via **"X"**, backdrop click, or **Esc**.
 
-9. **Private Favorites Page**  
-   Only accessible to authenticated users; displays their favorite tutors styled similarly to the Teachers page.
+- **Private Favorites Page** — Only accessible to authenticated users; displays their favorite tutors styled similarly to the Teachers page.
+
+- **Private Bookings Page** — Displays all lessons booked by the user in a **responsive card layout** with booking date, tutor name, and status.
+
+- **Profile Management** — Allows authenticated users to view and update profile data and see account creation date stored in Firebase.
 
 ---
 
-## Tech Stack
+## **Tech Stack**
 
 - **Framework:** Next.js (App Router)
+- **Languages:** JavaScript + TypeScript
 - **Styling:** Tailwind CSS
 - **Database & Auth:** Firebase Realtime Database & Firebase Authentication
-- **Forms & Validation:** react-hook-form + yup
+- **Forms & Validation:** react-hook-form + zod
 - **Deployment:** Vercel
 
 ---
 
-## Author
+## **Author**
 
-Yurii Shpuryk
-
----
-
-Thank you for checking out the project! Feel free to open issues or contribute.
+**Yurii Shpuryk**
