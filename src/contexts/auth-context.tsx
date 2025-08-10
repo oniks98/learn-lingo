@@ -174,6 +174,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Очищення всіх кешів, пов'язаних з обраними елементами
       queryClient.removeQueries({ queryKey: ['favorites'] });
       queryClient.removeQueries({ queryKey: ['favoriteStatus'] });
+      queryClient.removeQueries({ queryKey: ['userStats'] });
+      queryClient.removeQueries({ queryKey: ['bookings'] });
 
       // Очищення відкладених дій
       removePendingAction();
@@ -217,6 +219,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         queryClient.setQueryData(['user'], null);
         queryClient.removeQueries({ queryKey: ['favorites'] });
         queryClient.removeQueries({ queryKey: ['favoriteStatus'] });
+        queryClient.removeQueries({ queryKey: ['userStats'] });
+        queryClient.removeQueries({ queryKey: ['bookings'] });
         removePendingAction();
         setLastRefreshTime(0); // Скидання часу останнього оновлення
       }
