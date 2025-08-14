@@ -73,7 +73,7 @@ export default function EmailChangeModal({ isOpen, onCloseAction }: Props) {
             )}
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Button
               type="button"
               className="bg-gray-200 text-black hover:bg-gray-300"

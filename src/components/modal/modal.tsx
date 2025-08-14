@@ -47,12 +47,13 @@ export default function Modal({
           >
             <DialogPanel
               className={clsx(
-                '@container relative w-full max-w-[599px]',
-                'rounded-[30px] bg-white shadow-xl',
+                '@container relative max-h-[90vh] w-full max-w-[599px]',
+                'flex flex-col rounded-[30px] bg-white shadow-xl',
                 className,
               )}
             >
-              <div className="p-[10.68cqw]">
+              {/* Шапка модалки */}
+              <div className="relative flex-shrink-0 p-[10.68cqw] pb-0">
                 <button
                   onClick={onCloseAction}
                   className={clsx(
@@ -65,13 +66,16 @@ export default function Modal({
                 {title && (
                   <DialogTitle
                     className={clsx(
-                      'mb-5 text-[40px] leading-[1.2] font-medium tracking-[-0.02em]',
+                      'mb-5 text-[26px] leading-[1.2] font-medium tracking-[-0.02em] md:text-[40px]',
                     )}
                   >
                     {title}
                   </DialogTitle>
                 )}
+              </div>
 
+              {/* Контент со скроллом */}
+              <div className="flex-1 overflow-y-auto p-[10.68cqw] pt-0">
                 {children}
               </div>
             </DialogPanel>
