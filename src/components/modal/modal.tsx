@@ -53,7 +53,7 @@ export default function Modal({
               )}
             >
               {/* Шапка модалки */}
-              <div className="relative flex-shrink-0 p-[10.68cqw] pb-0">
+              <div className="relative flex-shrink-0 p-[10.68cqw] pb-4">
                 <button
                   onClick={onCloseAction}
                   className={clsx(
